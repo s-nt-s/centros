@@ -1,0 +1,5 @@
+load database
+  from sqlite://db.sqlite
+  into {{DB_TARGET}}
+with truncate, include drop, create tables, create indexes, reset sequences
+set work_mem to '16MB', maintenance_work_mem to '512 MB';
