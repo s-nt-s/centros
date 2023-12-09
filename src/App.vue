@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, unref } from 'vue'
 import { DB } from './lib/supabaseClient'
 import type { Tables } from './lib/database.types'
 
+const concurso = ref('');
 const concursos = ref([] as Tables<'concurso'>[]);
 const anexos = ref([] as Tables<'concurso_anexo'>[]);
 const centros = ref(0);
 
 async function setConcursos() {
   concursos.value = await DB.concursos();
-  anexos.value = await DB.anexos();
 }
 
-async function setAnexos() {
-  const gAll = (s:string) => Array.from(document.querySelectorAll(s)) as HTMLInputElement[];
-  const inputs = gAll("input[name='anexo']");
-  const anexos = inputs.filter(n=>n.checked).map(n=>Number(n.value));
-  if (anexos.length == 0) {
+watch(concurso, async function () {
+  if (concurso.value == '') {
+    anexos.value = [];
+    return;
+  }
+  const anx = await DB.anexos(concurso.value);
+  anexos.value = anx
+  if (anx.length == 0) {
     centros.value = 0;
     return;
   }
-  //inputs.forEach(i=>i.disabled=true);
   const { data } = await DB.supabase.from('concurso_anexo_centro')
     .select('centro')
-    .filter('anexo', 'in', '('+(anexos.join(", "))+')');
+    .filter('anexo', 'in', '('+(anx.map(a=>a.anexo).join(", "))+')');
   const values = (data??[]).map(d=>d.centro)
     .filter((item, index, arr) => arr.indexOf(item) === index)
     .sort((a,b)=>a-b)
   centros.value = values.length;
-  //inputs.forEach(i=>i.disabled=false);
-}
+})
 
 onMounted(() => {
   setConcursos();
@@ -37,30 +38,48 @@ onMounted(() => {
 </script>
 
 <template>
-  <p>
-    Esta web te ayudará a rellenar el concurso de traslados de la Comunidad de Madrid.<br/>
-    Elige los anexos que te interesen de la convocotaria que te aplique.
-  </p>
-  <fieldset v-for="concurso in concursos" :key="concurso.id">
-    <legend><a :href="concurso.url??undefined" target="_blank">{{ concurso.txt }}</a></legend>
-    <ol>
-      <li :value="anexo.anexo" v-for="anexo in anexos.filter(a=>a.concurso==concurso.id)" :key="anexo.anexo">
-        [<a :href="anexo.url??undefined" target="_blank">pdf</a>]
-        <input 
-          name="anexo" type="checkbox" 
-          @click="setAnexos()"
-          :value="anexo.anexo" :id="anexo.anexo.toString()"
-        />
-        <label :for="anexo.anexo.toString()">{{ anexo.txt }}</label>
-      </li>
-    </ol>
+  <fieldset>
+    <legend>
+      <select v-model="concurso">
+        <option value="">Elige tu concurso de traslados</option>
+        <option 
+          v-for="c in concursos"
+          :value="c.id" :key="c.id"
+        >{{ c.txt }}</option>
+      </select>
+    </legend>
+    <p v-if="concurso == ''">
+        Esta web te ayudará a rellenar el concurso de traslados de la Comunidad de Madrid.
+    </p>
+    <div v-if="concurso != ''">
+      <ol>
+        <li v-for="a in anexos"
+          :value="a.anexo"
+          :key="a.anexo">
+          <span v-if="a.anexo>0">
+          <abbr
+            title="Anexo"
+            >An</abbr> <code class="anx">{{ a.anexo.toString().padStart(2, ' ') }}</code>:
+          </span> <a :href="a.url??undefined" target="_blank">{{ a.txt }}</a>
+        </li>
+      </ol>
+      <button :disabled="centros==0">Ver mapa ({{ centros }} centros)</button>
+    </div>
   </fieldset>
-  <button :disabled="centros==0">Ver mapa ({{ centros }} centros)</button>
 </template>
 
 <style scoped>
 fieldset {
   margin-top: 1em;
   margin-bottom: 1em;
+}
+code.anx {
+  white-space: pre;
+  font-size: 1.3em;
+}
+ol {
+  list-style-type: circle;
+  margin-left: 1.5em;
+  padding-left: 0em;
 }
 </style>

@@ -21,11 +21,6 @@ delete from TIPO where not exists (
     select * from CENTRO c where c.tipo=TIPO.id
 );
 
-delete from CONCURSO_ANEXO where not exists (
-    select * from CONCURSO_ANEXO_CENTRO c where 
-        CONCURSO_ANEXO.concurso=c.concurso and CONCURSO_ANEXO.anexo=c.anexo
-);
-
 ALTER TABLE ETAPA_NOMBRE_CENTRO RENAME TO OLD_ETAPA_NOMBRE_CENTRO;
 
 CREATE TABLE ETAPA_NOMBRE_CENTRO (
