@@ -105,16 +105,19 @@ export interface Database {
       }
       concurso: {
         Row: {
+          cuerpo: string
           id: string
           txt: string | null
           url: string | null
         }
         Insert: {
+          cuerpo: string
           id: string
           txt?: string | null
           url?: string | null
         }
         Update: {
+          cuerpo?: string
           id?: string
           txt?: string | null
           url?: string | null
@@ -180,6 +183,47 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
+          }
+        ]
+      }
+      cuerpo: {
+        Row: {
+          id: string
+          txt: string | null
+        }
+        Insert: {
+          id: string
+          txt?: string | null
+        }
+        Update: {
+          id?: string
+          txt?: string | null
+        }
+        Relationships: []
+      }
+      cuerpo_concurso_anexo: {
+        Row: {
+          anexo: number
+          concurso: string
+          cuerpo: string
+        }
+        Insert: {
+          anexo: number
+          concurso: string
+          cuerpo: string
+        }
+        Update: {
+          anexo?: number
+          concurso?: string
+          cuerpo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cuerpo_concurso_anexo_cuerpo_fkey"
+            columns: ["cuerpo"]
+            isOneToOne: false
+            referencedRelation: "cuerpo"
+            referencedColumns: ["id"]
           }
         ]
       }
