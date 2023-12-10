@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database, Tables } from './database.types'
+import type { Database } from './database.types'
 
 export class DB {
   public static supabase = createClient<Database>(
