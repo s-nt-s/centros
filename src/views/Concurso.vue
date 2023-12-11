@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, inject } from 'vue'
-import { DB } from './lib/supabaseClient'
-import type { Tables } from './lib/database.types'
+import { DB } from '../lib/supabaseClient'
+import type { Tables } from '../lib/database.types'
 
 const concurso = ref('');
 const concursos = ref({} as {[id: string]: Tables<'concurso'>});
@@ -24,14 +24,17 @@ async function setConcursos() {
 }
 
 watch(concurso, async function () {
+  document.getElementById("content")?.classList.add("hide");
   if (['', '-1'].includes(concurso.value)) {
     anexos.value = [];
+    document.getElementById("content")?.classList.remove("hide");
     return;
   }
   const anx = await DB.anexos(concurso.value);
   anexos.value = anx
   if (anx.length == 0) {
     centros.value = 0;
+    document.getElementById("content")?.classList.remove("hide");
     return;
   }
   const { data } = await DB.supabase.from('concurso_anexo_centro')
@@ -41,11 +44,11 @@ watch(concurso, async function () {
     .filter((item, index, arr) => arr.indexOf(item) === index)
     .sort((a,b)=>a-b)
   centros.value = values.length;
+    document.getElementById("content")?.classList.remove("hide");
 })
 
 onMounted(() => {
   setConcursos();
-
 })
 </script>
 
@@ -70,7 +73,7 @@ onMounted(() => {
       Mientras tanto puedes usar el concurso disponible más similar al tuyo, ya que la mayoría
       de los centros serán los mismos.
     </p>
-    <div v-else-if="concurso != ''">
+    <div v-else-if="concurso != ''" id="content">
       <ol>
         <li>Concurso: <a :href="concursos[concurso].url??undefined">{{ concursos[concurso].txt }}</a></li>
         <li>Cuerpo{{ concursos[concurso].cuerpo.includes(' ')?'s':'' }}: {{ yJoin(concursos[concurso].cuerpo) }}</li>
@@ -91,6 +94,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.hide {
+  display: none;
+}
 fieldset {
   margin-top: 1em;
   margin-bottom: 1em;

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "hbs": "ts-node --project tsconfig.aux.json hbs/hbs.ts",
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
@@ -16,7 +17,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "pinia": "^2.1.7",
-    "vue": "^3.3.10"
+    "vue": "^3.3.10",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
@@ -30,9 +32,11 @@
     "@vue/tsconfig": "^0.4.0",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "handlebars": "^4.7.8",
     "jsdom": "^23.0.1",
     "npm-run-all2": "^6.1.1",
     "prettier": "^3.0.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.2.0",
     "vite": "^5.0.5",
     "vitest": "^1.0.1",
