@@ -7,5 +7,27 @@
     <title>Centros</title>
   </head>
   <body>
+    <fieldset>
+      <legend>
+        <select>
+        <option value="">Elige tu concurso de traslados</option>
+        {{#each concursos}}
+        <option value="{{this.id}}">{{ this.txt }}</option>
+        {{/each}}
+        <option value="-1">Ninguno de los anteriores</option>
+      </select>
+      </legend>
+        {{#each concursos as | c | }}
+        <div id="{{c.id}}">
+          <ol>
+          {{#each anexos[c.id] as | a | }}
+            <li>{{a.txt}}</li>
+          {{/each}}
+          </ol>
+        </div>
+        {{/each}}
+    </fieldset>
+    <ol>
+  </ol>
   </body>
 </html>

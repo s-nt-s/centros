@@ -1,5 +1,13 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "./tsconfig.node.json",
+    "include": [
+        "vite.config.*",
+        "vitest.config.*",
+        "cypress.config.*",
+        "nightwatch.conf.*",
+        "playwright.config.*",
+        "hbs/render.ts"
+    ],
     "compilerOptions": {
         "module": "commonjs",
         "target": "ESNext",

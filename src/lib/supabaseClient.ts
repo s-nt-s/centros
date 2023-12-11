@@ -12,8 +12,10 @@ export class DB {
     if (error) throw error;
     return data;
   }
-  static async anexos(concurso: string) {
-    const { data, error } = await DB.supabase.from('concurso_anexo').select().eq('concurso', concurso);
+  static async anexos(concurso: string | null) {
+    let prm = DB.supabase.from('concurso_anexo').select();
+    if (concurso!=null) prm = prm.eq('concurso', concurso);
+    const { data, error } = await prm;
     if (error) throw error;
     return data;
   }

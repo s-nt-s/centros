@@ -6,7 +6,9 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "./hbs/render.ts"
+    "./hbs/render.ts",
+    "./src/lib/supabaseClient.ts",
+    "./src/lib/database.types.ts",
   ],
   "compilerOptions": {
     "composite": true,
