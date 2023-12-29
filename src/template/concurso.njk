@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Concurso de traslados</title>
+    {% include "head.njk" %}
+  </head>
+  <body>
+    <fieldset>
+      <legend>
+        <select id="concurso">
+        <option value="empty">Elige tu concurso de traslados</option>
+        {% for c in concursos %}
+        <option value="{{c.id}}">{{ c.txt }}</option>
+        {% endfor %}
+        <option value="none">Ninguno de los anteriores</option>
+      </select>
+      </legend>
+      <div id="content" style="display:none;">
+        <p id="empty">
+          Esta web te ayudará a rellenar el concurso de traslados de la Comunidad de Madrid.
+        </p>
+        <p id="none">
+          Si no encuentras tu concurso de traslados escribe a <a href="{{mail.no_concurso}}">
+            %VITE_EMAIL%</a>
+          pidiendo que actualice la web.<br/>
+          Mientras tanto puedes usar el concurso disponible más similar al tuyo, ya que la mayoría
+          de los centros serán los mismos.
+        </p>
+        {% for c in concursos %}
+        <div id="{{c.id}}">
+          <ol class="anx">
+            <li>Concurso: <a href="{{c.url}}">{{c.txt}}</a></li>
+            <li>Cuerpo{%if ' ' in c.cuerpo%}s{%endif%}: {{c.cuerpo | yjoin}}</li>
+           {% for a in c.anexos %}
+            <li value="{{a.anexo}}">
+              {% if a.anexo == 0 %}Resolución:
+              {%else%}
+              <abbr title="Anexo">An</abbr> <code class='anx'>{%if a.anexo<10%} {%endif%}{{a.anexo}}</code>
+              {%endif%}
+              <a href="{{a.url}}">{{a.txt}}</a>
+            </li>
+          {% endfor %}
+          </ol>
+          <a href="{{c.id}}/" target="_self">
+          <button>Ver mapa ({{c.centros.length}} centros)</button>
+          </a>
+          {% if c.desubicados.length > 0 %}
+          <p>
+            <strong>¡AVISO!</strong> Los siguientes centros no aparecen en el mapa porque no
+              se ha podido calcular sus coordenadas geográficas:
+            </p>
+            <ul>
+              {% for x in c.desubicados %}
+              <li><a href="%VITE_FICHA%{{x.id}}">{{x.id}} {{x.abr_nombre | safe}}</a></li>
+              {% endfor %}
+            </ul>
+            <p>
+            Si sabes donde estan escribe a
+            <a href="{{mail.desubicados}}">
+            %VITE_EMAIL%</a>
+            </p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        </div>
+    </fieldset>
+  <script type="module" src="/src/ts/concurso.ts"></script>
+  </body>
+</html>

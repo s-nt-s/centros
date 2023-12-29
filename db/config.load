@@ -1,0 +1,19 @@
+load database
+  from sqlite://db.sqlite
+  into {{DB_TARGET}}
+with truncate, include drop, create tables, create indexes, reset sequences
+set work_mem to '16MB', maintenance_work_mem to '512 MB'
+BEFORE LOAD
+  DO $$ DROP SCHEMA IF EXISTS public CASCADE; $$
+  DO $$ create schema if not exists public; $$
+AFTER LOAD
+  DO $$ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role; $$
+  DO $$ GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role; $$
+  DO $$ GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role; $$
+  DO $$ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role; $$
+  DO $$ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role; $$
+  DO $$ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role; $$
+  DO $$ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role; $$
+  DO $$ ALTER TABLE CENTRO ALTER COLUMN latitud SET NOT NULL; $$
+  DO $$ ALTER TABLE CENTRO ALTER COLUMN longitud SET NOT NULL; $$
+;

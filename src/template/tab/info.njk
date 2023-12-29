@@ -1,0 +1,97 @@
+<h1 class="sidebar-header">
+  Información
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <h2>Leyenda</h2>
+  <p>Se han usado los siguientes iconos para dar información extra:</p>
+  <ul class="leyenda">
+    <li class="liimg">
+      <img alt="red" src="https://maps.google.com/mapfiles/ms/micons/red.png" />
+      <span>Centro de especial dificultad</span>
+    </li>
+    <li class="liimg">
+      <img
+        alt="blue"
+        src="https://maps.google.com/mapfiles/ms/micons/blue.png"
+      />
+      <span>Centro con turnos nocturnos</span>
+    </li>
+    <li class="liimg">
+      <img
+        alt="green"
+        src="https://maps.google.com/mapfiles/ms/micons/green.png"
+      />
+      <span>Color por defecto</span>
+    </li>
+    <li>
+      Los mismos iconos pero con un punto negro en el centro cuando además se
+      da alguna característica especial como bilingüismo, excelencia o
+      innovación tecnológica
+    </li>
+    <li class="liimg">
+      <img
+        alt="green"
+        src="http://maps.google.com/mapfiles/ms/micons/grn-pushpin.png"
+      />
+      Cada icono de un centro es sustituido por una chincheta cuando marca como
+      seleccionado, y por un circulo pequeño cuando se marca como descartado
+    </li>
+  </ul>
+  <h2>Objetivo</h2>
+  <p>
+    El objetivo de este mapa es ayudar a elegir destino en el concurso de
+    traslados <a href="{{ concurso.url }}">{{ concurso.txt }}</a>
+    a los funcionarios de carrera o interinos {% if ' ' in concurso.cuerpo %}de
+    los cuerpos{%else%}del cuerpo{%endif%}
+    {{ concurso.cuerpo | yjoin }} en la Comunidad de Madrid.
+  </p>
+  <h2>Fuentes</h2>
+  <p>Para ello se han usado las siguientes fuentes:</p>
+  <ol class="anx">
+    <li>
+      Concurso <a href="{{ concurso.url }}">{{ concurso.txt }}</a>
+    </li>
+    {% for a in concurso.anexos %}
+    <li value="{{ a.anexo }}">
+      {% if a.anexo == 0 %}Resolución: {%else%}
+      <abbr title="Anexo">An</abbr>
+      <code class="anx">{%if a.anexo<10%} {%endif%}{{ a.anexo }}</code>
+      {%endif%}
+      <a href="{{ a.url }}">{{ a.txt }}</a>
+    </li>
+    {% endfor %}
+  </ol>
+  {% if concurso.desubicados.length > 0 %}
+  <p>
+    <strong>¡AVISO!</strong> Los siguientes centros no aparecen en el mapa
+    porque no se ha podido calcular sus coordenadas geográficas:
+  </p>
+  <ul>
+    {% for x in concurso.desubicados %}
+    <li>
+      <a href="%VITE_FICHA%{{ x.id }}">{{ x.id }} {{ x.abr_nombre | safe }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <p>
+    Si sabes donde estan escribe a
+    <a
+      href="{{mail.desubicados}}"
+    >
+      %VITE_EMAIL%</a
+    >
+  </p>
+  {% endif %}
+  <h2>Soporte</h2>
+  <p>
+    Esta página ha sido validada desde un ordenador con
+    <a href="https://www.mozilla.org/es-ES/firefox/new/">Firefox</a>,
+    <a href="https://www.chromium.org/getting-involved/download-chromium"
+      >Chromium</a
+    >
+    y Chrome. No se garantiza que funcione al 100% desde otros dispositivos
+    (moviles, tablets, etc) u otros exploradores (Internet Explorer, Microsoft
+    Edge, Opera, Safari, etc).
+  </p>
+</div>

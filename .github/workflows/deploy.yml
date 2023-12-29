@@ -1,0 +1,60 @@
+name: deploy
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: '0 5 * * *'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+jobs:
+  import_db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v2
+      - name: Autoclean
+        run: |
+          sudo apt clean -y 
+          sudo apt autoclean -y 
+          sudo apt autoremove -y
+          sudo apt update
+          sudo apt install --fix-missing
+      - name: Install dependencies
+        run: sudo apt install -y pgloader sqlite3
+      - name: Build DB
+        env:
+          DB_TARGET: ${{ secrets.DB_TARGET }}
+        run: ./db/populate.sh
+  deploy_site:
+    needs: import_db
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: rm concurso
+        run: find . -name "concurso.txt" -exec dirname '{}' \; | xargs rm -rf
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

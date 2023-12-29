@@ -1,0 +1,116 @@
+<h1 class="sidebar-header">
+  Filtros<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content filter">
+  <p>
+    Los centros seleccionados siempre apareceran, independiemtemente del filtro
+    definido en esta sección.
+  </p>
+  <fieldset id="tipos">
+    <legend>Tipo de centro</legend>
+    {% for t in concurso.tipos %}
+    {% if loop.index>1 %}<br/>{%endif %}
+    <input id="t{{t.id}}" title="{{t.txt}}" type="checkbox" checked/>
+    <label for="t{{t.id}}">{{t.txt}}</label>
+    {% endfor %}
+  </fieldset>
+  <fieldset id="comunicacion">
+    <legend>Transporte</legend>
+    <label for="kms">Mostrar solo centros a menos de </label>
+    <input
+      id="kms"
+      min="{{distancia.min}}"
+      max="{{distancia.max}}"
+      step="{{distancia.step}}"
+      title="Deje vacio el campo para no filtrar"
+      type="number"
+    />
+    <label for="kms"
+      >metros de una estación de metro, metro ligero o cercanias</label
+    >
+  </fieldset>
+  {% if concurso.isEspecial %}
+  <fieldset id="otros">
+    <legend>Otras condiciones especiales</legend>
+    {% if concurso.nocturos.length>0 %}
+    <input
+      checked="checked"
+      id="nocturno"
+      title="Centros nocturnos"
+      type="checkbox"
+    />
+    <label for="nocturno">Centros nocturnos</label>
+    {% endif %}
+    {% if concurso.dificultad.length>0 %}
+    <br/>
+    <input
+      checked="checked"
+      id="dificultad"
+      title="Centro de especial dificultad"
+      type="checkbox"
+    />
+    <label for="dificultad">Centro de especial dificultad</label>
+    {% endif %}
+    {% if concurso.excelencia.length>0 %}
+    <br />
+    <input
+      checked="checked"
+      id="excelencia"
+      title="Centro o aula de excelencia"
+      type="checkbox"
+    />
+    <label for="excelencia">Centro o aula de excelencia</label>
+    {% endif %}
+    {% if concurso.innovacion.length>0 %}
+    <br />
+    <input
+      checked="checked"
+      id="innovacion"
+      title="Instituto de innovación tecnológica"
+      type="checkbox"
+    />
+    <label for="innovacion">Instituto de innovación tecnológica</label>
+    {% endif %}
+    {% if concurso.ingles.length>0 %}
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="EN"
+      title="Bilingüe o sección de inglés"
+      type="checkbox"
+    />
+    <label for="EN">Bilingüe o sección de inglés</label>
+    {% endif %}
+    {% if concurso.aleman.length>0 %}
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="DE"
+      title="Bilingüe o sección de alemán"
+      type="checkbox"
+    />
+    <label for="DE">Bilingüe o sección de alemán</label>
+    {% endif %}
+    {% if concurso.frances.length>0 %}
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="FR"
+      title="Bilingüe o sección de francés"
+      type="checkbox"
+    />
+    <label for="FR">Bilingüe o sección de francés</label>
+    {% endif %}
+  </fieldset>
+  {% endif %}
+  <fieldset>
+    <legend>Invertir filtro</legend>
+    <input id="invertir" title="Invertir filtro" type="checkbox" />
+    <label for="invertir"
+      >Mostrar centros ocultos y ocultar centros mostrados</label
+    >
+  </fieldset>
+</div>

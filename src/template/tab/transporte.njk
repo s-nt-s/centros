@@ -1,0 +1,37 @@
+<h1 class="sidebar-header">
+  Información
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <p>
+    <input id="estaciones" type="checkbox" />
+    <label for="estaciones"
+      >Mostrar estaciones de las lineas seleccionadas (*)</label
+    >
+  </p>
+  <fieldset class="metro">
+    <legend>Metro</legend>
+    {% for t in transporte.metro %}
+    {% if loop.index>1 %}<br/>{%endif %}
+    <input id="metro_{{t.linea}}" type="checkbox" /> <label for="metro_{{t.linea}}">{{t.linea}}</label>
+    {%endfor%}
+  </fieldset>
+  <fieldset class="cercanias">
+    <legend>Cercanias</legend>
+    {% for t in transporte.cercanias %}
+    {% if loop.index>1 %}<br/>{%endif %}
+    <input id="cercanias_{{t.linea}}" type="checkbox" /> <label for="cercanias_{{t.linea}}">{{t.linea}}</label>
+    {%endfor%}
+  </fieldset>
+  <fieldset class="metro_ligero">
+    <legend>Metro ligero</legend>
+    {% for t in transporte.metro_ligero %}
+    {% if loop.index>1 %}<br/>{%endif %}
+    <input id="metro_ligero_{{t.linea}}" type="checkbox" /> <label for="metro_ligero_{{t.linea}}">{{t.linea}}</label>
+    {%endfor%}
+  </fieldset>
+  <p>
+    (*) La ubicación de las estaciones es orientativa y puede haber otros
+    accesos que no esten representados.
+  </p>
+</div>

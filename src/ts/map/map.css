@@ -1,0 +1,159 @@
+body {
+  font-family: DejaVu Sans, Arial, Sans Serif;
+  margin:0;
+  padding: 0;
+  height: 100%;
+}
+html, body, #map  {
+  height: 100%;
+}
+
+div.leaflet-popup-content ul {
+  padding-left: 1em;
+}
+div.leaflet-popup-content p + ul {
+    margin-top: -10px;
+}
+
+div.sidebar-pane > div.content {
+  font-size: 0.75em;
+}
+div.sidebar-pane input[type=text] {
+  width: 95%;
+}
+div.sidebar-pane input[type=number] {
+  width: 5em;
+}
+fieldset {
+  margin-top: 16px;
+}
+div.content ul,  div.content ol {
+  padding-left: 20px;
+}
+ul.listCentros {
+  list-style-type: none;
+  padding-left: 0px !important;;
+  display: table;
+}
+ul.listCentros li {
+  display: table-row;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+ul.listCentros li img {
+  display: table-cell;
+  cursor: pointer;
+  transform: scale(0.7);
+  margin-top: -0.5em;
+}
+
+ul.listCentros li > span {
+  display: table-cell;
+  vertical-align: top;
+}
+
+ul.leyenda li {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+ul.leyenda li.liimg {
+  margin-left: -2em !important;
+  list-style-type: none;
+}
+ul.leyenda li img {
+  transform: scale(0.7);
+  margin-top: -0.8em;
+}
+ul.leyenda li span {
+  vertical-align: top;
+}
+
+div.content code {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+#contacto div.content svg {
+  float: left;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+a[disabled=disabled] {
+  pointer-events: fill;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+#lista h2 > small {
+  font-size: 0.60em;
+  font-weight: normal;
+  vertical-align: middle;
+}
+.tulista {
+  height: 54px !important;
+}
+#count {
+  font-size: 0.50em;
+  display: block;
+  padding: 0;
+  margin: 0;
+  line-height: 0.50em;
+  text-align: center;
+  vertical-align: middle;
+}
+#transporte div.content fieldset {
+  float:left;
+  margin-top: 0px;
+  margin-bottom: 16px;
+  margin-right: 16px;
+}
+#transporte div.content fieldset:last-of-type {
+  margin-right: 0px;
+}
+#transporte div.content fieldset.metro label {
+  width: 1.5em;
+  text-align: right;
+  display: inline-block
+}
+#transporte div.content fieldset + p {
+  clear: both;
+}
+sup {
+  margin-left: 0.3em;
+}
+sup, sup a {
+  cursor: help;
+}
+sup a {
+  text-decoration: none;
+}
+b.flag {
+  margin-left: 1px;
+  padding-left: 23px;
+  background-repeat: no-repeat;
+}
+b.tag_EN {
+  /*background-image: url("https://lipis.github.io/flag-icon-css/flags/4x3/gb.svg");*/
+  background-image: url("https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/gb.svg");
+}
+b.tag_FR {
+  /*background-image: url("https://lipis.github.io/flag-icon-css/flags/4x3/fr.svg");*/
+  background-image: url("https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/fr.svg");
+}
+b.tag_DE {
+  /*background-image: url("https://lipis.github.io/flag-icon-css/flags/4x3/de.svg");*/
+  background-image: url("https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/de.svg");
+}
+
+
+code.anx {
+  white-space: pre;
+  font-size: 1.3em;
+}
+ol.anx {
+  list-style-type: circle;
+}
+
+legend + br {
+  display: none;
+}

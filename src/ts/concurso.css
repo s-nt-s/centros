@@ -1,0 +1,13 @@
+fieldset {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+code.anx {
+    white-space: pre;
+    font-size: 1.3em;
+}
+ol.anx {
+    list-style-type: circle;
+    margin-left: 1.5em;
+    padding-left: 0em;
+}
