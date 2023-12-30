@@ -215,8 +215,8 @@ function updateCentros() {
   }
   CNT.filter();
   document.getElementById("count")!.textContent = CNT.ok.length.toString();
-  addCentrosLayer();
   addMailLink();
+  addCentrosLayer();
   updateList();
 }
 
@@ -397,7 +397,9 @@ function getPopUp(id: number) {
       const marca = parseInt(this.value);
       if (isNaN(marca)) delete MARCA.CENTRO[id];
       else MARCA.CENTRO[id] = marca;
-      updateCentros();
+      //updateCentros();
+      addCentrosLayer();
+      updateList();
     })
   );
   return div;
