@@ -190,8 +190,7 @@ function get_icon(c: Centro) {
 export function dwnConcurso() {
   DB.get_concurso_centros(id_concurso).then((centros) => {
     CNT.set(centros);
-    updateCentros();
-    if (!window.MAP.center()) window.MAP.setView([40.4165, -3.70256], 12);
+    updateCentros(true);
     return centros;
   });
   window.MAP.on("click", function (this: SBMap, e) {
@@ -202,13 +201,13 @@ export function dwnConcurso() {
   });
 }
 
-function updateCentros() {
+function updateCentros(centrar: boolean|undefined) {
   if (DST.size==0) {
     const km = getVal("#kms");
     if (typeof km == "string" && !isNaN(parseFloat(km))) {
       fetch(myweb+"/distancias.json").then(r => r.json()).then((data:{[id:string]:number[]})=>{
         Object.entries(data).forEach(([k, v])=>DST.set(Number(k), v));
-        updateCentros();
+        updateCentros(centrar);
       })
       return;
     }
@@ -218,6 +217,9 @@ function updateCentros() {
   addMailLink();
   addCentrosLayer();
   updateList();
+  if (centrar === true) {
+    if (!window.MAP.center()) window.MAP.setView([40.4165, -3.70256], 12);
+  }
 }
 
 function addMailLink() {
@@ -312,8 +314,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   this.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
 }
 
-function getPopUp(id: number) {
-  const c = CNT.get(id);
+function getPopUp(c: Centro) {
   let body = [
     `Código: <b>${c.id}</b>`,
     `<a href="geo:${c.latitud},${c.longitud}" title="Coordenadas: ${c.latitud}, ${c.longitud}">${c.direccion}</a>`,
@@ -395,83 +396,66 @@ function getPopUp(id: number) {
     e.addEventListener("change", function (this: HTMLInputElement) {
       if (!this.checked) return;
       const marca = parseInt(this.value);
-      if (isNaN(marca)) delete MARCA.CENTRO[id];
-      else MARCA.CENTRO[id] = marca;
+      if (isNaN(marca)) delete MARCA.CENTRO[c.id];
+      else MARCA.CENTRO[c.id] = marca;
       //updateCentros();
-      addCentrosLayer();
+      addCentroMarker(c, true);
       updateList();
+      /*
+      const layer = (<L.GeoJSON>window.MAP.idlayer.get("centros")!);
+      layer.eachLayer((l)=>{
+        //if (!(l instanceof geojson.Feature)) return;
+        //console.log(l)
+      })
+      */
     })
   );
   return div;
 }
 
-function addCentrosLayer() {
-  window.MAP.removeLayerById("centros");
-  const features: geojson.Feature[] = CNT.get_ok().map((c) => {
-    return {
-      type: "Feature",
-      properties: {
-        id: c.id,
-        tooltip: c.tp.abr + " " + c.nombre,
-        color: (() => {
-          if (c.dificultad) return "red";
-          if (c.nocturno) return "blue";
-          return "green";
-        })(),
-        especial: [
-          c.aleman,
-          c.ingles,
-          c.frances,
-          c.innovacion,
-          c.excelencia,
-        ].includes(true),
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [c.longitud!, c.latitud!],
-      },
+function addCentroMarker(centro:Centro, refresh: boolean = false) {
+  const layer_id = "centro_"+centro.id;
+  const layer_old = window.MAP.idlayer.get(layer_id);
+  if (layer_old!=null) {
+    if (!refresh) return layer_old;
+    window.MAP.removeLayer(layer_old);
+    window.MAP.idlayer.delete(layer_id);
+  }
+  const icon = get_icon(centro);
+  const latlng: L.LatLng = new L.LatLng(centro.latitud, centro.longitud);
+  const marker = (()=>{
+    if (MARCA.CENTRO[centro.id] == MARCA.DESCARTADO) {
+      const options: L.CircleOptions = {
+        radius: 5,
+        fill: true,
+        fillColor: icon.color,
+        fillOpacity: 0.8,
+        color: "black",
+        opacity: 1,
+        weight: 1
+      };
+      return L.circleMarker(latlng, options);
+    }
+    const conf = {
+      icon: L.icon({
+        iconUrl: icon.url,
+        iconSize: [32, 32],
+      }),
     };
-  });
-  const geo: geojson.FeatureCollection = {
-    type: "FeatureCollection",
-    features: features,
-  };
+    return L.marker(latlng, conf);
+  })();
+  marker.bindPopup(() => getPopUp(centro));
+  marker.bindTooltip(centro.tp.abr + " " + centro.nombre);
+  window.MAP.addIdLayer(layer_id, marker);
+}
 
-  //const dct_centros = Object.fromEntries(centros.map(c=>[c.id, c]));
-  const layer = window.MAP.addGeoJson(
-    geo,
-    new SBConf({
-      id: "centros",
-      onEachFeature: function (f, l) {
-        l.bindPopup(() => getPopUp(f.properties!.id));
-        l.bindTooltip(f.properties!.tooltip);
-      },
-      pointToLayer: function (f, latlng) {
-        const p = f.properties;
-        if (MARCA.CENTRO[p.id] == MARCA.DESCARTADO) {
-          const options: L.CircleOptions = {
-            radius: 5,
-            fill: true,
-            fillColor: p.color,
-            fillOpacity: 0.8,
-            color: "black",
-            opacity: 1,
-            weight: 1
-          };
-          return L.circleMarker(latlng, options);
-        }
-        const icon = get_icon(CNT.get(p.id));
-        const conf = {
-          icon: L.icon({
-            iconUrl: icon.url,
-            iconSize: [32, 32],
-          }),
-        };
-        return L.marker(latlng, conf);
-      },
-    })
-  );
-  return layer;
+function addCentrosLayer() {
+  CNT.get_ok().forEach((c) => {
+    addCentroMarker(c);
+  });
+  CNT.get_ko().forEach((c) => {
+    window.MAP.removeLayerById("centro_"+c.id)
+  });
 }
 
 type idbool = { [id: string]: boolean };
@@ -646,6 +630,6 @@ document.addEventListener("DOMContentLoaded", function () {
       i.addEventListener(e, fnc);
     });
   }
-  onChange("#settings input", updateCentros);
+  onChange("#settings input", ()=>updateCentros(false));
   onChange("#transporte input", set_transpo_layer);
 });

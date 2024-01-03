@@ -170,14 +170,31 @@ export class SBMap extends L.Map {
         }
         return layer;
     }
-    center() {
+    findBound() {
+        const arr: L.LatLng[] = [];
+        const get_latlon = (l:L.Layer) => {
+            if (l instanceof L.CircleMarker) return l.getLatLng();
+            if (l instanceof L.DivOverlay) return l.getLatLng();
+            if (l instanceof L.Marker) return l.getLatLng();
+            return undefined;
+        }
+        this.eachLayer((l)=>{
+            const latlon = get_latlon(l);
+            if (latlon!=undefined) arr.push(latlon);
+        })
+        if (arr.length>0) return L.latLngBounds(arr);
         const bds = Array.from(this.idlayer.values()).flatMap((l)=>{
             if (!(l instanceof L.FeatureGroup)) return [];
             const b = l.getBounds();
             return (Object.keys(b).length)?b:[];
         })
-        if (bds.length==0) return false;
-        const bounds = bds[0];
+        if (bds.length>0) return bds[0];
+        console.log("MAP.findBound = null");
+        return null;
+    }
+    center() {
+        const bounds = this.findBound();
+        if (bounds==null) return false;
         const opt = (()=>{
             const aux1 = document.querySelector(".leaflet-bottom.leaflet-right");
             const aux2 = document.querySelector("#sidebar");
@@ -196,6 +213,7 @@ export class SBMap extends L.Map {
         })();
         if (opt!=null) this.fitBounds(bounds, opt);
         else this.fitBounds(bounds);
+        console.log("MAP.center", bounds);
         return true;
     }
     getLayersIds() {
@@ -214,7 +232,7 @@ export class SBMap extends L.Map {
     removeLayerById(id: string) {
         const layer = this.idlayer.get(id);
         if (layer == null) {
-            console.warn(`layer[id=${id}] not found`);
+            //console.warn(`layer[id=${id}] not found`);
             return;
         }
         this.removeLayer(layer);
