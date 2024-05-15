@@ -1,9 +1,8 @@
 import * as L from "leaflet";
-import { SBMap, SBConf } from "../../mapsidebar/leaflet-sidebar";
+import { SBMap } from "../../mapsidebar/leaflet-sidebar";
 import { DBConcurso, Centro } from "../../lib/supabaseClient";
 import { set_transpo_layer } from "./transporte"
 import type { SchemaName } from "../../lib/supabaseClient";
-import type * as geojson from "geojson";
 import {
   getVal,
   Mail,

@@ -31,6 +31,11 @@ class DBConcurso {
     this.onerror = onerror;
   }
 
+  from(relation: string) {
+    relation = relation.replace("-", "_");
+    return this.supabase.from(relation);
+  }
+
   private get_data(log: string, obj: PostgrestSingleResponse<any[]>) {
     if (obj.error) {
       console.error(log, obj);
@@ -48,7 +53,7 @@ class DBConcurso {
   }
 
   private async get(table: TableName, ...ids: (number | string)[]) {
-    let prm = this.supabase.from(table).select();
+    let prm = this.from(table).select();
     if (ids.length == 1) prm = prm.eq('id', ids[0]);
     else if (ids.length>1) prm = prm.in('id', ids);
     return this.get_data(
@@ -74,7 +79,7 @@ class DBConcurso {
     if (typeof c == "string") c=(await this.get_one("concurso", c)) as Tables<"concurso">
     const anx = this.get_data(
       `anexo[concurso=${c.id}`,
-      await this.supabase.from("concurso_anexo").select().eq("concurso", c.id)
+      await this.from("concurso_anexo").select().eq("concurso", c.id)
     );
     return new Concurso(
       c,
@@ -98,7 +103,7 @@ class DBConcurso {
   }
 
   private async _get_concurso_centros(id: string, with_latlon: boolean = true) {
-    let prm = this.supabase.from(id+'_centro').select().order('id');
+    let prm = this.from(id+'_centro').select().order('id');
     if (with_latlon) prm = prm.neq('latitud', 0);
     return this.get_data(
       `centro[${id}]`,
@@ -119,7 +124,7 @@ class DBConcurso {
     ];
     this.get_data(
       `query_centro[${id}][query=${qrs}]`,
-      await this.supabase.from(id+'_query_centro').select('query, centro').in('query', qrs)
+      await this.from(id+'_query_centro').select('query, centro').in('query', qrs)
     ).forEach(e=>{
       if (obj[e.query]==null) obj[e.query]=[];
       obj[e.query].push(e.centro);
@@ -130,7 +135,7 @@ class DBConcurso {
     let obj: {[id:string]: number[]} = {};
     this.get_data(
       `etapa_centro[${id}]`,
-      await this.supabase.from(id+'_etapa_centro').select('etapa, centro').eq('hoja', 1)
+      await this.from(id+'_etapa_centro').select('etapa, centro').eq('hoja', 1)
     ).forEach(e=>{
       if (obj[e.etapa]==null) obj[e.etapa]=[];
       obj[e.etapa].push(e.centro);
@@ -139,7 +144,7 @@ class DBConcurso {
     obj = {};
     this.get_data(
       `etapa_nombre_centro[${id}]`,
-      await this.supabase.from(id+'_etapa_nombre_centro').select('nombre, centro').eq('hoja', 1)
+      await this.from(id+'_etapa_nombre_centro').select('nombre, centro').eq('hoja', 1)
     ).forEach(e=>{
       if (obj[e.etapa]==null) obj[e.etapa]=[];
       obj[e.etapa].push(e.centro);

@@ -41,12 +41,13 @@ function mk_schema () {
     fi
     if [ "$1" == "public" ]; then
         for c in $(sqlite3 db.sqlite 'select id from concurso'); do
-            echo "  DO \$\$ CREATE VIEW ${c}_ctr AS (select distinct centro as id from concurso_anexo_centro where concurso='${c}' order by centro); \$\$" >> "aux/config.load"
-            echo "  DO \$\$ CREATE VIEW ${c}_centro AS (select * from centro where id in (select id from ${c}_ctr)); \$\$" >> "aux/config.load"
+            cc=$(echo "$c" | sed 's/-/_/g')
+            echo "  DO \$\$ CREATE VIEW ${cc}_ctr AS (select distinct centro as id from concurso_anexo_centro where concurso='${c}' order by centro); \$\$" >> "aux/config.load"
+            echo "  DO \$\$ CREATE VIEW ${cc}_centro AS (select * from centro where id in (select id from ${cc}_ctr)); \$\$" >> "aux/config.load"
 
             for tb in $(sqlite3 "aux/db.sqlite" "SELECT name FROM sqlite_schema WHERE type='table';"); do
                 for col in $(sqlite3 "aux/db.sqlite" "select name from pragma_table_info('$tb') where name='centro'"); do
-            echo "  DO \$\$ CREATE VIEW ${c}_${tb} AS (select * from ${tb} where ${col} in (select id from ${c}_ctr)); \$\$" >> "aux/config.load"
+            echo "  DO \$\$ CREATE VIEW ${cc}_${tb} AS (select * from ${tb} where ${col} in (select id from ${cc}_ctr)); \$\$" >> "aux/config.load"
                 done
             done
         done
