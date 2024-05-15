@@ -224,6 +224,10 @@ class Concurso {
     return this._c.convocatoria;
   }
 
+  get tipo_convocatoria() {
+    return toTitle(this.tipo)+' '+this.convocatoria;
+  }
+
   get url() {
     return this._c.url;
   }

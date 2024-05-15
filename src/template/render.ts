@@ -83,11 +83,13 @@ function get_min_idstance(latlons: [number, number][], c: Centro): number|null {
 async function do_render(env: Record<string, string>) {
     const concursos = await DB.get_concursos();
     const latlons = get_latlons();
+    const tipo_convocatoria = Array.from(new Set(concursos.map(c=>c.tipo_convocatoria)));
     render(
         'concurso.njk',
         'index.html',
         {
             concursos: concursos,
+            tipo_convocatoria: tipo_convocatoria,
             mail: {
                 no_concurso: no_concurso(env.VITE_EMAIL),
                 desubicados: desubicados(env.VITE_EMAIL)
