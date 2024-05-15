@@ -137,6 +137,11 @@ export class SBMap extends L.Map {
         if (this.attributionControl.options==null) this.attributionControl.options = {} as L.Control.AttributionOptions;
         this.attributionControl.options.prefix = txt.trim();
     }
+    getAttributionControlPrefix() {
+        if (this.attributionControl==null) return null;
+        if (this.attributionControl.options==null) return null;
+        return this.attributionControl.options.prefix;
+    }
     resetLayers() {
         const ok = ["mapbox.streets", "capa.base"];
         this.eachLayer((layer) => {

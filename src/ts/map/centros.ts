@@ -11,6 +11,7 @@ import {
   get_distance,
 } from "../../lib/util";
 
+const DONAR = import.meta.env.VITE_DONAR;
 const id_concurso = (() => {
   const href = window.location.href.replace(/\/(index\.html)?$/, "");
   const path = href.split("/");
@@ -308,6 +309,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   });
   txt = txt.replace(/<.*?>/g, "");
   txt = txt + "\n---\n" + myweb;
+  txt = txt + "\n¿Te hay sido útil?. Considera donar para mantener este proyecto\n"+DONAR;
   txt = txt.trim();
   txt = txt.replace(/\n/g, "\r\n");
   this.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
