@@ -132,6 +132,11 @@ export class SBMap extends L.Map {
         this.sidebar = new Sidebar(idsidebar, {});
         this.addControl(this.sidebar.control);
     }
+    setAttributionControlPrefix(txt: string) {
+        if (this.attributionControl==null) this.attributionControl = new L.Control.Attribution();
+        if (this.attributionControl.options==null) this.attributionControl.options = {} as L.Control.AttributionOptions;
+        this.attributionControl.options.prefix = txt.trim();
+    }
     resetLayers() {
         const ok = ["mapbox.streets", "capa.base"];
         this.eachLayer((layer) => {
