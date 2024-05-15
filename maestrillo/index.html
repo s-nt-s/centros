@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Concurso de traslados</title>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_blank"/>
+<link href="/icon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="/icon/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/icon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+<link href="/icon/site.webmanifest" rel="manifest"/>
+<link color="#5bbad5" href="/icon/safari-pinned-tab.svg" rel="mask-icon"/>
+<link href="/icon/favicon.ico" rel="shortcut icon"/>
+<meta content="#da532c" name="msapplication-TileColor"/>
+<meta content="/icon/browserconfig.xml" name="msapplication-config"/>
+<meta content="#ffffff" name="theme-color"/>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <div id="sidebar" class="sidebar collapsed">
+      <!-- Nav tabs -->
+      <div class="sidebar-tabs">
+        <ul role="tablist">
+          <li title="Información"><a href="#home" role="tab"><i class="fa fa-info-circle"></i></a></li>
+          <li title="Filtros"><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+          <li title="Transporte"><a href="#transporte" role="tab"><i class="fa fa-subway"></i></a></li>
+          <li id="lkMessages" title="Mandar mails"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+          <li class="tulista" title="Tu lista"><a href="#lista" role="tab"><i class="fa fa-pencil-square-o"></i><span id="count">1391</span></a></li>
+          <li title="Contacto, correciones y sugerencias"><a href="#contacto" role="tab"><i class="fa fa-question-circle"></i></a></li>
+          <li title="Descarga tu lista"><a data-href="data:text/plain;charset=utf-8," download="centros.txt" href="data:text/plain;charset=utf-8," id="download" role="tab"><i class="fa fa fa-cloud-download"></i></a></li>
+          </ul>
+          <ul role="tablist">
+          <!--li title="Donaciones"><a href="#donaciones" role="tab"><i class="fa fa fa-eur"></i></a></li-->
+          <li title="GitHub"><a href="%VITE_GITHUB%" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+        </ul>
+      </div>
+
+      <!-- Content tabs -->
+      <div class="sidebar-content">
+        <div class="sidebar-pane" id="home">
+          <h1 class="sidebar-header">
+  Información
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <h2>Leyenda</h2>
+  <p>Se han usado los siguientes iconos para dar información extra:</p>
+  <ul class="leyenda">
+    <li class="liimg">
+      <img alt="red" src="https://maps.google.com/mapfiles/ms/micons/red.png" />
+      <span>Centro de especial dificultad</span>
+    </li>
+    <li class="liimg">
+      <img
+        alt="blue"
+        src="https://maps.google.com/mapfiles/ms/micons/blue.png"
+      />
+      <span>Centro con turnos nocturnos</span>
+    </li>
+    <li class="liimg">
+      <img
+        alt="green"
+        src="https://maps.google.com/mapfiles/ms/micons/green.png"
+      />
+      <span>Color por defecto</span>
+    </li>
+    <li>
+      Los mismos iconos pero con un punto negro en el centro cuando además se
+      da alguna característica especial como bilingüismo, excelencia o
+      innovación tecnológica
+    </li>
+    <li class="liimg">
+      <img
+        alt="green"
+        src="http://maps.google.com/mapfiles/ms/micons/grn-pushpin.png"
+      />
+      Cada icono de un centro es sustituido por una chincheta cuando marca como
+      seleccionado, y por un circulo pequeño cuando se marca como descartado
+    </li>
+  </ul>
+  <h2>Objetivo</h2>
+  <p>
+    El objetivo de este mapa es ayudar a elegir destino en el <strong>concursillo</strong> de
+    traslados <a href="https://www.comunidad.madrid/servicios/educacion/maestros-asignacion-destinos-provisionales-inicio-curso">2023-2024 Magisterio</a>
+    a los funcionarios de carrera o interinos del cuerpo
+    0597 en la Comunidad de Madrid.
+  </p>
+  <h2>Fuentes</h2>
+  <p>Para ello se han usado las siguientes fuentes:</p>
+  <ol class="anx">
+    <li>
+      Concursillo: <a href="https://www.comunidad.madrid/servicios/educacion/maestros-asignacion-destinos-provisionales-inicio-curso">2023-2024 Magisterio</a>
+    </li>
+    <li value="0">
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_instrucciones_calendario_asig_prov_maestros_firma.pdf">Resolución 2023-05-26: instrucciones y calendario para la asignación de puestos docentes provisionales del cuerpo de maestros (26 de mayo de 2023)</a>
+    </li>
+    <li value="1">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 1</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_normas_procedimiento_maestros.pdf">Normas de procedimiento</a>
+    </li>
+    <li value="2">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 2</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_calendario_maestros.pdf">Calendario</a>
+    </li>
+    <li value="3">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 3</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_manual_cumplimentacion_solicitud_maestros.pdf">Manual de instrucciones para cumplimentar la solicitud</a>
+    </li>
+    <li value="4">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 4</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_codigos_especialidades_maestros.pdf">Códigos de especialidades</a>
+    </li>
+    <li value="5">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 5</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_codigos_centros_maestros.pdf">Códigos de centros y localidades</a>
+    </li>
+    <li value="6">
+      <abbr title="Anexo">An</abbr>
+      <code class="anx"> 6</code>
+      <a href="https://www.comunidad.madrid/sites/default/files/doc/educacion/rh09/rh09_0118_2324_resinic_manual_presentacion_electronica_maestros.pdf">Manual de ayuda para presentación telemática de la documentación requerida para el nombramiento del personal docente interino</a>
+    </li>
+  </ol>
+  <p>
+    <strong>¡AVISO!</strong> Los siguientes centros no aparecen en el mapa
+    porque no se ha podido calcular sus coordenadas geográficas:
+  </p>
+  <ul>
+    <li>
+      <a href="%VITE_FICHA%28701196">28701196 <abbr title="Centro educativo-terapéutico">CET</abbr> Guadarrama</a>
+    </li>
+  </ul>
+  <p>
+    Si sabes donde estan escribe a
+    <a
+      href="mailto:?to=santos82%40gmail.com&amp;subject=Concurso+de+traslados+necesita+ser+actualizado&amp;body=Hola%0A%0ASoy+...+y+quer%C3%ADa+informar+de+la+ubicaci%C3%B3n+de...%0A%0AMuchas+gracias"
+    >
+      %VITE_EMAIL%</a
+    >
+  </p>
+  <h2>Soporte</h2>
+  <p>
+    Esta página ha sido validada desde un ordenador con
+    <a href="https://www.mozilla.org/es-ES/firefox/new/">Firefox</a>,
+    <a href="https://www.chromium.org/getting-involved/download-chromium"
+      >Chromium</a
+    >
+    y Chrome. No se garantiza que funcione al 100% desde otros dispositivos
+    (moviles, tablets, etc) u otros exploradores (Internet Explorer, Microsoft
+    Edge, Opera, Safari, etc).
+  </p>
+</div>
+
+        </div>
+        <div class="sidebar-pane" id="settings">
+          <h1 class="sidebar-header">
+  Filtros<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content filter">
+  <p>
+    Los centros seleccionados siempre apareceran, independiemtemente del filtro
+    definido en esta sección.
+  </p>
+  <fieldset id="tipos">
+    <legend>Tipo de centro</legend>
+    <input id="t036" title="Aula hospitalaria" type="checkbox" checked/>
+    <label for="t036">Aula hospitalaria</label>
+    <br/>
+    <input id="t035" title="Centro de educación adultos establecimientos penitenciarios" type="checkbox" checked/>
+    <label for="t035">Centro de educación adultos establecimientos penitenciarios</label>
+    <br/>
+    <input id="t031" title="Centro de educación de personas adultas" type="checkbox" checked/>
+    <label for="t031">Centro de educación de personas adultas</label>
+    <br/>
+    <input id="t038" title="Centro educativo-terapéutico" type="checkbox" checked/>
+    <label for="t038">Centro educativo-terapéutico</label>
+    <br/>
+    <input id="t016" title="Centro integrado de enseñanzas artísticas elementales y profesionales de música, educación primaria y secundaria" type="checkbox" checked/>
+    <label for="t016">Centro integrado de enseñanzas artísticas elementales y profesionales de música, educación primaria y secundaria</label>
+    <br/>
+    <input id="t068" title="Centro integrado de formación profesional" type="checkbox" checked/>
+    <label for="t068">Centro integrado de formación profesional</label>
+    <br/>
+    <input id="t039" title="Centro regional de enseñanzas integradas" type="checkbox" checked/>
+    <label for="t039">Centro regional de enseñanzas integradas</label>
+    <br/>
+    <input id="t020" title="Colegio de educación especial" type="checkbox" checked/>
+    <label for="t020">Colegio de educación especial</label>
+    <br/>
+    <input id="t014" title="Colegio de educación infantil y primaria" type="checkbox" checked/>
+    <label for="t014">Colegio de educación infantil y primaria</label>
+    <br/>
+    <input id="t070" title="Colegio de educación infantil, primaria y secundaria" type="checkbox" checked/>
+    <label for="t070">Colegio de educación infantil, primaria y secundaria</label>
+    <br/>
+    <input id="t012" title="Colegio de educación primaria" type="checkbox" checked/>
+    <label for="t012">Colegio de educación primaria</label>
+    <br/>
+    <input id="t205" title="Equipo de orientación educativa y psicopedagógica: Atención temprana" type="checkbox" checked/>
+    <label for="t205">Equipo de orientación educativa y psicopedagógica: Atención temprana</label>
+    <br/>
+    <input id="t204" title="Equipo de orientación educativa y psicopedagógica: Específico" type="checkbox" checked/>
+    <label for="t204">Equipo de orientación educativa y psicopedagógica: Específico</label>
+    <br/>
+    <input id="t206" title="Equipo de orientación educativa y psicopedagógica: General" type="checkbox" checked/>
+    <label for="t206">Equipo de orientación educativa y psicopedagógica: General</label>
+    <br/>
+    <input id="t003" title="Escuela infantil" type="checkbox" checked/>
+    <label for="t003">Escuela infantil</label>
+    <br/>
+    <input id="t042" title="Instituto de educación secundaria" type="checkbox" checked/>
+    <label for="t042">Instituto de educación secundaria</label>
+    <br/>
+    <input id="t047" title="Sección de instituto de educación secundaria" type="checkbox" checked/>
+    <label for="t047">Sección de instituto de educación secundaria</label>
+    <br/>
+    <input id="t034" title="Unidad de formación e inserción laboral" type="checkbox" checked/>
+    <label for="t034">Unidad de formación e inserción laboral</label>
+  </fieldset>
+  <fieldset id="comunicacion">
+    <legend>Transporte</legend>
+    <label for="kms">Mostrar solo centros a menos de </label>
+    <input
+      id="kms"
+      min="100"
+      max="38100"
+      step="100"
+      title="Deje vacio el campo para no filtrar"
+      type="number"
+    />
+    <label for="kms"
+      >metros de una estación de metro, metro ligero o cercanias</label
+    >
+  </fieldset>
+  <fieldset id="otros">
+    <legend>Otras condiciones especiales</legend>
+    <input
+      checked="checked"
+      id="nocturno"
+      title="Centros nocturnos"
+      type="checkbox"
+    />
+    <label for="nocturno">Centros nocturnos</label>
+    <br/>
+    <input
+      checked="checked"
+      id="dificultad"
+      title="Centro de especial dificultad"
+      type="checkbox"
+    />
+    <label for="dificultad">Centro de especial dificultad</label>
+    <br />
+    <input
+      checked="checked"
+      id="excelencia"
+      title="Centro o aula de excelencia"
+      type="checkbox"
+    />
+    <label for="excelencia">Centro o aula de excelencia</label>
+    <br />
+    <input
+      checked="checked"
+      id="innovacion"
+      title="Instituto de innovación tecnológica"
+      type="checkbox"
+    />
+    <label for="innovacion">Instituto de innovación tecnológica</label>
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="EN"
+      title="Bilingüe o sección de inglés"
+      type="checkbox"
+    />
+    <label for="EN">Bilingüe o sección de inglés</label>
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="DE"
+      title="Bilingüe o sección de alemán"
+      type="checkbox"
+    />
+    <label for="DE">Bilingüe o sección de alemán</label>
+    <br />
+    <input
+      checked="checked"
+      name="idioma"
+      id="FR"
+      title="Bilingüe o sección de francés"
+      type="checkbox"
+    />
+    <label for="FR">Bilingüe o sección de francés</label>
+  </fieldset>
+  <fieldset>
+    <legend>Invertir filtro</legend>
+    <input id="invertir" title="Invertir filtro" type="checkbox" />
+    <label for="invertir"
+      >Mostrar centros ocultos y ocultar centros mostrados</label
+    >
+  </fieldset>
+</div>
+
+        </div>
+        <div class="sidebar-pane" id="transporte">
+          <h1 class="sidebar-header">
+  Información
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <p>
+    <input id="estaciones" type="checkbox" />
+    <label for="estaciones"
+      >Mostrar estaciones de las lineas seleccionadas (*)</label
+    >
+  </p>
+  <fieldset class="metro">
+    <legend>Metro</legend>
+    <input id="metro_1" type="checkbox" /> <label for="metro_1">1</label>
+    <br/>
+    <input id="metro_2" type="checkbox" /> <label for="metro_2">2</label>
+    <br/>
+    <input id="metro_3" type="checkbox" /> <label for="metro_3">3</label>
+    <br/>
+    <input id="metro_4" type="checkbox" /> <label for="metro_4">4</label>
+    <br/>
+    <input id="metro_5" type="checkbox" /> <label for="metro_5">5</label>
+    <br/>
+    <input id="metro_6" type="checkbox" /> <label for="metro_6">6</label>
+    <br/>
+    <input id="metro_7" type="checkbox" /> <label for="metro_7">7</label>
+    <br/>
+    <input id="metro_8" type="checkbox" /> <label for="metro_8">8</label>
+    <br/>
+    <input id="metro_9" type="checkbox" /> <label for="metro_9">9</label>
+    <br/>
+    <input id="metro_10" type="checkbox" /> <label for="metro_10">10</label>
+    <br/>
+    <input id="metro_11" type="checkbox" /> <label for="metro_11">11</label>
+    <br/>
+    <input id="metro_12" type="checkbox" /> <label for="metro_12">12</label>
+    <br/>
+    <input id="metro_R" type="checkbox" /> <label for="metro_R">R</label>
+  </fieldset>
+  <fieldset class="cercanias">
+    <legend>Cercanias</legend>
+    <input id="cercanias_C1" type="checkbox" /> <label for="cercanias_C1">C1</label>
+    <br/>
+    <input id="cercanias_C2" type="checkbox" /> <label for="cercanias_C2">C2</label>
+    <br/>
+    <input id="cercanias_C3" type="checkbox" /> <label for="cercanias_C3">C3</label>
+    <br/>
+    <input id="cercanias_C4" type="checkbox" /> <label for="cercanias_C4">C4</label>
+    <br/>
+    <input id="cercanias_C5" type="checkbox" /> <label for="cercanias_C5">C5</label>
+    <br/>
+    <input id="cercanias_C7" type="checkbox" /> <label for="cercanias_C7">C7</label>
+    <br/>
+    <input id="cercanias_C8" type="checkbox" /> <label for="cercanias_C8">C8</label>
+    <br/>
+    <input id="cercanias_C9" type="checkbox" /> <label for="cercanias_C9">C9</label>
+    <br/>
+    <input id="cercanias_C10" type="checkbox" /> <label for="cercanias_C10">C10</label>
+  </fieldset>
+  <fieldset class="metro_ligero">
+    <legend>Metro ligero</legend>
+    <input id="metro_ligero_ML1" type="checkbox" /> <label for="metro_ligero_ML1">ML1</label>
+    <br/>
+    <input id="metro_ligero_ML2" type="checkbox" /> <label for="metro_ligero_ML2">ML2</label>
+    <br/>
+    <input id="metro_ligero_ML3" type="checkbox" /> <label for="metro_ligero_ML3">ML3</label>
+    <br/>
+    <input id="metro_ligero_ML4" type="checkbox" /> <label for="metro_ligero_ML4">ML4</label>
+  </fieldset>
+  <p>
+    (*) La ubicación de las estaciones es orientativa y puede haber otros
+    accesos que no esten representados.
+  </p>
+</div>
+
+        </div>
+        <div class="sidebar-pane" id="messages">
+          <h1 class="sidebar-header">
+  Mandar un mail
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <p>
+    Puedes mandar un correo electrónico a todos los centros que se estan
+    motrando en el mapa
+    <a
+      href="#"
+      id="maillink"
+      >pulsando en este enlace</a
+    >
+  </p>
+  <p>
+    También puedes mandar mails desde la pestaña
+    <i class="fa fa-pencil-square-o"></i> Lista.
+  </p>
+</div>
+
+        </div>
+        <div class="sidebar-pane" id="lista">
+          <h1 class="sidebar-header">
+  Tu lista
+  <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <p>
+    Para ordenar los centros por cercania a un punto geográfico haz click en el
+    lugar deseado sobre el mapa con el botón secundario, o con el principal
+    mientras pulsas la tecla <code>control</code>, o haz una pulsación larga si
+    estas desde un movil o tablet.
+  </p>
+  <h2>Centros seleccionados</h2>
+  <div id="cSel"></div>
+  <h2>Centros visibles</h2>
+  <div id="cShw"></div>
+  <h2>Centros ocultos</h2>
+  <div id="cHdn"></div>
+  <h2>Centros descartados</h2>
+  <div id="cDsc"></div>
+</div>
+
+        </div>
+        <div class="sidebar-pane" id="contacto">
+          <h1 class="sidebar-header">
+  Contacto<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content">
+  <p>
+    <svg
+      aria-hidden="true"
+      class="octicon octicon-law license-summary-octicon float-left mr-2"
+      height="32"
+      version="1.1"
+      viewBox="0 0 14 16"
+      width="28"
+    >
+      <path
+        d="M7 4c-.83 0-1.5-.67-1.5-1.5S6.17 1 7 1s1.5.67 1.5 1.5S7.83 4 7 4zm7 6c0 1.11-.89 2-2 2h-1c-1.11 0-2-.89-2-2l2-4h-1c-.55 0-1-.45-1-1H8v8c.42 0 1 .45 1 1h1c.42 0 1 .45 1 1H3c0-.55.58-1 1-1h1c0-.55.58-1 1-1h.03L6 5H5c0 .55-.45 1-1 1H3l2 4c0 1.11-.89 2-2 2H2c-1.11 0-2-.89-2-2l2-4H1V5h3c0-.55.45-1 1-1h4c.55 0 1 .45 1 1h3v1h-1l2 4zM2.5 7L1 10h3L2.5 7zM13 10l-1.5-3-1.5 3h3z"
+        fill-rule="evenodd"
+      ></path>
+    </svg>
+    Esta obra esta bajo una licencia
+    <a href="%VITE_GITHUB%/blob/master/LICENSE"
+      >GNU General Public License v3.0</a
+    >, por lo tanto eres libre de hacer cualquier modificación o mejora.
+  </p>
+  <p>
+    Si quieres que tus mejoras, sugerencias o correciones sean incluidas lo
+    mejor es que me hagas un <code>pull Requests</code>, o des de alta un
+    <code>issue</code>, en
+    <a href="%VITE_GITHUB%">github</a>; pero si eso
+    te suena a chino puedes simplemente contactame via mail en
+    <a href="mailto:%VITE_EMAIL%">%VITE_EMAIL%</a>.
+  </p>
+  <p>
+    Por otro lado, si tienes conocimientos de programación y quieres colaborar
+    pero no se te ocurre como, echale un vistazo a los
+    <a href="%VITE_GITHUB%/issues">issues abiertos</a
+    >, especialmente a aquellos que estan etiquetados como
+    <code>help wanted</code>.
+  </p>
+  <h2>Donaciones</h2>
+  <p>
+    Por favor, si te ha resultado útil esta página considera realizar un
+    donativo para mantenerla actualizada.
+  </p>
+  <form
+    action="https://www.paypal.com/cgi-bin/webscr"
+    method="post"
+    target="_blank"
+  >
+    <input name="cmd" type="hidden" value="_donations" />
+    <input name="business" type="hidden" value="H69CMSB6JMJLY" />
+    <input
+      name="item_name"
+      type="hidden"
+      value="Mantener actualizado %VITE_GITHUB%"
+    />
+    <input name="currency_code" type="hidden" value="EUR" />
+    <input
+      alt="Pulsa aquí para donar :)"
+      border="0"
+      name="submit"
+      src="https://www.paypalobjects.com/es_ES/ES/i/btn/btn_donateCC_LG.gif"
+      title="Pulsa aquí para donar :)"
+      type="image"
+    />
+    <img
+      alt=""
+      border="0"
+      height="1"
+      src="https://www.paypal.com/es_ES/i/scr/pixel.gif"
+      width="1"
+      f9utw555y=""
+    />
+  </form>
+  <p>Cualquier cantidad es buena 🙂</p>
+</div>
+
+        </div>
+      </div>
+    </div>
+    <div id="map" class="sidebar-map" style="height: 100%"></div>
+    <script type="module" src="/src/ts/map/index.ts"></script>
+  </body>
+</html>

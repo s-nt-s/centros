@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       area: {
@@ -100,25 +100,31 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       concurso: {
         Row: {
+          convocatoria: string
           cuerpo: string
           id: string
+          tipo: string
           txt: string
           url: string
         }
         Insert: {
+          convocatoria: string
           cuerpo: string
           id: string
+          tipo: string
           txt: string
           url: string
         }
         Update: {
+          convocatoria?: string
           cuerpo?: string
           id?: string
+          tipo?: string
           txt?: string
           url?: string
         }
@@ -150,7 +156,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       concurso_anexo_centro: {
@@ -202,6 +208,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -210,6 +223,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -225,7 +245,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       etapa: {
@@ -295,6 +315,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -303,6 +330,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -318,7 +352,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       etapa_nombre_centro: {
@@ -373,6 +407,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -387,9 +428,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       extraescolar: {
@@ -438,6 +486,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -452,9 +507,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       jornada: {
@@ -518,6 +580,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -532,9 +601,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       proyecto: {
@@ -583,6 +659,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -597,9 +680,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       query: {
@@ -663,6 +753,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -671,6 +768,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -686,7 +790,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       tipo: {
@@ -785,7 +889,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_concurso_anexo_centro: {
@@ -837,6 +941,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -845,6 +956,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -860,7 +978,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       diseno_ctr: {
@@ -900,6 +1018,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -914,9 +1039,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_etapa_centro: {
@@ -971,6 +1103,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -979,6 +1118,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -994,7 +1140,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_etapa_nombre_centro: {
@@ -1049,6 +1195,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1063,9 +1216,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_extraescolar: {
@@ -1114,6 +1274,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1128,9 +1295,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_plan: {
@@ -1179,6 +1353,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1193,9 +1374,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_proyecto: {
@@ -1244,6 +1432,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1258,9 +1453,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       diseno_query_centro: {
@@ -1309,6 +1511,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1317,6 +1526,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -1332,7 +1548,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_centro: {
@@ -1411,7 +1627,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_concurso_anexo_centro: {
@@ -1463,6 +1679,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1471,6 +1694,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -1486,7 +1716,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       eoi_ctr: {
@@ -1526,6 +1756,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1540,9 +1777,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_etapa_centro: {
@@ -1597,6 +1841,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1605,6 +1856,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -1620,7 +1878,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_etapa_nombre_centro: {
@@ -1675,6 +1933,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1689,9 +1954,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_extraescolar: {
@@ -1740,6 +2012,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1754,9 +2033,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_plan: {
@@ -1805,6 +2091,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1819,9 +2112,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_proyecto: {
@@ -1870,6 +2170,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1884,9 +2191,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       eoi_query_centro: {
@@ -1935,6 +2249,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -1943,6 +2264,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -1958,7 +2286,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_centro: {
@@ -2037,7 +2365,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_concurso_anexo_centro: {
@@ -2089,6 +2417,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2097,6 +2432,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -2112,7 +2454,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       fp_ctr: {
@@ -2152,6 +2494,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2166,9 +2515,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_etapa_centro: {
@@ -2223,6 +2579,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2231,6 +2594,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -2246,7 +2616,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_etapa_nombre_centro: {
@@ -2301,6 +2671,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2315,9 +2692,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_extraescolar: {
@@ -2366,6 +2750,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2380,9 +2771,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_plan: {
@@ -2431,6 +2829,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2445,9 +2850,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_proyecto: {
@@ -2496,6 +2908,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2510,9 +2929,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       fp_query_centro: {
@@ -2561,6 +2987,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2569,6 +3002,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -2584,7 +3024,745 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      maestrillo_centro: {
+        Row: {
+          area: string | null
+          cp: number | null
+          dificultad: number | null
+          distrito: string | null
+          domicilio: string | null
+          email: string | null
+          id: number | null
+          jornada: string | null
+          latitud: number | null
+          longitud: number | null
+          municipio: string | null
+          nombre: string | null
+          telefono: string | null
+          tipo: string | null
+          titular: string | null
+          web: string | null
+        }
+        Insert: {
+          area?: string | null
+          cp?: number | null
+          dificultad?: number | null
+          distrito?: string | null
+          domicilio?: string | null
+          email?: string | null
+          id?: number | null
+          jornada?: string | null
+          latitud?: number | null
+          longitud?: number | null
+          municipio?: string | null
+          nombre?: string | null
+          telefono?: string | null
+          tipo?: string | null
+          titular?: string | null
+          web?: string | null
+        }
+        Update: {
+          area?: string | null
+          cp?: number | null
+          dificultad?: number | null
+          distrito?: string | null
+          domicilio?: string | null
+          email?: string | null
+          id?: number | null
+          jornada?: string | null
+          latitud?: number | null
+          longitud?: number | null
+          municipio?: string | null
+          nombre?: string | null
+          telefono?: string | null
+          tipo?: string | null
+          titular?: string | null
+          web?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "centro_area_fkey"
+            columns: ["area"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centro_jornada_fkey"
+            columns: ["jornada"]
+            isOneToOne: false
+            referencedRelation: "jornada"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centro_tipo_fkey"
+            columns: ["tipo"]
+            isOneToOne: false
+            referencedRelation: "tipo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_concurso_anexo_centro: {
+        Row: {
+          anexo: number | null
+          centro: number | null
+          concurso: string | null
+        }
+        Insert: {
+          anexo?: number | null
+          centro?: number | null
+          concurso?: string | null
+        }
+        Update: {
+          anexo?: number | null
+          centro?: number | null
+          concurso?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_concurso_anexo_fkey"
+            columns: ["concurso", "anexo"]
+            isOneToOne: false
+            referencedRelation: "concurso_anexo"
+            referencedColumns: ["concurso", "anexo"]
+          },
+        ]
+      }
+      maestrillo_ctr: {
+        Row: {
+          id: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: string | null
+          hoja: number | null
+          inferido: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: string | null
+          hoja?: number | null
+          inferido?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: string | null
+          hoja?: number | null
+          inferido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_etapa_nombre_centro: {
+        Row: {
+          centro: number | null
+          hoja: number | null
+          nombre: string | null
+          tipo: string | null
+        }
+        Insert: {
+          centro?: number | null
+          hoja?: number | null
+          nombre?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          centro?: number | null
+          hoja?: number | null
+          nombre?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_extraescolar: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_plan: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_proyecto: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maestrillo_query_centro: {
+        Row: {
+          centro: number | null
+          query: string | null
+        }
+        Insert: {
+          centro?: number | null
+          query?: string | null
+        }
+        Update: {
+          centro?: number | null
+          query?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_query_fkey"
+            columns: ["query"]
+            isOneToOne: false
+            referencedRelation: "query"
+            referencedColumns: ["id"]
+          },
         ]
       }
       magisterio_centro: {
@@ -2663,7 +3841,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_concurso_anexo_centro: {
@@ -2715,6 +3893,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2723,6 +3908,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -2738,7 +3930,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       magisterio_ctr: {
@@ -2778,6 +3970,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2792,9 +3991,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_etapa_centro: {
@@ -2849,6 +4055,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2857,6 +4070,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -2872,7 +4092,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_etapa_nombre_centro: {
@@ -2927,6 +4147,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -2941,9 +4168,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_extraescolar: {
@@ -2992,6 +4226,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3006,9 +4247,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_plan: {
@@ -3057,6 +4305,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3071,9 +4326,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_proyecto: {
@@ -3122,6 +4384,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3136,9 +4405,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       magisterio_query_centro: {
@@ -3187,6 +4463,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3195,6 +4478,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -3210,7 +4500,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_centro: {
@@ -3289,7 +4579,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_concurso_anexo_centro: {
@@ -3341,6 +4631,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3349,6 +4646,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -3364,7 +4668,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       musica_ctr: {
@@ -3404,6 +4708,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3418,9 +4729,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_etapa_centro: {
@@ -3475,6 +4793,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3483,6 +4808,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -3498,7 +4830,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_etapa_nombre_centro: {
@@ -3553,6 +4885,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3567,9 +4906,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_extraescolar: {
@@ -3618,6 +4964,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3632,9 +4985,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_plan: {
@@ -3683,6 +5043,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3697,9 +5064,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_proyecto: {
@@ -3748,6 +5122,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3762,9 +5143,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       musica_query_centro: {
@@ -3813,6 +5201,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3821,6 +5216,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -3836,7 +5238,745 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      profesillo_centro: {
+        Row: {
+          area: string | null
+          cp: number | null
+          dificultad: number | null
+          distrito: string | null
+          domicilio: string | null
+          email: string | null
+          id: number | null
+          jornada: string | null
+          latitud: number | null
+          longitud: number | null
+          municipio: string | null
+          nombre: string | null
+          telefono: string | null
+          tipo: string | null
+          titular: string | null
+          web: string | null
+        }
+        Insert: {
+          area?: string | null
+          cp?: number | null
+          dificultad?: number | null
+          distrito?: string | null
+          domicilio?: string | null
+          email?: string | null
+          id?: number | null
+          jornada?: string | null
+          latitud?: number | null
+          longitud?: number | null
+          municipio?: string | null
+          nombre?: string | null
+          telefono?: string | null
+          tipo?: string | null
+          titular?: string | null
+          web?: string | null
+        }
+        Update: {
+          area?: string | null
+          cp?: number | null
+          dificultad?: number | null
+          distrito?: string | null
+          domicilio?: string | null
+          email?: string | null
+          id?: number | null
+          jornada?: string | null
+          latitud?: number | null
+          longitud?: number | null
+          municipio?: string | null
+          nombre?: string | null
+          telefono?: string | null
+          tipo?: string | null
+          titular?: string | null
+          web?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "centro_area_fkey"
+            columns: ["area"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centro_jornada_fkey"
+            columns: ["jornada"]
+            isOneToOne: false
+            referencedRelation: "jornada"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centro_tipo_fkey"
+            columns: ["tipo"]
+            isOneToOne: false
+            referencedRelation: "tipo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_concurso_anexo_centro: {
+        Row: {
+          anexo: number | null
+          centro: number | null
+          concurso: string | null
+        }
+        Insert: {
+          anexo?: number | null
+          centro?: number | null
+          concurso?: string | null
+        }
+        Update: {
+          anexo?: number | null
+          centro?: number | null
+          concurso?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_concurso_anexo_fkey"
+            columns: ["concurso", "anexo"]
+            isOneToOne: false
+            referencedRelation: "concurso_anexo"
+            referencedColumns: ["concurso", "anexo"]
+          },
+        ]
+      }
+      profesillo_ctr: {
+        Row: {
+          id: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: string | null
+          hoja: number | null
+          inferido: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: string | null
+          hoja?: number | null
+          inferido?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: string | null
+          hoja?: number | null
+          inferido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_etapa_nombre_centro: {
+        Row: {
+          centro: number | null
+          hoja: number | null
+          nombre: string | null
+          tipo: string | null
+        }
+        Insert: {
+          centro?: number | null
+          hoja?: number | null
+          nombre?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          centro?: number | null
+          hoja?: number | null
+          nombre?: string | null
+          tipo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_extraescolar: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_plan: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_proyecto: {
+        Row: {
+          centro: number | null
+          nombre: string | null
+        }
+        Insert: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Update: {
+          centro?: number | null
+          nombre?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profesillo_query_centro: {
+        Row: {
+          centro: number | null
+          query: string | null
+        }
+        Insert: {
+          centro?: number | null
+          query?: string | null
+        }
+        Update: {
+          centro?: number | null
+          query?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_query_fkey"
+            columns: ["query"]
+            isOneToOne: false
+            referencedRelation: "query"
+            referencedColumns: ["id"]
+          },
         ]
       }
       secundaria_centro: {
@@ -3915,7 +6055,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "tipo"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_concurso_anexo_centro: {
@@ -3967,6 +6107,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -3975,6 +6122,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -3990,7 +6144,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "concurso_anexo"
             referencedColumns: ["concurso", "anexo"]
-          }
+          },
         ]
       }
       secundaria_ctr: {
@@ -4030,6 +6184,13 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4044,9 +6205,16 @@ export interface Database {
             foreignKeyName: "concurso_anexo_centro_centro_fkey"
             columns: ["id"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concurso_anexo_centro_centro_fkey"
+            columns: ["id"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_etapa_centro: {
@@ -4101,6 +6269,13 @@ export interface Database {
             foreignKeyName: "etapa_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4109,6 +6284,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -4124,7 +6306,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "etapa"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_etapa_nombre_centro: {
@@ -4179,6 +6361,13 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4193,9 +6382,16 @@ export interface Database {
             foreignKeyName: "etapa_nombre_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "etapa_nombre_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_extraescolar: {
@@ -4244,6 +6440,13 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4258,9 +6461,16 @@ export interface Database {
             foreignKeyName: "extraescolar_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraescolar_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_plan: {
@@ -4309,6 +6519,13 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4323,9 +6540,16 @@ export interface Database {
             foreignKeyName: "plan_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_proyecto: {
@@ -4374,6 +6598,13 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4388,9 +6619,16 @@ export interface Database {
             foreignKeyName: "proyecto_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "profesillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proyecto_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "secundaria_centro"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       secundaria_query_centro: {
@@ -4439,6 +6677,13 @@ export interface Database {
             foreignKeyName: "query_centro_centro_fkey"
             columns: ["centro"]
             isOneToOne: false
+            referencedRelation: "maestrillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
             referencedRelation: "magisterio_centro"
             referencedColumns: ["id"]
           },
@@ -4447,6 +6692,13 @@ export interface Database {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "query_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "profesillo_centro"
             referencedColumns: ["id"]
           },
           {
@@ -4462,7 +6714,7 @@ export interface Database {
             isOneToOne: false
             referencedRelation: "query"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -4478,14 +6730,16 @@ export interface Database {
   }
 }
 
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -4493,67 +6747,67 @@ export type Tables<
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-      Database["public"]["Views"])
-  ? (Database["public"]["Tables"] &
-      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof Database["public"]["Enums"]
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
-  : never
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never

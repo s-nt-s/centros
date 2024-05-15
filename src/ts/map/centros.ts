@@ -217,8 +217,8 @@ function updateCentros(centrar: boolean|undefined) {
   addMailLink();
   addCentrosLayer();
   updateList();
-  if (centrar === true) {
-    if (!window.MAP.center()) window.MAP.setView([40.4165, -3.70256], 12);
+  if (centrar === true && !window.MAP.center()) {
+    window.MAP.setView([40.4165, -3.70256], 12);
   }
 }
 
@@ -398,22 +398,14 @@ function getPopUp(c: Centro) {
       const marca = parseInt(this.value);
       if (isNaN(marca)) delete MARCA.CENTRO[c.id];
       else MARCA.CENTRO[c.id] = marca;
-      //updateCentros();
-      addCentroMarker(c, true);
+      setCentroMarker(c, true);
       updateList();
-      /*
-      const layer = (<L.GeoJSON>window.MAP.idlayer.get("centros")!);
-      layer.eachLayer((l)=>{
-        //if (!(l instanceof geojson.Feature)) return;
-        //console.log(l)
-      })
-      */
     })
   );
   return div;
 }
 
-function addCentroMarker(centro:Centro, refresh: boolean = false) {
+function setCentroMarker(centro:Centro, refresh: boolean = false) {
   const layer_id = "centro_"+centro.id;
   const layer_old = window.MAP.idlayer.get(layer_id);
   if (layer_old!=null) {
@@ -451,10 +443,10 @@ function addCentroMarker(centro:Centro, refresh: boolean = false) {
 
 function addCentrosLayer() {
   CNT.get_ok().forEach((c) => {
-    addCentroMarker(c);
+    setCentroMarker(c);
   });
-  CNT.get_ko().forEach((c) => {
-    window.MAP.removeLayerById("centro_"+c.id)
+  CNT.ko.forEach((id) => {
+    window.MAP.removeLayerById("centro_"+id)
   });
 }
 

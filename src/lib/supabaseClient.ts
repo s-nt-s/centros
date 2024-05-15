@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { smart_title, to_dict } from "./util";
+import { smart_title, to_dict, toTitle } from "./util";
 import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
@@ -58,12 +58,16 @@ class DBConcurso {
   }
 
   async get_concursos() {
-    const cpn = (await this.get('concurso')) as Tables<"concurso">[];
+    const cpn = ((await this.get('concurso')) as Tables<"concurso">[]).sort((c1, c2)=>{
+      if (c1.convocatoria != c2.convocatoria) return c1.convocatoria.localeCompare(c2.convocatoria);
+      if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
+      return c1.txt.localeCompare(c2.txt);
+    });
     const obj: Concurso[] = [];
     for (let i = 0; i < cpn.length; i++) {
       obj.push((await this.get_concurso(cpn[i])));
     }
-    return obj;
+    return obj
   }
 
   async get_concurso(c: string|Tables<"concurso">) {
@@ -199,6 +203,20 @@ class Concurso {
 
   get txt() {
     return this._c.txt;
+  }
+
+  get name() {
+    const txt = this._c.convocatoria+' '+this._c.txt;
+    if (this._c.tipo != 'concursillo') return txt;
+    return txt + ' (concursillo)';
+  }
+
+  get tipo() {
+    return this._c.tipo;
+  }
+
+  get convocatoria() {
+    return this._c.convocatoria;
   }
 
   get url() {

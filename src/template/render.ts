@@ -3,7 +3,7 @@ import { writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { dirname } from 'path'
 import { glob } from "glob";
 import { DBConcurso, Centro } from '../lib/supabaseClient'
-import { Mail, get_distance, yJoin } from "../lib/util";
+import { Mail, get_distance, yJoin, toTitle } from "../lib/util";
 import transporte from "../assets/transporte/transporte.json";
 import accesos from "../assets/transporte/accesos.json";
 import estaciones from "../assets/transporte/estaciones.json";
@@ -12,6 +12,7 @@ const DB = new DBConcurso();
 
 const env = nunjucks.configure('src/template', { autoescape: true });
 env.addFilter('yjoin', yJoin);
+env.addFilter('toTitle', toTitle);
 
 function save(destination: string, content: string|object) {
     const dir = dirname(destination);

@@ -10,7 +10,7 @@
         <select id="concurso">
         <option value="empty">Elige tu concurso de traslados</option>
         {% for c in concursos %}
-        <option value="{{c.id}}">{{ c.txt }}</option>
+        <option value="{{c.id}}">{{ c.name }}</option>
         {% endfor %}
         <option value="none">Ninguno de los anteriores</option>
       </select>
@@ -29,11 +29,11 @@
         {% for c in concursos %}
         <div id="{{c.id}}">
           <ol class="anx">
-            <li>Concurso: <a href="{{c.url}}">{{c.txt}}</a></li>
+            <li>{{c.tipo | toTitle}}: <a href="{{c.url}}">{{c.convocatoria}} {{c.txt}}</a></li>
             <li>Cuerpo{%if ' ' in c.cuerpo%}s{%endif%}: {{c.cuerpo | yjoin}}</li>
            {% for a in c.anexos %}
             <li value="{{a.anexo}}">
-              {% if a.anexo == 0 %}Resolución:
+              {% if a.anexo == 0 %}{% if 'Resolución' not in a.txt %}Resolución: {%endif%}
               {%else%}
               <abbr title="Anexo">An</abbr> <code class='anx'>{%if a.anexo<10%} {%endif%}{{a.anexo}}</code>
               {%endif%}

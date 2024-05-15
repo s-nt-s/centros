@@ -40,8 +40,8 @@
   </ul>
   <h2>Objetivo</h2>
   <p>
-    El objetivo de este mapa es ayudar a elegir destino en el concurso de
-    traslados <a href="{{ concurso.url }}">{{ concurso.txt }}</a>
+    El objetivo de este mapa es ayudar a elegir destino en el <strong>{{concurso.tipo}}</strong> de
+    traslados <a href="{{ concurso.url }}">{{concurso.convocatoria}} {{ concurso.txt }}</a>
     a los funcionarios de carrera o interinos {% if ' ' in concurso.cuerpo %}de
     los cuerpos{%else%}del cuerpo{%endif%}
     {{ concurso.cuerpo | yjoin }} en la Comunidad de Madrid.
@@ -50,11 +50,11 @@
   <p>Para ello se han usado las siguientes fuentes:</p>
   <ol class="anx">
     <li>
-      Concurso <a href="{{ concurso.url }}">{{ concurso.txt }}</a>
+      {{concurso.tipo|toTitle}}: <a href="{{ concurso.url }}">{{concurso.convocatoria}} {{ concurso.txt }}</a>
     </li>
     {% for a in concurso.anexos %}
     <li value="{{ a.anexo }}">
-      {% if a.anexo == 0 %}Resolución: {%else%}
+      {% if a.anexo == 0 %}{% if 'Resolución' not in a.txt %}Resolución: {%endif%}{%else%}
       <abbr title="Anexo">An</abbr>
       <code class="anx">{%if a.anexo<10%} {%endif%}{{ a.anexo }}</code>
       {%endif%}
