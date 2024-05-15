@@ -2,15 +2,11 @@ env.txt
 diseno/
 eoi/
 fp/
-magisterio/
-musica/
-public/diseno/
-public/eoi/
-public/fp/
-public/magisterio/
-public/musica/
-public/secundaria/
 secundaria/
+magisterio/
+concursillo/
+concursillo-magisterio/
+musica/
 
 *.sqlite
 *.sqlite.*
