@@ -78,16 +78,7 @@
         {% endfor %}
       </div>
     </fieldset>
-    <footer>
-      <p>
-        <a
-          id="donarlink"
-          href="%VITE_DONAR%"
-          >Donar</a
-        >
-        para que este proyecto siga siendo viable.
-      </p>
-    </footer>
+    {% include "tab/donar.njk" %}
     <script type="module" src="/src/ts/concurso.ts"></script>
   </body>
 </html>
