@@ -7,6 +7,9 @@ magisterio/
 concursillo/
 concursillo-magisterio/
 musica/
+concursillo-diseno/
+concursillo-eoi/
+concursillo-musica/
 
 *.sqlite
 *.sqlite.*
