@@ -557,7 +557,7 @@ function updateList() {
   set_html(
     "cDsc",
     list_centros(
-      "Aún no has descartados ningún centro",
+      "Aún no has descartado ningún centro",
       estadistica.descartados,
       estadistica.distancias?.centro
     )
