@@ -74,11 +74,17 @@ class DBConcurso {
     }
     return obj
   }
-
+  async get_jornadas() {
+    const jnd = this.get_data(
+      `jornada`,
+      await this.from("jornada").select()
+    );
+    return jnd as Tables<"jornada">[];
+  }
   async get_concurso(c: string|Tables<"concurso">) {
     if (typeof c == "string") c=(await this.get_one("concurso", c)) as Tables<"concurso">
     const anx = this.get_data(
-      `anexo[concurso=${c.id}`,
+      `anexo[concurso=${c.id}]`,
       await this.from("concurso_anexo").select().eq("concurso", c.id)
     );
     return new Concurso(
@@ -167,6 +173,7 @@ class Concurso {
   public readonly ingles: readonly number[];
   public readonly frances: readonly number[];
   public readonly aleman: readonly number[];
+  public readonly jornadas: readonly string[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -196,6 +203,7 @@ class Concurso {
     this.ingles = _gids(c=>c.ingles);
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
+    this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
   get id() {
@@ -292,6 +300,10 @@ class Centro {
 
   get longitud(): number {
     return this._c.longitud;
+  }
+
+  get jornada(): string {
+    return this._c.jornada;
   }
 
   set longitud(l: number) {

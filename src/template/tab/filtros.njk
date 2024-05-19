@@ -29,6 +29,19 @@
       >metros de una estación de metro, metro ligero o cercanias</label
     >
   </fieldset>
+  {% if concurso.jornadas.length > 1 %}
+  <fieldset>
+    <legend>Jornada</legend>
+    <select id="jornada" style="width: 100%;">
+      <option value="">Cualquiera</option>
+      {% for j in jornadas %}
+      {% if concurso.jornadas.includes(j.id) %}
+      <option value="{{j.id}}">{{j.txt}}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </fieldset>
+  {% endif %}
   {% if concurso.isEspecial %}
   <fieldset id="otros">
     <legend>Otras condiciones especiales</legend>

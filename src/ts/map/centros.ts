@@ -250,12 +250,19 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   const invertir = getVal("#invertir") as boolean;
   const transporte = parseInt(getVal("#kms") as string);
 
-  const ok: HTMLInputElement[] = [];
-  const ko: HTMLInputElement[] = [];
+  const ok: (HTMLInputElement|HTMLOptionElement)[] = [];
+  const ko: (HTMLInputElement|HTMLOptionElement)[] = [];
   document.querySelectorAll("#settings input").forEach((i) => {
     if (!(i instanceof HTMLInputElement) || i.type != "checkbox") return;
     if (i.id=="invertir") return;
     (i.checked ? ok : ko).push(i);
+  });
+  document.querySelectorAll("#settings select").forEach((i) => {
+    if (!(i instanceof HTMLSelectElement) || i.value.length == 0) return;
+    Array.from(i.options).forEach(o=>{
+      if (o.value.length == 0) return;
+      (o.selected ? ok : ko).push(o);
+    })
   });
 
   if (ko.length == 0 && isNaN(transporte)) {
@@ -272,9 +279,14 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
       const legend = i
         .closest("fieldset")!
         .querySelector("legend")!
-        .textContent!.trim();
-      if (legend != lastLegend) txt = txt + "\n* " + legend + ":";
-      txt = txt + "\n    * " + i.title;
+        .textContent!.trim()??"";
+      const item = (i.title||i.textContent?.trim())??"";
+      if (legend.length && item.startsWith(legend)) {
+        txt = txt + "\n* " + item;
+      } else {
+        if (legend != lastLegend) txt = txt + "\n* " + legend + ":";
+        txt = txt + "\n    * " + item;
+      }
       lastLegend = legend;
     });
     if (!isNaN(transporte)) {
@@ -354,6 +366,10 @@ function getPopUp(c: Centro) {
     const t = n.getAttribute("title")!.trim();
     tags.push(`<b class="tag_${i} flag" title="${t}">&#35;${i}</b>`);
   });
+  if (c.jornada.length) {
+    const o =document.querySelector("#jornada option[value='"+c.jornada+"']");
+    if (o != null) tags.push(o.textContent?.trim())
+  }
   if (tags.length) {
     body.push("\n" + tags.join(", "));
   }
@@ -456,6 +472,7 @@ type idbool = { [id: string]: boolean };
 function mk_filter() {
   const _get = (s: string) => Array.from(document.querySelectorAll(s));
   const invertir = getVal("#invertir") as boolean;
+  const jornada = (getVal("#jornada", "")??"") as string;
   const innovacion = getVal("#innovacion", true) as boolean;
   const dificultad = getVal("#dificultad", true) as boolean;
   const excelencia = getVal("#excelencia", true) as boolean;
@@ -477,6 +494,7 @@ function mk_filter() {
     if (c.nocturno && !nocturno) return false;
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;
+    if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
     if (!isNaN(transporte)) {
       for (const [km, ids] of DST) if (km>transporte && ids.includes(c.id)) return false;
     }
@@ -623,6 +641,6 @@ document.addEventListener("DOMContentLoaded", function () {
       i.addEventListener(e, fnc);
     });
   }
-  onChange("#settings input", ()=>updateCentros(false));
+  onChange("#settings input, #settings select", ()=>updateCentros(false));
   onChange("#transporte input", set_transpo_layer);
 });

@@ -81,6 +81,7 @@ function get_min_idstance(latlons: [number, number][], c: Centro): number|null {
 
 
 async function do_render(env: Record<string, string>) {
+    const jornadas = (await DB.get_jornadas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
     const concursos = await DB.get_concursos();
     const latlons = get_latlons();
     const tipo_convocatoria = Array.from(new Set(concursos.map(c=>c.tipo_convocatoria)));
@@ -118,6 +119,7 @@ async function do_render(env: Record<string, string>) {
             `${c.id}/index.html`,
             {
                 concurso: c,
+                jornadas: jornadas,
                 distancia: {
                     min: min,
                     max: max,
