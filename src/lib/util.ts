@@ -101,9 +101,11 @@ export class Mail {
     const url = new URL("mailto:");
     if (this.to != null) url.searchParams.append("to", this.to);
     if (this.bcc != null) url.searchParams.append("bcc", this.bcc);
-    if (this.subject != null) url.searchParams.append("subject", this.subject);
-    if (this.body != null) url.searchParams.append("body", this.body);
-    return url.toString();
+    const params = [];
+    if (this.subject != null) params.push(`subject=${encodeURIComponent(this.subject)}`);
+    if (this.body != null) params.push(`body=${encodeURIComponent(this.body)}`);
+    if (params.length == 0) return url.toString();
+    return url.toString()+"&"+params.join("&")
   }
 }
 
