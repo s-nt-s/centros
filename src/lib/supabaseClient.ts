@@ -64,7 +64,7 @@ class DBConcurso {
 
   async get_concursos() {
     const cpn = ((await this.get('concurso')) as Tables<"concurso">[]).sort((c1, c2)=>{
-      if (c1.convocatoria != c2.convocatoria) return c1.convocatoria.localeCompare(c2.convocatoria);
+      if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
       if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
       return c1.txt.localeCompare(c2.txt);
     });
