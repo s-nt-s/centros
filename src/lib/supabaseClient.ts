@@ -395,28 +395,28 @@ class Centro {
     if (abr == "EXEOI") {
       nom = nom.replace(/^(Extension de la Escuela Oficial de Idiomas de) /i, "");
     }
-    if (abr == "E ARTE") {
+    if (abr == "ES ARTE") {
       nom = nom.replace(/^(Escuela de Arte de) /i, "");
     }
     if (abr == "ES CANTO") {
       nom = nom.replace(/^(Real )?Escuela Superior de Canto de /i, "");
     }
-    if (abr == "CPROF DANZA") {
+    if (abr == "CPR DANZA") {
       nom = nom.replace(/^(Real )?Conservatorio Profesional de Danza( de)? /i, "");
     }
     if (abr == "CSU MUS") {
       nom = nom.replace(/^(Real )?Conservatorio Superior de Musica de /i, "");
     }
-    if (abr == "CPROF MUS") {
+    if (abr == "CPR MUS") {
       nom = nom.replace(/^(Real )?Conservatorio Profesional de Musica de /i, "");
     }
-    if (this.id == 28034428 && abr=="ES ARTE DRA" && nom.toLocaleLowerCase()=="real escuela superior de arte dramatico") {
+    if (this.id == 28034428 && abr=="ES ARTE" && nom.toLocaleLowerCase()=="real escuela superior de arte dramatico") {
       nom = "Madrid";
     }
     if (this.id == 28037821 && abr=="ES CRBC" && nom.toLocaleLowerCase()=="escuela superior conservacion y restauracion bienes culturales") {
       nom = "Madrid";
     }
-    if (this.id == 28072508 && abr=="ESC SUP DISEÑO" && nom.toLocaleLowerCase()=="escuela superior de diseño") {
+    if (this.id == 28072508 && abr=="ES DISEÑO" && nom.toLocaleLowerCase()=="escuela superior de diseño") {
       nom = "Madrid";
     }
     nom = smart_title(nom);
