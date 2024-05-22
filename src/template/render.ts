@@ -82,7 +82,12 @@ function get_min_idstance(latlons: [number, number][], c: Centro): number|null {
 
 async function do_render(env: Record<string, string>) {
     const jornadas = (await DB.get_jornadas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
-    const concursos = await DB.get_concursos();
+    const concursos = (await DB.get_concursos()).sort((c1, c2)=>{
+        if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
+        if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
+        if (c1.centros.length!=c2.centros.length) return c2.centros.length-c1.centros.length;
+        return c1.txt.localeCompare(c2.txt);
+      });
     const latlons = get_latlons();
     const tipo_convocatoria = Array.from(new Set(concursos.map(c=>c.tipo_convocatoria)));
     const convocatorias = concursos.filter((v, i, arr)=>{
