@@ -13,7 +13,7 @@
       <em title="{{conv.descripcion}}">Concursillo</em>
       {%else%}
       <span title="{{conv.descripcion}}">{{conv.tipo|toTitle}}</span>
-      {%endif%} {{conv.convocatoria}}
+      {%endif%} <span class="convfull">{{conv.convocatoria}}</span><span class="convmini" title="{{conv.convocatoria}}">{{conv.convocatoria.split("-")[0]}}</span>
     </legend>
     {% if conv.tipo == "concursillo" %}
     <p>{{conv.descripcion}}</p>
