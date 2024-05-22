@@ -97,14 +97,11 @@ class DBConcurso {
     const cetrs = await this._get_concurso_centros(id, with_latlon);
     const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
     const query = await this._get_concurso_query(id);
-    const {etapa_centro, etapa_nombre} = await this._get_concurso_etapa(id);
     const _is = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
     return cetrs.map(c=>{
       const t = tipos[c.tipo] as Tables<'tipo'>;
       const q = _is(query, c.id)
-      const e1 = _is(etapa_centro, c.id)
-      const e2 = _is(etapa_nombre, c.id)
-      return new Centro(c, t, q, e1);
+      return new Centro(c, t, q);
     }) as Centro[]
   }
 
@@ -265,18 +262,15 @@ class Centro {
   private readonly _c: Tables<"centro">;
   private readonly _t: Tables<"tipo">;
   readonly queries: readonly string[];
-  readonly etapas: readonly string[];
 
   constructor(
     centro: Tables<"centro">,
     tipo: Tables<"tipo">,
-    queries: string[],
-    etapas: string[]
+    queries: string[]
   ) {
     this._c = centro;
     this._t = tipo;
     this.queries = Object.freeze(queries);
-    this.etapas = Object.freeze(etapas);
   }
 
   get id(): number {
