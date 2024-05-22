@@ -232,6 +232,12 @@ class Concurso {
     return this._c.convocatoria;
   }
 
+  get descripcion() {
+    if (this.tipo == "concurso") return "Concurso de traslados"
+    if (this.tipo == "concursillo" ) return "Asignación de destinos provisionales en inicio de curso"
+    return null;
+  }
+
   get tipo_convocatoria() {
     return toTitle(this.tipo)+' '+this.convocatoria;
   }

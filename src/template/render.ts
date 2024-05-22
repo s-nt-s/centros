@@ -85,12 +85,17 @@ async function do_render(env: Record<string, string>) {
     const concursos = await DB.get_concursos();
     const latlons = get_latlons();
     const tipo_convocatoria = Array.from(new Set(concursos.map(c=>c.tipo_convocatoria)));
+    const convocatorias = concursos.filter((v, i, arr)=>{
+        if (i==0) return true;
+        return (arr[i-1].tipo_convocatoria != v.tipo_convocatoria)
+    })
     render(
         'concurso.njk',
         'index.html',
         {
             concursos: concursos,
             tipo_convocatoria: tipo_convocatoria,
+            convocatorias: convocatorias,
             mail: {
                 no_concurso: no_concurso(env.VITE_EMAIL),
                 desubicados: desubicados(env.VITE_EMAIL)

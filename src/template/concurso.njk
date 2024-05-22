@@ -5,79 +5,38 @@
     {% include "head.njk" %}
   </head>
   <body>
-    <fieldset>
-      <legend>
-        <select id="concurso">
-          <option value="empty">Elige tu concurso de traslados</option>
-          {% for tc in tipo_convocatoria %}
-          <optgroup label="{{ tc }}">
-            {% for c in concursos %} {% if c.tipo_convocatoria == tc %}
-            <option value="{{ c.id }}">{{ c.txt }}</option>
-            {% endif %} {% endfor %}
-          </optgroup>
-          {% endfor %}
-          <option value="none">Ninguno de los anteriores</option>
-        </select>
-      </legend>
-      <div id="content" style="display: none">
-        <p id="empty">
-          Esta web te ayudará a rellenar el concurso de traslados de la
-          Comunidad de Madrid.
-        </p>
-        <p id="none">
-          Si no encuentras tu concurso de traslados escribe a
-          <a href="{{ mail.no_concurso }}"> %VITE_EMAIL%</a> pidiendo que
-          actualice la web.<br />
-          Mientras tanto puedes usar el concurso disponible más similar al tuyo,
-          ya que la mayoría de los centros serán los mismos.
-        </p>
-        {% for c in concursos %}
-        <div id="{{ c.id }}">
-          <ol class="anx">
-            <li>
-              {{ c.tipo | toTitle }}:
-              <a href="{{ c.url }}">{{ c.convocatoria }} {{ c.txt }}</a>
-            </li>
-            <li>
-              Cuerpo{%if ' ' in c.cuerpo%}s{%endif%}: {{ c.cuerpo | yjoin }}
-            </li>
-            {% for a in c.anexos %}
-            <li value="{{ a.anexo }}">
-              {% if a.anexo == 0 %}{% if 'Resolución' not in a.txt %}Resolución:
-              {%endif%} {%else%}
-              <abbr title="Anexo">An</abbr>
-              <code class="anx">{%if a.anexo<10%} {%endif%}{{ a.anexo }}</code>
-              {%endif%}
-              <a href="{{ a.url }}">{{ a.txt }}</a>
-            </li>
-            {% endfor %}
-          </ol>
-          <a href="{{ c.id }}/" target="_self">
-            <button>Ver mapa ({{ c.centros.length }} centros)</button>
-          </a>
-          {% if c.desubicados.length > 0 %}
-          <p>
-            <strong>¡AVISO!</strong> Los siguientes centros no aparecen en el
-            mapa porque no se ha podido calcular sus coordenadas geográficas:
-          </p>
-          <ul>
-            {% for x in c.desubicados %}
-            <li>
-              <a href="%VITE_FICHA%{{ x.id }}"
-                >{{ x.id }} {{ x.abr_nombre | safe }}</a
-              >
-            </li>
-            {% endfor %}
-          </ul>
-          <p>
-            Si sabes donde estan escribe a
-            <a href="{{ mail.desubicados }}"> %VITE_EMAIL%</a>
-          </p>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
+    <main>
+    {% for conv in convocatorias %}
+    <fieldset id="{{conv.tipo}}">
+    <legend>
+      {% if conv.tipo == "concursillo" %}
+      <em title="{{conv.descripcion}}">Concursillo</em>
+      {%else%}
+      <span title="{{conv.descripcion}}">{{conv.tipo|toTitle}}</span>
+      {%endif%} {{conv.convocatoria}}
+    </legend>
+    {% if conv.tipo == "concursillo" %}
+    <p>{{conv.descripcion}}</p>
+    {%endif%}
+    <div>
+      {% for c in concursos %} {% if c.tipo_convocatoria == conv.tipo_convocatoria %}
+        <a href="{{ c.id }}/" target="_self" id="{{ c.id }}">
+          <button>{{ c.txt }}<br/><small>Cuerpo{% if ' ' in c.cuerpo %}s{%endif%} {{ c.cuerpo | yjoin }}</small></button>
+        </a>
+      {% endif %} {% endfor %}
+    </div>
     </fieldset>
+    {% endfor %}
+    <hr/>
+    <p>
+      ¿No encuentras tu concurso de traslados? Escribe a
+      <a href="{{ mail.no_concurso }}"> %VITE_EMAIL%</a> pidiendo que
+      actualice la web.</p>
+    <p>
+      Mientras tanto puedes usar el concurso disponible más similar al tuyo,
+      ya que la mayoría de los centros serán los mismos.
+    </p>
+  </main>
     <script type="module" src="/src/ts/concurso.ts"></script>
   </body>
 </html>
