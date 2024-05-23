@@ -220,6 +220,8 @@ function updateCentros(centrar: boolean|undefined) {
   if (centrar === true && !window.MAP.center()) {
     window.MAP.setView([40.4165, -3.70256], 12);
   }
+  const l = document.getElementById('loading-overlay');
+  if (l != null) l.remove();
 }
 
 function addMailLink() {

@@ -89,7 +89,6 @@ async function do_render(env: Record<string, string>) {
         return c1.txt.localeCompare(c2.txt);
       });
     const latlons = get_latlons();
-    const tipo_convocatoria = Array.from(new Set(concursos.map(c=>c.tipo_convocatoria)));
     const convocatorias = concursos.filter((v, i, arr)=>{
         if (i==0) return true;
         return (arr[i-1].tipo_convocatoria != v.tipo_convocatoria)
@@ -99,7 +98,6 @@ async function do_render(env: Record<string, string>) {
         'index.html',
         {
             concursos: concursos,
-            tipo_convocatoria: tipo_convocatoria,
             convocatorias: convocatorias,
             mail: {
                 no_concurso: no_concurso(env.VITE_EMAIL),
