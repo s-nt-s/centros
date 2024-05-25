@@ -42,6 +42,16 @@
     </select>
   </fieldset>
   {% endif %}
+  {% if concurso.showFP %}
+  <fieldset>
+    <legend>FP Dual</legend>
+    <select id="fpdual" style="width: 100%;">
+      <option value="">Cualquiera</option>
+      <option value="con">Con FP Dual</option>
+      <option value="sin">Sin FP Dual</option>
+    </select>
+  </fieldset>
+  {% endif %}
   {% if concurso.isEspecial %}
   <fieldset id="otros">
     <legend>Otras condiciones especiales</legend>

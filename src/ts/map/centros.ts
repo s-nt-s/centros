@@ -372,6 +372,7 @@ function getPopUp(c: Centro) {
     const o =document.querySelector("#jornada option[value='"+c.jornada+"']");
     if (o != null) tags.push(o.textContent?.trim())
   }
+  if (c.fpdual) tags.push("FP Dual");
   if (tags.length) {
     body.push("\n" + tags.join(", "));
   }
@@ -480,6 +481,7 @@ function mk_filter() {
   const excelencia = getVal("#excelencia", true) as boolean;
   const nocturno = getVal("#nocturno", true) as boolean;
   const transporte = parseInt(getVal("#kms") as string);
+  const fpdual = (getVal("#fpdual", "")??"") as string;
   const ok_tipo = _get("#tipos input").flatMap((i) => {
     return (getVal(i) as boolean) ? i.id.substring(1) : [];
   });
@@ -497,6 +499,10 @@ function mk_filter() {
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;
     if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
+    if (fpdual.length>0){
+      if (fpdual == "con" && c.fpdual == false) return false;
+      if (fpdual == "sin" && c.fpdual == true) return false;
+    }
     if (!isNaN(transporte)) {
       for (const [km, ids] of DST) if (km>transporte && ids.includes(c.id)) return false;
     }

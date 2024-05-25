@@ -124,6 +124,7 @@ class DBConcurso {
       "checkCentroConvenio=S",
       "checkSeccionesLinguisticasFr=S",
       "checkSeccionesLinguisticasAl=S",
+      "itRegimenDual=5"
     ];
     this.get_data(
       `query_centro[${id}][query=${qrs}]`,
@@ -201,6 +202,12 @@ class Concurso {
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
+  }
+
+  get showFP() {
+    const spl = this.id.split("-");
+    const id = spl[spl.length-1];
+    return ["fp", "secundaria", "concursillo"].includes(id);
   }
 
   get id() {
@@ -348,7 +355,9 @@ class Centro {
   get aleman() {
     return this.isQuery("checkSeccionesLinguisticasAl=S");
   }
-
+  get fpdual() {
+    return this.isQuery("itRegimenDual=5");
+  }
   get emails() {
     return (this._c.email??'').trim().split(/\s+/);
   }
