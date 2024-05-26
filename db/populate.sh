@@ -19,7 +19,11 @@ if [[ $SRC == http* ]]; then
 else
     cat "$SRC" | sqlite3 db.sqlite
 fi
+
+sqlite3 db.sqlite "SELECT 'DROP VIEW ' || name || ';' FROM sqlite_master WHERE type='view'; SELECT sql || ';' FROM sqlite_master WHERE type='view'" > view.sql
 sqlite3 db.sqlite < filter.sql
+sqlite3 db.sqlite < view.sql
+
 
 function mk_schema () {
     echo ""
