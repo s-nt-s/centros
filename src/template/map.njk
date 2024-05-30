@@ -20,7 +20,7 @@
           <li id="lkMessages" title="Mandar mails"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
           <li class="tulista" title="Tu lista"><a href="#lista" role="tab"><i class="fa fa-pencil-square-o"></i><span id="count">{{concurso.centros.length}}</span></a></li>
           <li title="Contacto, correciones y sugerencias"><a href="#contacto" role="tab"><i class="fa fa-question-circle"></i></a></li>
-          <li title="Descarga tu lista"><a data-href="data:text/plain;charset=utf-8," download="centros.txt" href="data:text/plain;charset=utf-8," id="download" role="tab"><i class="fa fa fa-cloud-download"></i></a></li>
+          <li title="Descarga tu lista"><a href="#dwn" role="tab"><i class="fa fa fa-cloud-download"></i></a></li>
           </ul>
           <ul role="tablist">
           <li title="Volver al listado de concursos"><a href=".." role="tab" target="_self"><i class="fa fa-arrow-left"></i></a></li-->
@@ -47,6 +47,9 @@
         </div>
         <div class="sidebar-pane" id="contacto">
           {% include "tab/contacto.njk" %}
+        </div>
+        <div class="sidebar-pane" id="dwn">
+          {% include "tab/dwn.njk" %}
         </div>
       </div>
     </div>

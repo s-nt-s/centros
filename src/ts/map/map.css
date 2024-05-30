@@ -211,3 +211,15 @@ p.tabdonar {
   font-size: 1.5em;
   text-align: center;
 }
+
+#dwn #dwn_datos input[type="checkbox"]:disabled {
+  opacity: 1; /* Elimina la reducción de opacidad */
+  cursor: pointer; /* Cambia el cursor para que no parezca deshabilitado */
+}
+#dwn #download {
+  text-decoration: none;
+}
+#dwn #download button {
+  width: 100%;
+  display: inline-block;
+}

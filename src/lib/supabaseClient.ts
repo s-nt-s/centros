@@ -438,6 +438,10 @@ class Centro {
   get abr_nombre(): string {
     return `<abbr title="${this.tp.txt}">${this.tp.abr}</abbr> ${this.nombre}`;
   }
+
+  getAttribute<K extends keyof Centro>(attributeName: K): Centro[K] {
+    return this[attributeName];
+  }
 }
 
 export {

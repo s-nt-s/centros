@@ -303,6 +303,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     ["Centros descartados por el filtro", estadistica.hidden],
     ["Centros descartados por mi", estadistica.descartados],
   ];
+  const datos = Array.from(document.querySelectorAll("#dwn_datos input[id]:enabled:checked")).map(i=>i.id.substring(4));
   cols.forEach((item) => {
     let col = item[1] as Centro[];
     if (col.length == 0) return;
@@ -318,6 +319,12 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
         })();
         txt = txt + ` (${dis})`;
       }
+      datos.forEach(d=>{
+        let v = c.getAttribute(d as keyof Centro);
+        if (Array.isArray(v) && v.length>0) v = v.join(" ");
+        if (typeof v != "string" || v.length==0) return;
+        txt = txt + `\n  ${v}`;
+      })
     });
     txt = txt + "\n";
   });

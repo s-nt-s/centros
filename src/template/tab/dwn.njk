@@ -1,0 +1,37 @@
+<h1 class="sidebar-header">
+  Descargas<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+</h1>
+<div class="content filter">
+  <p>
+    Aquí puedes descargar la lista de centros tal como la has configurado en
+    <i class="fa fa-gear"></i> Filtros.
+  </p>
+  <fieldset id="dwn_datos">
+    <legend>Datos a incluir</legend>
+    <input id="dwn_id" type="checkbox" checked readonly disabled />
+    <label for="dwn_id">Identificador</label><br />
+    <input id="dwn_id" type="checkbox" checked readonly disabled />
+    <label for="dwn_tipo">Tipo</label><br />
+    <input id="dwn_nombre" type="checkbox" checked readonly disabled />
+    <label for="dwn_nombre">Nombre</label><br />
+    <input id="dwn_direccion" type="checkbox" />
+    <label for="dwn_direccion">Dirección</label><br />
+    <input id="dwn_web" type="checkbox" />
+    <label for="dwn_web">Web</label><br />
+    <input id="dwn_emails" type="checkbox" />
+    <label for="dwn_emails">Mail</label><br />
+    <input id="dwn_telefonos" type="checkbox" />
+    <label for="dwn_telefonos">Teléfono</label>
+  </fieldset>
+  <p>
+    <a
+      data-href="data:text/plain;charset=utf-8,"
+      download="centros.txt"
+      href="data:text/plain;charset=utf-8,"
+      id="download"
+    >
+      <button>Descargar</button>
+    </a>
+  </p>
+  {% include "tab/donar.njk" %}
+</div>
