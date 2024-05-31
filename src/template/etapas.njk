@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Concurso de traslados</title>
+    {% include "head.njk" %}
+    <style>
+      body {
+        font-family: DejaVu Sans, Arial, Sans Serif;
+        font-size: 0.75em;
+      }
+      table {
+        margin-top: 14px;
+        border-spacing: 0px;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      thead > tr > th:first-child {
+        width: 0px;
+      }
+      td,
+      th {
+        border: 1px solid black;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      table tbody tr:nth-child(even) {
+        background-color: #ddd;
+      }
+      td > p,
+      th > p {
+        margin-top: 7px;
+        margin-bottom: 7px;
+      }
+      td > p:first-child,
+      th > p:first-child {
+        margin-top: 0;
+      }
+      td > p:last-child,
+      td > p:last-child {
+        margin-bottom: 0;
+      }
+      td,
+      th {
+        vertical-align: top;
+      }
+      .etapa,
+      .cuerpo {
+        background-color: lightblue;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>
+        Para crear el selector de etapas educativas se ha utilizado la
+        estrategia descrita en el
+        <a href="%VITE_GITHUB%/issues/7" target="_blank">issue #7</a>. Para
+        facilitar el entendimiento y la depuración de dicha estrategia, a
+        continuación se lista la correspondencia entre las <em>etapas macro</em>
+        y el desglose de las etapas a las que equivalen tal como aparecen en
+        <a
+          href="https://gestiona.comunidad.madrid/wpad_pub/run/j/MostrarConsultaGeneral.icm"
+          target="_blank"
+          >el buscador de centros</a
+        >.
+      </p>
+      <h1>Agrupación de etapas educativas</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Cuerpos</th>
+            <th>Etapa</th>
+          </tr>
+        </thead>
+        {% for e in etapas %} {% if e.id != -1 %}
+        <tbody>
+          <tr class="{{ loop.index | odd_even }}">
+            <td rowspan="{{ (sub.get(e.id) | length) + 1 }}" class="cuerpo">
+              {% if e.cuerpo %} {{e.cuerpo | replace(" ", "<br />") | safe }} {%
+              else %} ¿Cualquiera? ¿Tu lo sabes? Dímelo en el
+              <a href="%VITE_GITHUB%/issues/7" target="_blank">issue #7</a>{%
+              endif %}
+            </td>
+            <th class="etapa">
+              {{ e.familia }}: <strong>{{ e.txt }}</strong>
+            </th>
+          </tr>
+          {% for s in sub.get(e.id) %}
+          <tr>
+            <td>{{ s.subetapa }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% endif %} {% endfor %}
+      </table>
+      <h1>Etapas no usadas</h1>
+      <ul>
+        {% for s in sub.get(-1) %}
+        <li>{{ s.subetapa }}</li>
+        {% endfor %}
+      </ul>
+    </main>
+  </body>
+</html>

@@ -618,6 +618,157 @@ export type Database = {
         }
         Relationships: []
       }
+      macro_etapa: {
+        Row: {
+          cuerpo: string | null
+          familia: string
+          id: number
+          txt: string
+        }
+        Insert: {
+          cuerpo?: string | null
+          familia: string
+          id: number
+          txt: string
+        }
+        Update: {
+          cuerpo?: string | null
+          familia?: string
+          id?: number
+          txt?: string
+        }
+        Relationships: []
+      }
+      macro_etapa_centro: {
+        Row: {
+          centro: number
+          etapa: number
+        }
+        Insert: {
+          centro: number
+          etapa: number
+        }
+        Update: {
+          centro?: number
+          etapa?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      macro_etapa_sub: {
+        Row: {
+          etapa: number
+          subetapa: string
+        }
+        Insert: {
+          etapa: number
+          subetapa: string
+        }
+        Update: {
+          etapa?: number
+          subetapa?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_sub_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan: {
         Row: {
           centro: number
@@ -1839,6 +1990,113 @@ export type Database = {
           },
         ]
       }
+      concursillo_diseno_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concursillo_diseno_plan: {
         Row: {
           centro: number | null
@@ -2745,6 +3003,113 @@ export type Database = {
           },
         ]
       }
+      concursillo_eoi_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concursillo_eoi_plan: {
         Row: {
           centro: number | null
@@ -3371,6 +3736,113 @@ export type Database = {
           },
         ]
       }
+      concursillo_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concursillo_magisterio_centro: {
         Row: {
           area: string | null
@@ -3966,6 +4438,113 @@ export type Database = {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concursillo_magisterio_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
             referencedColumns: ["id"]
           },
         ]
@@ -4872,6 +5451,113 @@ export type Database = {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concursillo_musica_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
             referencedColumns: ["id"]
           },
         ]
@@ -6089,6 +6775,113 @@ export type Database = {
           },
         ]
       }
+      diseno_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diseno_plan: {
         Row: {
           centro: number | null
@@ -6991,6 +7784,113 @@ export type Database = {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eoi_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
             referencedColumns: ["id"]
           },
         ]
@@ -7901,6 +8801,113 @@ export type Database = {
           },
         ]
       }
+      fp_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fp_plan: {
         Row: {
           centro: number | null
@@ -8803,6 +9810,113 @@ export type Database = {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      magisterio_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
             referencedColumns: ["id"]
           },
         ]
@@ -9713,6 +10827,113 @@ export type Database = {
           },
         ]
       }
+      musica_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       musica_plan: {
         Row: {
           centro: number | null
@@ -10615,6 +11836,113 @@ export type Database = {
             columns: ["centro"]
             isOneToOne: false
             referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      secundaria_macro_etapa_centro: {
+        Row: {
+          centro: number | null
+          etapa: number | null
+        }
+        Insert: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Update: {
+          centro?: number | null
+          etapa?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "concursillo_musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "diseno_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "eoi_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "fp_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "magisterio_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "musica_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_centro_fkey"
+            columns: ["centro"]
+            isOneToOne: false
+            referencedRelation: "secundaria_centro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "macro_etapa_centro_etapa_fkey"
+            columns: ["etapa"]
+            isOneToOne: false
+            referencedRelation: "macro_etapa"
             referencedColumns: ["id"]
           },
         ]

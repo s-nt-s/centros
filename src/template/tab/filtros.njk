@@ -6,7 +6,7 @@
     Los centros seleccionados siempre apareceran, independiemtemente del filtro
     definido en esta sección.
   </p>
-  <fieldset id="tipos">
+  <fieldset id="tipos" class="check_to_show">
     <legend>Tipo de centro</legend>
     {% for t in concurso.tipos %}
     {% if loop.index>1 %}<br/>{%endif %}
@@ -26,11 +26,11 @@
       type="number"
     />
     <label for="kms"
-      >metros de una estación de metro, metro ligero o cercanias</label
+      >metros de una estación de metro, metro ligero o cercanías</label
     >
   </fieldset>
   {% if concurso.jornadas.length > 1 %}
-  <fieldset>
+  <fieldset class="flt_property">
     <legend>Jornada</legend>
     <select id="jornada" style="width: 100%;">
       <option value="">Cualquiera</option>
@@ -42,6 +42,21 @@
     </select>
   </fieldset>
   {% endif %}
+  {% if concurso.id.indexOf("magisterio") == -1 %}
+  <fieldset>
+    <legend>Etapa educativa</legend>
+    <select id="etapa" style="width: 100%;" data-label="Etapa educativa: ">
+      <option value="">Cualquiera</option>
+      {% for e in concurso.etapas %}
+      <option value="{{e.id}}">{{e.txt}}</option>
+      {% endfor %}
+    </select>
+    <p style="margin-bottom: 0;">
+      <strong>⚠ ¡OJO!</strong> Función experimental, puede inducir a error. Leer el <a href="%VITE_GITHUB%/issues/7" target="_blank">issue #7</a> antes de usar.
+    </p>
+  </fieldset>
+  {% endif %}
+  {#
   {% if concurso.showFP %}
   <fieldset>
     <legend>FP Dual</legend>
@@ -52,8 +67,9 @@
     </select>
   </fieldset>
   {% endif %}
+  #}
   {% if concurso.isEspecial %}
-  <fieldset id="otros">
+  <fieldset id="otros" class="uncheck_to_hide">
     <legend>Otras condiciones especiales</legend>
     {% if concurso.nocturos.length>0 %}
     <input

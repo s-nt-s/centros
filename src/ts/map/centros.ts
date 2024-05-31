@@ -26,6 +26,8 @@ const myweb = (() => {
   return href;
 })();
 
+const _get = (s: string) => Array.from(document.querySelectorAll(s));
+
 const DB = new DBConcurso();
 const DST = new Map<number, number[]>();
 
@@ -239,6 +241,8 @@ function addMailLink() {
   a.href = Mail.mail_tobcc(mails, MSG_MAIL.subject, MSG_MAIL.body);
 }
 
+
+
 function dwnTxtCentros(this: HTMLAnchorElement) {
   const estadistica = CNT.get_estadistica();
   let date = dateToString(new Date());
@@ -249,54 +253,65 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
       txt +
       `Punto de refrencia: ${estadistica.distancias.latitud},${estadistica.distancias.longitud}\n`;
   }
-  const invertir = getVal("#invertir") as boolean;
-  const transporte = parseInt(getVal("#kms") as string);
 
-  const ok: (HTMLInputElement|HTMLOptionElement)[] = [];
-  const ko: (HTMLInputElement|HTMLOptionElement)[] = [];
-  document.querySelectorAll("#settings input").forEach((i) => {
-    if (!(i instanceof HTMLInputElement) || i.type != "checkbox") return;
-    if (i.id=="invertir") return;
-    (i.checked ? ok : ko).push(i);
-  });
-  document.querySelectorAll("#settings select").forEach((i) => {
-    if (!(i instanceof HTMLSelectElement) || i.value.length == 0) return;
-    Array.from(i.options).forEach(o=>{
-      if (o.value.length == 0) return;
-      (o.selected ? ok : ko).push(o);
-    })
-  });
-
-  if (ko.length == 0 && isNaN(transporte)) {
-    const ver = invertir ? "Ocultar" : "Ver";
-    txt = txt + "Filtro: " + ver + " todos\n";
-  } else if (ok.length == 0) {
-    const ocultar = invertir ? "Ver" : "Ocultar";
-    txt = txt + "Filtro: " + ocultar + " todos\n";
-  } else {
-    const ver = invertir ? "Ocultar" : "Ver";
-    txt = txt + "Filtro => " + ver + " todos menos:";
-    let lastLegend = "";
-    ko.forEach((i) => {
-      const legend = i
-        .closest("fieldset")!
-        .querySelector("legend")!
-        .textContent!.trim()??"";
-      const item = (i.title||i.textContent?.trim())??"";
-      if (legend.length && item.startsWith(legend)) {
-        txt = txt + "\n* " + item;
-      } else {
-        if (legend != lastLegend) txt = txt + "\n* " + legend + ":";
-        txt = txt + "\n    * " + item;
-      }
-      lastLegend = legend;
+  const filtro = (()=>{
+    const invertir = getVal("#invertir") as boolean;
+    const tipos = _get("#settings #tipos input").flatMap((i) => {
+      if (!(i instanceof HTMLInputElement)) return [];
+      let b = (getVal(i) as boolean);
+      if (invertir) b = !b;
+      return b ? i.title : [];
     });
+    if (tipos.length == 0) return "Ocultar todos";
+    const transporte = parseInt(getVal("#kms") as string);
+    const filtro = [];
     if (!isNaN(transporte)) {
-      txt =
-        txt + "\n* Centros a más de " + transporte + " metros de una estación";
+      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + transporte + " metros de una estación");
     }
-    txt = txt + "\n";
-  }
+    const selects = _get("#settings select").flatMap(s=>{
+      if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
+      const opts = Array.from(s.options).filter(o=>o.value.trim().length > 0);
+      const label = s.getAttribute("data-label")||"";
+      const opt = s.selectedOptions[0];
+      if (opts.length == 2) {
+        const o = invertir?opts.filter(o=>!o.selected)[0]:opt;
+        filtro.push("* " +label+ o.textContent);
+        return;
+      }
+      if (invertir) {
+        filtro.push("* " +label+"Cualquiera menos: " +opt.textContent);
+        return 
+      }
+      filtro.push("* " +label+opt.textContent);
+    })
+    filtro.push("* Tipos de centro:");
+    tipos.forEach(t=>{
+      filtro.push("    * " + t);
+    })
+    let excepto = true;
+    _get("fieldset.uncheck_to_hide").forEach(f=>{
+      const inputs = Array.from(f.querySelectorAll("input")).flatMap(i=>{
+        if (!(i instanceof HTMLInputElement)) return [];
+        let isChecked = i.checked;
+        if (invertir) isChecked = !isChecked;
+        if (isChecked) return [];
+        return (i.title||i.textContent?.trim())??"";
+      })
+      if (inputs.length == 0) return;
+      if (excepto) {
+        excepto = false;
+        filtro.push("\nExcepto aquellos centros que cumplan:");
+      }
+      //const legend = f.querySelector("legend")!.textContent!.trim()??"";
+      //filtro.push("* "+legend);
+      inputs.forEach(i=>{
+        filtro.push("* "+i);
+      })
+    })
+    return "\n"+filtro.join("\n").trim();
+  })();
+
+  txt = txt + "\nFiltro: " + filtro + "\n";
   let cols = [
     ["Centros seleccionados por mi", estadistica.seleccionados],
     ["Centros seleccionados por el filtro", estadistica.showen],
@@ -480,9 +495,9 @@ function addCentrosLayer() {
 type idbool = { [id: string]: boolean };
 
 function mk_filter() {
-  const _get = (s: string) => Array.from(document.querySelectorAll(s));
   const invertir = getVal("#invertir") as boolean;
   const jornada = (getVal("#jornada", "")??"") as string;
+  const etapa = parseInt((getVal("#etapa", "")??"") as string);
   const innovacion = getVal("#innovacion", true) as boolean;
   const dificultad = getVal("#dificultad", true) as boolean;
   const excelencia = getVal("#excelencia", true) as boolean;
@@ -506,6 +521,7 @@ function mk_filter() {
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;
     if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
+    if (!isNaN(etapa) && !c.hasEtapa(etapa)) return false;
     if (fpdual.length>0){
       if (fpdual == "con" && c.fpdual == false) return false;
       if (fpdual == "sin" && c.fpdual == true) return false;

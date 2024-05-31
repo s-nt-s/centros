@@ -81,27 +81,51 @@ class DBConcurso {
     );
     return jnd as Tables<"jornada">[];
   }
+  async get_etapas() {
+    const jnd = this.get_data(
+      `macro_etapa`,
+      await this.from("macro_etapa").select()
+    );
+    return jnd as Tables<"macro_etapa">[];
+  }
+  async get_etapas_sub() {
+    const jnd = this.get_data(
+      `macro_etapa_sub`,
+      await this.from("macro_etapa_sub").select()
+    );
+    return jnd as Tables<"macro_etapa_sub">[];
+  }
   async get_concurso(c: string|Tables<"concurso">) {
     if (typeof c == "string") c=(await this.get_one("concurso", c)) as Tables<"concurso">
     const anx = this.get_data(
       `anexo[concurso=${c.id}]`,
       await this.from("concurso_anexo").select().eq("concurso", c.id)
-    );
+    ) as Tables<'concurso_anexo'>[];
+    const centros = (await this.get_concurso_centros(c.id, false))
+    const id_etapas = Array.from(new Set(centros.flatMap(c=>c.etapas)));
+    const etapas = this.get_data(
+      `macro_etapa[${c.id}]`,
+      (await this.from('macro_etapa').select().in('id', id_etapas).order('txt')),
+    ) as Tables<'macro_etapa'>[];
     return new Concurso(
       c,
-      anx as Tables<'concurso_anexo'>[],
-      (await this.get_concurso_centros(c.id, false))
+      anx,
+      etapas,
+      centros
     );
   }
   async get_concurso_centros(id: string, with_latlon: boolean = true) {
     const cetrs = await this._get_concurso_centros(id, with_latlon);
     const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
     const query = await this._get_concurso_query(id);
-    const _is = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
+    const etapas = await this._get_concurso_etapas(id);
+    const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
+    const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
       const t = tipos[c.tipo] as Tables<'tipo'>;
-      const q = _is(query, c.id)
-      return new Centro(c, t, q);
+      const q = _isS(query, c.id)
+      const e = _isN(etapas, c.id)
+      return new Centro(c, t, q, e);
     }) as Centro[]
   }
 
@@ -135,26 +159,17 @@ class DBConcurso {
     })
     return Object.freeze(obj);
   }
-  private async _get_concurso_etapa(id: string) {
-    let obj: {[id:string]: number[]} = {};
-    this.get_data(
-      `etapa_centro[${id}]`,
-      await this.from(id+'_etapa_centro').select('etapa, centro').eq('hoja', 1)
-    ).forEach(e=>{
+  private async _get_concurso_etapas(id: string) {
+    const obj: {[id:number]: number[]} = {}
+    const etapas: Tables<'macro_etapa_centro'>[] = this.get_data(
+      `macro_etapa_centro[${id}]`,
+      await this.from(id+'_macro_etapa_centro').select('centro, etapa')
+    );
+    etapas.forEach(e=>{
       if (obj[e.etapa]==null) obj[e.etapa]=[];
       obj[e.etapa].push(e.centro);
     })
-    const etapa_centro = Object.freeze(obj);
-    obj = {};
-    this.get_data(
-      `etapa_nombre_centro[${id}]`,
-      await this.from(id+'_etapa_nombre_centro').select('nombre, centro').eq('hoja', 1)
-    ).forEach(e=>{
-      if (obj[e.etapa]==null) obj[e.etapa]=[];
-      obj[e.etapa].push(e.centro);
-    })
-    const etapa_nombre = Object.freeze(obj);
-    return {etapa_centro, etapa_nombre}
+    return Object.freeze(obj);
   }
 }
 
@@ -172,14 +187,17 @@ class Concurso {
   public readonly frances: readonly number[];
   public readonly aleman: readonly number[];
   public readonly jornadas: readonly string[];
+  public readonly etapas: readonly Tables<"macro_etapa">[];
 
   constructor(
     concurso: Tables<"concurso">,
     anexos: Tables<'concurso_anexo'>[],
+    etapas: Tables<'macro_etapa'>[],
     centros: Centro[]
   ) {
     this._c = concurso;
     this.anexos = Object.freeze(anexos);
+    this.etapas = Object.freeze(etapas);
     const {ok, ko} = filter(centros, (c:Centro) => (c.latitud??0)>0);
     this.centros = Object.freeze(ok as Centro[]);
     this.desubicados = Object.freeze(ko as Centro[]);
@@ -269,19 +287,26 @@ class Centro {
   private readonly _c: Tables<"centro">;
   private readonly _t: Tables<"tipo">;
   readonly queries: readonly string[];
+  readonly etapas: readonly number[];
 
   constructor(
     centro: Tables<"centro">,
     tipo: Tables<"tipo">,
-    queries: string[]
+    queries: string[],
+    etapas: number[]
   ) {
     this._c = centro;
     this._t = tipo;
     this.queries = Object.freeze(queries);
+    this.etapas = Object.freeze(etapas);
   }
 
   get id(): number {
     return this._c.id;
+  }
+
+  hasEtapa(s: number) {
+    return this.etapas.includes(s);
   }
 
   get latlon(): readonly [number, number] {

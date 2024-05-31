@@ -5,14 +5,15 @@ import { glob } from "glob";
 import { DBConcurso, Centro } from '../lib/supabaseClient'
 import { Mail, get_distance, yJoin, toTitle } from "../lib/util";
 import transporte from "../assets/transporte/transporte.json";
-import accesos from "../assets/transporte/accesos.json";
 import estaciones from "../assets/transporte/estaciones.json";
+import type { Tables } from "../lib/database.types";
 
 const DB = new DBConcurso();
 
 const env = nunjucks.configure('src/template', { autoescape: true });
 env.addFilter('yjoin', yJoin);
 env.addFilter('toTitle', toTitle);
+env.addFilter('odd_even', (i)=>i%2==0?"even":"odd");
 
 function save(destination: string, content: string|object) {
     const dir = dirname(destination);
@@ -144,6 +145,20 @@ async function do_render(env: Record<string, string>) {
         save(`public/${c.id}/distancias.json`, json);
         save(`public/${c.id}/concurso.txt`, c.id);
     });
+    const etapas = (await DB.get_etapas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
+    const sub = new Map<number, Tables<'macro_etapa_sub'>[]>();
+    (await DB.get_etapas_sub()).sort((j1, j2)=>j1.subetapa.localeCompare(j2.subetapa)).forEach(s=>{
+        if (!sub.has(s.etapa)) sub.set(s.etapa, []);
+        sub.get(s.etapa)!.push(s);
+    });
+    render(
+        'etapas.njk',
+        `etapas/index.html`,
+        {
+            etapas: etapas,
+            sub: sub
+        }
+    )
 }
 
 export {do_render};

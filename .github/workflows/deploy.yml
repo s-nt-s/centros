@@ -21,6 +21,10 @@ jobs:
     steps:
       - name: Check out this repo
         uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
       - name: Autoclean
         run: |
           sudo apt clean -y 
@@ -32,6 +36,11 @@ jobs:
         run: sudo apt install -y pgloader sqlite3
       - name: GET DB
         run: ./db/get_db.sh
+      - name: Etapas
+        run: |
+          cd py
+          python3 etapas.py
+          cd ..
       - name: SET DB
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.import_db == 'true' }}
         env:
