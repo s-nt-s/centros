@@ -57,18 +57,16 @@ class Etapa(NamedTuple):
         return self.familia+': '+txt
 
     def get_txt(self):
-        if self.familia == "Diseño" and len(self.txt.split()) == 1:
-            if self.txt.lower() == "gráfico":
-                return "Diseño gráfico"
-            return "Diseño de "+self.txt.lower()
         txt = str(self.txt)
+        if self.familia == "Adultos" and not re.search(r"\badult[oa]s\b", self.txt):
+            txt = txt + " (adultos)"
         if txt == txt.lower():
             txt = title(txt)
         return txt
 
     def __get_cuerpo(self):
         if self.familia == "Secundaría":
-            return "0590 0511 "
+            return "0590 0511"
         if self.familia == "EOI":
             return "0592 0512"
         if self.familia == "Magisterio":
@@ -79,6 +77,8 @@ class Etapa(NamedTuple):
             return "0596 0595 0513"
         if self.familia == "Master Enseñanzas Artísticas":
             return "0594 0593 0596 0595 0513"
+        #if self.familia == "FP":
+        #    return "0590 0511 0591 0598"
 
     def get_cuerpo(self):
         c = self.__get_cuerpo()
@@ -87,6 +87,12 @@ class Etapa(NamedTuple):
 
     def merge(self, **kwargs):
         return Etapa(**{**self._asdict(), **kwargs})
+
+
+def fp_family(etp: str):
+    if "artes plásticas y diseño" in etp:
+        return "Diseño"
+    return "FP"
 
 
 def get_etapa(abr: str, etp: str):
@@ -111,6 +117,19 @@ def get_etapa(abr: str, etp: str):
             return m
         return m.group(g)
 
+    if _re(r"aula mentor"):
+        return None
+
+    if spl[-1] in ("enseñanzas para el desarrollo personal y la participación", "ampliación cultural", "técnico profesional"):
+        return None
+
+    isAdultos = abr in ("CEPA", "CARCEL") or _re(r"\b(adultos|adultas)\b")
+
+    if _re(r'\beducación secundaria obligatoria\b'):
+        return Etapa(
+            familia="Secundaría",
+            txt="ESO y/o Bachillerato"
+        )
     if abr in ('EOI', 'EXEOI'):
         m = _re(r"\b(alemán|chino|danés|español|euskera|finés|francés|griego|italiano|japonés|neerlandés|polaco|portugués|rumano|ruso|sueco|árabe|catalán|gallego|irlandés|húngaro|inglés|english)\b")
         if m:
@@ -120,16 +139,7 @@ def get_etapa(abr: str, etp: str):
                 familia="EOI",
                 txt=i
             )
-    if _re(r"^\b(formación profesional|programas profesionales|ciclos)\b.*? -> (.+)"):
-        avoid = ('general', 'especial')
-        if spl[-1] in avoid:
-            return None
-        txt = spl[1] if spl[1] not in avoid else spl[2]
-        return Etapa(
-            familia="FP",
-            txt=txt
-        )
-    if abr in ("CEPA", "CARCEL"):
+    if isAdultos:
         m = _re(r"\b(aula mentor|español para extranjeros)\b", 1)
         if m:
             return Etapa(
@@ -141,23 +151,10 @@ def get_etapa(abr: str, etp: str):
             familia="Adultos",
             txt="Curso preparatorio prueba de acceso grado superior"
         )
-    if spl[-1] not in ("enseñanzas para el desarrollo personal y la participación", "ampliación cultural", "técnico profesional"):
-        if spl[0] in ("enseñanzas para el desarrollo personal y la participación", "educación personas adultas") or spl[-1] in ("enseñanzas iniciales básicas para personas adultas", ):
-            return Etapa(
-                familia="Adultos",
-                txt=spl[-1]
-            )
-    m = _re(r'ciclos formativos -> .*? -> ([^>]+)', 1)
-    if m:
+    if spl[0] in ("enseñanzas para el desarrollo personal y la participación", "educación personas adultas") or spl[-1] in ("enseñanzas iniciales básicas para personas adultas", ):
         return Etapa(
-            familia="FP",
-            txt=m.rstrip(" -")
-        )
-    m = _re(r'grado (medio|superior) -> .*? -> ([^>]+)', 2)
-    if m:
-        return Etapa(
-            familia="FP",
-            txt=m.rstrip(" -")
+            familia="Adultos",
+            txt=spl[-1]
         )
     m = _re(r'(de|artísticas) arte dramático -> ([^>]+)', 2)
     if m:
@@ -182,15 +179,20 @@ def get_etapa(abr: str, etp: str):
             familia="Master Enseñanzas Artísticas",
             txt=spl[-1]
         )
-    if _re(r"^técnico profesional -> .+"):
+    if _re(r"^\b(formación profesional|programas profesionales|ciclos)\b.*? -> (.+)"):
+        avoid = ('general', 'especial')
+        if spl[-1] in avoid:
+            return None
+        txt = spl[1] if spl[1] not in avoid else spl[2]
         return Etapa(
-            familia="FP",
-            txt=spl[1]
+            familia=fp_family(etp),
+            txt=txt
         )
-    if _re(r"grado .*? -> capacitación digital"):
+    m = _re(r'ciclos formativos -> .*? -> ([^>]+)', 1)
+    if m:
         return Etapa(
-            familia="FP",
-            txt="capacitación digital"
+            familia=fp_family(etp),
+            txt=m.rstrip(" -")
         )
     if _re(r"^artísticas -> música y danza -> música -> ([^>]+) -> interpretación -> itinerario .*? -> "):
         return Etapa(
@@ -216,6 +218,22 @@ def get_etapa(abr: str, etp: str):
         return Etapa(
             familia="Danza",
             txt=spl[2]
+        )
+    m = _re(r'grado (medio|superior|e|a) -> .*? -> ([^>]+)', 2)
+    if m:
+        return Etapa(
+            familia=fp_family(etp),
+            txt=m.rstrip(" -")
+        )
+    if _re(r"^técnico profesional -> .+"):
+        return Etapa(
+            familia=fp_family(etp),
+            txt=spl[1]
+        )
+    if _re(r"grado .*? -> capacitación digital"):
+        return Etapa(
+            familia=fp_family(etp),
+            txt="capacitación digital"
         )
     if _re(r"\b(bachibac|bachillerato|secundaria|eso)\b"):
         return Etapa(
@@ -247,16 +265,43 @@ def get_etapa(abr: str, etp: str):
 
 def parse_etapa(e: Etapa):
     if e.txt == "electricidad y electrónica y fabricación mecánica":
-        return [
-            e.merge(txt="electricidad y electrónica"),
-            e.merge(txt="fabricación mecánica"),
-        ]
+        yield e.merge(txt="electricidad y electrónica")
+        yield e.merge(txt="fabricación mecánica")
+        return
     if e.txt == "fabricación mecánica e instalación y mantenimiento":
-        return [
-            e.merge(txt="fabricación mecánica"),
-            e.merge(txt="instalación y mantenimiento"),
-        ]
-    return [e]
+        yield e.merge(txt="fabricación mecánica")
+        yield e.merge(txt="instalación y mantenimiento")
+        return
+    if e.txt.startswith("talleres ocupacionales"):
+        yield e.merge(txt="talleres ocupacionales")
+        return
+    if e.txt == "actividades agrarias":
+        yield e.merge(txt="agraria")
+        return
+
+    if e.familia == "Diseño":
+        if e.txt in ("estilismo de indumentaria", "modelismo de indumentaria"):
+            yield e.merge(txt="artes aplicadas a la indumentaria")
+            return
+        if e.txt == "grabado y técnicas de estampación":
+            yield e.merge(txt="artes aplicadas al libro")
+            return
+        if e.txt == "estilismo de indumentaria":
+            yield e.merge(txt="artes aplicadas a la indumentaria")
+            return
+        if e.txt == "grabado y técnicas de estampación":
+            yield e.merge(txt="artes aplicadas al libro")
+            return
+        if len(e.txt.split()) == 1:
+            if e.txt.lower() == "gráfico":
+                yield e.merge(txt="Diseño gráfico")
+                return
+            yield e.merge(txt="diseño de "+e.txt.lower())
+            return
+    if e.familia == "Música" and e.txt.lower() == "dirección":
+        yield e.merge(txt="dirección (música)")
+        return
+    yield e
 
 
 CT: Dict[int, Set[Etapa]] = {}
