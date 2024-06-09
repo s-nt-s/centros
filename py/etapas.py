@@ -58,7 +58,7 @@ class Etapa(NamedTuple):
 
     def get_txt(self):
         txt = str(self.txt)
-        if self.familia == "Adultos" and not re.search(r"\badult[oa]s\b", self.txt):
+        if self.familia == "Adultos" and not re.search(r"\b(adult[oa]s|mayores)\b", self.txt):
             txt = txt + " (adultos)"
         if txt == txt.lower():
             txt = title(txt)
@@ -95,6 +95,20 @@ def fp_family(etp: str):
     return "FP"
 
 
+SECUNDARIA = Etapa(
+    familia="Secundaría",
+    txt="ESO y/o Bachillerato"
+)
+MAGISTERIO = Etapa(
+    familia="Magisterio",
+    txt="Infantil y/o Primaria"
+)
+EBO = Etapa(
+    familia="Educación especial",
+    txt="Educación básica obligatoria"
+)
+
+
 def get_etapa(abr: str, etp: str):
     etp = etp.lower()
     etp = re.sub(r"\(.*?\)", " ", etp)
@@ -126,14 +140,10 @@ def get_etapa(abr: str, etp: str):
     isAdultos = abr in ("CEPA", "CARCEL") or _re(r"\b(adultos|adultas)\b")
 
     if _re(r'\beducación secundaria obligatoria\b'):
-        return Etapa(
-            familia="Secundaría",
-            txt="ESO y/o Bachillerato"
-        )
+        return SECUNDARIA
     if abr in ('EOI', 'EXEOI'):
-        m = _re(r"\b(alemán|chino|danés|español|euskera|finés|francés|griego|italiano|japonés|neerlandés|polaco|portugués|rumano|ruso|sueco|árabe|catalán|gallego|irlandés|húngaro|inglés|english)\b")
-        if m:
-            i = m.group(0)
+        i = _re(r"\b(alemán|chino|danés|español|euskera|finés|francés|griego|italiano|japonés|neerlandés|polaco|portugués|rumano|ruso|sueco|árabe|catalán|gallego|irlandés|húngaro|inglés|english)\b", 1)
+        if i:
             i = {"english": "inglés"}.get(i, i)
             return Etapa(
                 familia="EOI",
@@ -236,20 +246,11 @@ def get_etapa(abr: str, etp: str):
             txt="capacitación digital"
         )
     if _re(r"\b(bachibac|bachillerato|secundaria|eso)\b"):
-        return Etapa(
-            familia="Secundaría",
-            txt="ESO y/o Bachillerato"
-        )
+        return SECUNDARIA
     if _re(r"\b(infantil|primaria)\b"):
-        return Etapa(
-            familia="Magisterio",
-            txt="Infantil y/o Primaria"
-        )
+        return MAGISTERIO
     if _re(r".*educación básica obligatoria.*"):
-        return Etapa(
-            familia="Educación especial",
-            txt="Educación básica obligatoria"
-        )
+        return EBO
     m = _re(r'educación especial -> ([^>]+)', 1)
     if m:
         return Etapa(
@@ -304,6 +305,12 @@ def parse_etapa(e: Etapa):
     yield e
 
 
+def simplificar(etps: Set[Etapa]):
+    if len(set((SECUNDARIA, MAGISTERIO, EBO)).difference(etps)) == 0:
+        etps.remove(EBO)
+    return tuple(sorted(etps))
+
+
 CT: Dict[int, Set[Etapa]] = {}
 OK: Dict[Etapa, Dict[str, Set[str]]] = {}
 KO = set()
@@ -336,19 +343,19 @@ with DBLite(ARG.db) as db:
 
     all_etp = sorted(set([e for sub_list in CT.values() for e in sub_list]))
     for c, etps in sorted(CT.items()):
-        for e in sorted(etps):
+        for e in simplificar(etps):
             db.insert("MACRO_ETAPA", familia=e.familia, txt=e.get_txt(), cuerpo=e.get_cuerpo(), id=all_etp.index(e), _or="ignore")
             db.insert("MACRO_ETAPA_CENTRO", centro=c, etapa=all_etp.index(e))
 
     for new_etp, abretp in sorted(OK.items()):
-        print(new_etp.to_str())
+        #print(new_etp.to_str())
         for etp, abrs in sorted(abretp.items()):
-            print("  ", ",".join(sorted(abrs)), etp)
+            #print("  ", ",".join(sorted(abrs)), etp)
             db.insert("MACRO_ETAPA_SUB", etapa=all_etp.index(new_etp), subetapa=etp, _or="ignore")
 
-    print("")
+    #print("")
     for abr, etp in sorted(KO):
-        print(abr, etp)
+        #print(abr, etp)
         db.insert("MACRO_ETAPA_SUB", etapa=-1, subetapa=etp, _or="ignore")
 
     db.execute('''
