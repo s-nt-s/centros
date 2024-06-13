@@ -38,6 +38,11 @@ function mk_schema () {
             done
         done
     fi
+    for t in $(sqlite3 "aux/db.sqlite" "SELECT name FROM sqlite_schema WHERE type='table';"); do
+            echo "  DO \$\$ ALTER TABLE $t ENABLE ROW LEVEL SECURITY; \$\$ " >> "aux/config.load"
+            echo "  DO \$\$ ALTER TABLE $t FORCE ROW LEVEL SECURITY; \$\$ " >> "aux/config.load"
+            echo "  DO \$\$ CREATE POLICY read_policy ON $t FOR SELECT USING (true); \$\$ " >> "aux/config.load"
+    done
     echo ";" >> "aux/config.load"
     echo "$1: build remote"
     cat "aux/config.load"
