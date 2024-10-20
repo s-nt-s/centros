@@ -17,6 +17,9 @@ function mk_schema () {
         for c in $(sqlite3 "aux/db.sqlite" "select name from pragma_table_info('$t') where \"notnull\"=1;"); do
             echo "  DO \$\$ ALTER TABLE $t ALTER COLUMN $c SET NOT NULL; \$\$ " >> "aux/config.load"
         done
+        for c in $(sqlite3 "aux/db.sqlite" "select name from pragma_table_info('$t') where \"type\"='TEXT';"); do
+            echo "  DO \$\$ ALTER TABLE $t ALTER COLUMN $c SET DATA TYPE TEXT COLLATE \"es-ES-x-icu\"; \$\$ " >> "aux/config.load"
+        done
     done
     if [ "$1" != "public" ]; then
         echo "  DO \$\$ ALTER SCHEMA public RENAME TO $1; \$\$" >> "aux/config.load"
