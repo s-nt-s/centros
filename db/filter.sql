@@ -65,6 +65,9 @@ UPDATE TIPO SET abr='CPR DANZA' where abr='CPROF DANZA';
 UPDATE TIPO SET abr='CSU DANZA' where abr='CSU DANZA';
 
 UPDATE TIPO SET txt=REPLACE(txt, 'Centro público ', 'Centro ');
+UPDATE TIPO SET txt=REPLACE(txt, 'Colegio público ', 'Colegio ');
+UPDATE CONCURSO_ANEXO SET txt=REPLACE(txt, 'Centros públicos ', 'Centros ');
+UPDATE CONCURSO_ANEXO SET txt=REPLACE(txt, 'Colegios públicos ', 'Colegios ');
 
 UPDATE CENTRO SET latitud=0 where latitud is null;
 UPDATE CENTRO SET longitud=0 where longitud is null;

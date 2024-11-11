@@ -10,6 +10,7 @@ musica/
 concursillo-diseno/
 concursillo-eoi/
 concursillo-musica/
+etapas/
 
 *.sqlite
 *.sqlite.*
