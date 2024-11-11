@@ -42,7 +42,7 @@
   <p>
     El objetivo de este mapa es ayudar a elegir destino en el <strong>{{concurso.tipo}}</strong> de
     traslados <a href="{{ concurso.url }}">{{concurso.convocatoria}} {{ concurso.txt }}</a>
-    a los funcionarios de carrera o interinos {% if ' ' in concurso.cuerpo %}de
+    a los funcionarios de carrera {% if concurso.tipo=='concursillo' %}o interinos {%endif%}{% if ' ' in concurso.cuerpo %}de
     los cuerpos{%else%}del cuerpo{%endif%}
     {{ concurso.cuerpo | yjoin }} en la Comunidad de Madrid.
   </p>
