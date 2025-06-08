@@ -1,4 +1,8 @@
 body {
+  font-family: DejaVu Sans, Arial, Sans Serif;
+  font-size: 0.75em;
+}
+body {
   font-family: Arial, sans-serif;
   font-size: 11pt;
   margin: 0;
