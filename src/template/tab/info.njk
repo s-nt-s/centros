@@ -50,11 +50,11 @@
   <p>Para ello se han usado las siguientes fuentes:</p>
   <ol class="anx">
     <li>
-      {{concurso.tipo|toTitle}}: <a href="{{ concurso.url }}">{{concurso.convocatoria}} {{ concurso.txt }}</a>
+      {{concurso.tipo|toTitle}} <a href="{{ concurso.url }}">{{concurso.convocatoria}} {{ concurso.txt }}</a>
     </li>
     {% for a in concurso.anexos %}
     <li value="{{ a.anexo }}">
-      {% if a.anexo <= 0 %}{% if 'Resolución' not in a.txt %}Resolución: {%endif%}{%else%}
+      {% if a.anexo <= 0 %}{% if 'Resolución' not in a.txt %}Resolución {%endif%}{%else%}
       <abbr title="Anexo">An</abbr>
       <code class="anx">{%if a.anexo<10%} {%endif%}{{ a.anexo }}</code>
       {%endif%}
