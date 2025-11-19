@@ -81,6 +81,13 @@ class DBConcurso {
     );
     return jnd as Tables<"jornada">[];
   }
+  async get_areas() {
+    const jnd = this.get_data(
+      `area`,
+      await this.from("area").select()
+    );
+    return jnd as Tables<"area">[];
+  }
   async get_etapas() {
     const jnd = this.get_data(
       `macro_etapa`,
@@ -188,6 +195,7 @@ class Concurso {
   public readonly aleman: readonly number[];
   public readonly jornadas: readonly string[];
   public readonly etapas: readonly Tables<"macro_etapa">[];
+  public readonly areas: readonly string[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -220,6 +228,7 @@ class Concurso {
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
+    this.areas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.area?c.area:[]))).sort());
   }
 
   get showFP() {
@@ -324,6 +333,10 @@ class Centro {
 
   get web(): string|null {
     return this._c.web;
+  }
+
+  get area(): string|null {
+    return this._c.area;
   }
 
   get latitud(): number {

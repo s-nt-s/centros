@@ -495,6 +495,7 @@ function addCentrosLayer() {
 type idbool = { [id: string]: boolean };
 
 function mk_filter() {
+  const dat = getVal("#dat") as string|null;
   const invertir = getVal("#invertir") as boolean;
   const jornada = (getVal("#jornada", "")??"") as string;
   const etapa = parseInt((getVal("#etapa", "")??"") as string);
@@ -516,6 +517,7 @@ function mk_filter() {
     for (i = 0; i < ko_idio.length; i++) {
       if (c.idiomas.includes(ko_idio[i])) return false;
     }
+    if (dat && c.area!=dat) return false;
     if (c.excelencia && !excelencia) return false;
     if (c.nocturno && !nocturno) return false;
     if (c.innovacion && !innovacion) return false;

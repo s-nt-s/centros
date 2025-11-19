@@ -82,6 +82,17 @@ function get_min_idstance(latlons: [number, number][], c: Centro): number|null {
 
 
 async function do_render(env: Record<string, string>) {
+    const area_order = ["C", "N", "S","E", "O"];
+    const areas = (await DB.get_areas()).map(a=>{
+        a.txt = a.txt.replace(/^Madrid\s*-\s*/, '');
+        return a;
+    }).sort((a1, a2)=>{
+        if (a1.id == a2.id) return 0;
+        const i1 = area_order.indexOf(a1.id);
+        const i2 = area_order.indexOf(a2.id);
+        if (i1==-1 && i2==-1) return a1.txt.localeCompare(a2.txt);
+        return i1-i2;
+    });
     const jornadas = (await DB.get_jornadas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
     const concursos = (await DB.get_concursos()).sort((c1, c2)=>{
         if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
@@ -129,6 +140,7 @@ async function do_render(env: Record<string, string>) {
             {
                 concurso: c,
                 jornadas: jornadas,
+                areas: areas,
                 distancia: {
                     min: min,
                     max: max,

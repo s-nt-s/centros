@@ -56,6 +56,19 @@
     </p>
   </fieldset>
   {% endif %}
+  {% if concurso.areas.length > 1 %}
+  <fieldset>
+    <legend title="Dirección de área territorial">DAT</legend>
+    <select id="dat" style="width: 100%;" data-label="Dirección de área territorial: ">
+      <option value="">Cualquiera</option>
+      {% for a in areas %}
+      {% if concurso.areas.includes(a.id) %}
+      <option value="{{a.id}}">{{a.txt}}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </fieldset>
+  {% endif %}
   {#
   {% if concurso.showFP %}
   <fieldset>

@@ -36,10 +36,12 @@ jobs:
         run: sudo apt install -y pgloader sqlite3
       - name: GET DB
         run: ./db/get_db.sh
-      - name: Etapas
+      - name: Etapas y GeoJson
         run: |
           cd py
+          pip install -r requirements.txt
           python3 etapas.py
+          python3 geojson.py
           cd ..
       - name: SET DB
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.import_db == 'true' }}
