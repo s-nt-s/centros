@@ -2,6 +2,7 @@ import * as L from "leaflet";
 import { SBMap } from "../../mapsidebar/leaflet-sidebar";
 import { DBConcurso, Centro } from "../../lib/supabaseClient";
 import { set_transpo_layer } from "./transporte"
+import { set_area_layer } from './areas'
 import type { SchemaName } from "../../lib/supabaseClient";
 import {
   getVal,
@@ -672,6 +673,7 @@ document.addEventListener("DOMContentLoaded", function () {
       i.addEventListener(e, fnc);
     });
   }
-  onChange("#settings input, #settings select", ()=>updateCentros(false));
+  onChange("#settings input:not(.nofiltro), #settings select", ()=>updateCentros(false));
   onChange("#transporte input", set_transpo_layer);
+  onChange("#areas", set_area_layer);
 });

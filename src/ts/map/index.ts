@@ -3,7 +3,7 @@ import "./map.css";
 import { SBMap } from "../../mapsidebar/leaflet-sidebar";
 import { dwnConcurso } from './centros'
 import { set_transpo_layer } from './transporte'
-
+import { set_area_layer } from './areas'
 
 const DONAR = import.meta.env.VITE_DONAR;
 
@@ -14,5 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
   )
   window.MAP.setView([40.4165, -3.70256], 12);
   dwnConcurso();
+  set_area_layer();
   set_transpo_layer();
 });
