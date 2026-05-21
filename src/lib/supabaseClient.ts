@@ -148,7 +148,8 @@ class DBConcurso {
       "checkCentroConvenio=S",
       "checkSeccionesLinguisticasFr=S",
       "checkSeccionesLinguisticasAl=S",
-      "itRegimenDual=5"
+      "itRegimenDual=5",
+      "checkIntegraM=S"
     ];
     this.get_data(
       `query_centro[${id}][query=${qrs}]`,
@@ -173,6 +174,21 @@ class DBConcurso {
   }
 }
 
+/*
+class CodTxt {
+  public readonly cod: string;
+  public readonly txt: string;
+
+  constructor(
+    cod: string,
+    txt: string
+  ) {
+    this.cod = cod;
+    this.txt = txt;
+  }
+}
+*/
+
 class Concurso {
   private readonly _c: Tables<"concurso">;
   public readonly anexos: readonly Tables<"concurso_anexo">[];
@@ -188,6 +204,7 @@ class Concurso {
   public readonly aleman: readonly number[];
   public readonly jornadas: readonly string[];
   public readonly etapas: readonly Tables<"macro_etapa">[];
+  public readonly accesible: readonly number[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -219,6 +236,7 @@ class Concurso {
     this.ingles = _gids(c=>c.ingles);
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
+    this.accesible = _gids(c=>c.accesible);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
@@ -278,6 +296,7 @@ class Concurso {
         this.ingles,
         this.aleman,
         this.frances,
+        this.accesible,
       ].filter((arr) => arr.length > 0).length > 0
     );
   }
@@ -359,6 +378,13 @@ class Centro {
     return false;
   }
 
+  get accesible() {
+    if (this.isQuery("checkIntegraM=S")) return true;
+    return false;
+  }
+  get motorico() {
+    return this.isQuery("checkIntegraM=S");
+  }
   get nocturno() {
     return this.isQuery("itRegimenNocturno=4");
   }

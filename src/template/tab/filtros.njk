@@ -143,6 +143,15 @@
     />
     <label for="FR">Bilingüe o sección de francés</label>
     {% endif %}
+    {% if concurso.accesible.length > 1 %}
+    <br />
+    <input
+      id="accesible"
+      title="Ocultar centros no accesibles"
+      type="checkbox"
+    />
+    <label for="accesible">Ocultar centros <strong>no</strong> accesibles</label>
+    {% endif %}
   </fieldset>
   {% endif %}
   <fieldset>

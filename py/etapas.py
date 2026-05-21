@@ -62,7 +62,6 @@ def title(s: str):
     return s
 
 
-
 class MacroEtapa(NamedTuple):
     familia: str
     txt: str

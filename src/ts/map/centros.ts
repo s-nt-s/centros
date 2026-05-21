@@ -381,6 +381,7 @@ function getPopUp(c: Centro) {
   body = [];
   if (c.dificultad) body.push("<b>Centro de especial dificultad</b>");
   if (c.nocturno) body.push("<b>Nocturno</b>");
+  if (c.accesible) body.push("<b>♿ Accesible</b>");
   const tags = [];
   if (c.excelencia) tags.push("<b>&#35;excelencia</b>");
   if (c.innovacion) tags.push("<b>&#35;tecnológico</b>");
@@ -503,6 +504,7 @@ function mk_filter() {
   const dificultad = getVal("#dificultad", true) as boolean;
   const excelencia = getVal("#excelencia", true) as boolean;
   const nocturno = getVal("#nocturno", true) as boolean;
+  const accesible = getVal("#accesible", true) as boolean;
   const transporte = parseInt(getVal("#kms") as string);
   const fpdual = (getVal("#fpdual", "")??"") as string;
   const ok_tipo = _get("#tipos input").flatMap((i) => {
@@ -519,6 +521,7 @@ function mk_filter() {
     }
     if (c.excelencia && !excelencia) return false;
     if (c.nocturno && !nocturno) return false;
+    if (accesible && !c.accesible) return false;
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;
     if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
