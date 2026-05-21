@@ -137,6 +137,7 @@ export function getVal(
     i = b;
   }
   const val = (() => {
+    if (i == null) return null;
     if (i.tagName == "INPUT") {
       const n = i as HTMLInputElement;
       if (["checkbox", "radio"].includes(n.type)) return n.checked;

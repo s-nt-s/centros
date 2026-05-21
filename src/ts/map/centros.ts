@@ -504,7 +504,7 @@ function mk_filter() {
   const dificultad = getVal("#dificultad", true) as boolean;
   const excelencia = getVal("#excelencia", true) as boolean;
   const nocturno = getVal("#nocturno", true) as boolean;
-  const accesible = getVal("#accesible", undefined) as boolean|null;
+  const accesible = getVal("#accesible") as boolean|null;
   const transporte = parseInt(getVal("#kms") as string);
   const fpdual = (getVal("#fpdual", "")??"") as string;
   const ok_tipo = _get("#tipos input").flatMap((i) => {
