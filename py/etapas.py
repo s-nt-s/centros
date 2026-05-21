@@ -3,6 +3,7 @@ import argparse
 import logging
 import re
 from typing import Dict, Set, NamedTuple
+from collections import defaultdict
 
 
 parser = argparse.ArgumentParser(
@@ -30,6 +31,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def mkRe(x: str):
+    x = x.lower()
+    for k, v in {
+        "á": "a",
+        "é": "e",
+        "í": "i",
+        "ó": "o",
+        "ú": "u",
+    }.items():
+        x = re.sub(k, f"[{k}{v}]", x)
+    r = re.compile(r"(^|-> )"+x+r"($| ->)", flags=re.I)
+    return r
+
+
 def read(file: str, *args, **kwargs):
     with open(file, "r") as f:
         txt = f.read()
@@ -41,25 +56,41 @@ def read(file: str, *args, **kwargs):
 def title(s: str):
     if s.lower() != s:
         return s
-    return s[0].upper()+s[1:].lower()
+    s = s[0].upper()+s[1:].lower()
+    s = re.sub(r"\bespaña\b", "España", s)
+    s = re.sub(r"\b3d\b", "3D", s)
+    return s
+
+
+
+class MacroEtapa(NamedTuple):
+    familia: str
+    txt: str
+    cuerpo: str
 
 
 class Etapa(NamedTuple):
     familia: str
     txt: str
 
-    def to_str(self):
-        txt = str(self.txt)
-        if txt == txt.lower():
-            txt = title(txt)
-        if len(self.familia) == 0:
-            return txt
-        return self.familia+': '+txt
+    def to_macro(self):
+        return MacroEtapa(
+            familia=e.familia,
+            txt=self.get_txt(),
+            cuerpo=self.get_cuerpo()
+        )
 
     def get_txt(self):
         txt = str(self.txt)
-        if self.familia == "Adultos" and not re.search(r"\b(adult[oa]s|mayores)\b", self.txt):
-            txt = txt + " (adultos)"
+        if self.familia == "FP":
+            txt = re.sub(r"Operaciones( (auxiliares|b[aá]sicas))? de ", "", txt, flags=re.I)
+        if self.familia == "Adultos":
+            txt = re.sub(r" para personas adultas$", " (adultos)", txt, flags=re.I)
+            txt = re.sub(r" para mayores de (\d+) años$", r" (+\1)", txt, flags=re.I)
+            if txt == self.txt and not re.search(r"\b(adult[oa]s|mayores)\b", txt):
+                txt = txt + " (adultos)"
+        if txt.lower() == "interpretación":
+            return f"Interpretación ({self.familia})"
         if txt == txt.lower():
             txt = title(txt)
         return txt
@@ -77,8 +108,8 @@ class Etapa(NamedTuple):
             return "0596 0595 0513"
         if self.familia == "Master Enseñanzas Artísticas":
             return "0594 0593 0596 0595 0513"
-        #if self.familia == "FP":
-        #    return "0590 0511 0591 0598"
+        if self.familia == "FP":
+            return "0590 0511 0591 0598"
 
     def get_cuerpo(self):
         c = self.__get_cuerpo()
@@ -89,7 +120,7 @@ class Etapa(NamedTuple):
         return Etapa(**{**self._asdict(), **kwargs})
 
 
-def fp_family(etp: str):
+def get_fp_family(etp: str):
     if "artes plásticas y diseño" in etp:
         return "Diseño"
     return "FP"
@@ -109,10 +140,25 @@ EBO = Etapa(
 )
 
 
+def _iter_re_dict(obj: dict[str]):
+    for t, rs in obj.items():
+        if not isinstance(rs, tuple):
+            rs = (rs, )
+        for r in rs:
+            if r is None:
+                r = mkRe(t)
+            elif isinstance(r, str):
+                r = re.compile(r, flags=re.I)
+            if not isinstance(r, re.Pattern):
+                raise ValueError(r)
+            yield t.lower(), r
+
+
 def get_etapa(abr: str, etp: str):
     etp = etp.lower()
     etp = re.sub(r"\(.*?\)", " ", etp)
     etp = re_sp.sub(r" ", etp).strip()
+    etp = re.sub(r"\bclav e\b", "clave", etp)
     etp = re.sub(r"\binformatica\b", "informática", etp)
     etp = re.sub(r"\bhosteleria\b", "hostelería", etp)
     etp = re.sub(r"\bedcuación\b", "educación", etp)
@@ -134,15 +180,26 @@ def get_etapa(abr: str, etp: str):
     if _re(r"aula mentor"):
         return None
 
-    if spl[-1] in ("enseñanzas para el desarrollo personal y la participación", "ampliación cultural", "técnico profesional"):
+    if spl[-1] in (
+        "enseñanzas para el desarrollo personal y la participación",
+        "ampliación cultural",
+        "técnico profesional",
+        "conocimiento de idiomas",
+    ):
         return None
 
-    isAdultos = abr in ("CEPA", "CARCEL") or _re(r"\b(adultos|adultas)\b")
+    isAdultos = abr in ("CEPA", "CARCEL") or _re(r"\b(adultos|adultas)\b") or re.search(r"(" + "|".join((
+        r"curso.*prueba (de )?acceso.*(grado superior|f.p.g.s.)",
+        r"preparaci[oó]n acceso ciclos formativos gs",
+        r"enseñanzas para el desarrollo personal y la participaci[oó]n",
+        r"educaci[óo]n personas adultas",
+        r"enseñanzas iniciales b[aá]sicas para personas adultas",
+    )) +r")", etp)
 
     if _re(r'\beducación secundaria obligatoria\b'):
         return SECUNDARIA
     if abr in ('EOI', 'EXEOI'):
-        i = _re(r"\b(alemán|chino|danés|español|euskera|finés|francés|griego|italiano|japonés|neerlandés|polaco|portugués|rumano|ruso|sueco|árabe|catalán|gallego|irlandés|húngaro|inglés|english)\b", 1)
+        i = _re(r"\b(alemán|chino|danés|español|euskera|finés|francés|griego|italiano|japonés|neerlandés|polaco|portugués|rumano|ruso|sueco|árabe|catalán|gallego|irlandés|húngaro|inglés|english|coreano)\b", 1)
         if i:
             i = {"english": "inglés"}.get(i, i)
             return Etapa(
@@ -150,22 +207,26 @@ def get_etapa(abr: str, etp: str):
                 txt=i
             )
     if isAdultos:
-        m = _re(r"\b(aula mentor|español para extranjeros)\b", 1)
-        if m:
+        for t, r in _iter_re_dict({
+            "Aula mentor": r"\baula mento\b",
+            "Español para extranjeros": r"\bespañol para extranjeros\b",
+            "Curso preparatorio prueba de acceso grado superior": (
+                r"curso.*prueba (de )?acceso.*(grado superior|f.p.g.s.)",
+                r"preparación acceso ciclos formativos gs",
+            ),
+            "Enseñanzas iniciales básicas para personas adultas": r"\benseñanzas iniciales b[aá]sicas para personas adultas\b",
+            "Conocimiento informático": None,
+        }):
+            if r.search(etp):
+                return Etapa(
+                    familia="Adultos",
+                    txt=t
+                )
+        if spl[0] in ("enseñanzas para el desarrollo personal y la participación", "educación personas adultas"):
             return Etapa(
                 familia="Adultos",
-                txt=m
+                txt=spl[-1]
             )
-    if _re(r"curso.*prueba (de )?acceso.*(grado superior|f.p.g.s.)|preparación acceso ciclos formativos gs"):
-        return Etapa(
-            familia="Adultos",
-            txt="Curso preparatorio prueba de acceso grado superior"
-        )
-    if spl[0] in ("enseñanzas para el desarrollo personal y la participación", "educación personas adultas") or spl[-1] in ("enseñanzas iniciales básicas para personas adultas", ):
-        return Etapa(
-            familia="Adultos",
-            txt=spl[-1]
-        )
     m = _re(r'(de|artísticas) arte dramático -> ([^>]+)', 2)
     if m:
         return Etapa(
@@ -189,19 +250,79 @@ def get_etapa(abr: str, etp: str):
             familia="Master Enseñanzas Artísticas",
             txt=spl[-1]
         )
+    
+    fp_familia = get_fp_family(etp)
+    if fp_familia == "FP":
+        for t, r in _iter_re_dict({
+            "Transporte y mantenimiento de vehículos y fabricación mecánica": mkRe(r"transporte y mantenimiento de vehículos( \([^\(\)]+\))? y fabricación mecánica"),
+            "Electricidad y electrónica y fabricación mecánica": None,
+            "Electricidad y electrónica": (
+                None,
+                mkRe(r"operaciones auxiliares de montaje de instal\. electrotécnicas y de telecomunicaciones en edificios")
+            ),
+            "Fabricación mecánica e instalación y mantenimiento": None,
+            "Fabricación mecánica": None,
+            "Transporte y mantenimiento de vehículos": (
+                None,
+                mkRe("operaciones auxiliares de mantenimiento de carrocerías de vehículos"),
+                mkRe("operaciones auxiliares de mantenimiento en electromecánica de vehículos"),
+            ),
+            "Instalación y mantenimiento": (
+                None,
+                mkRe("operaciones de fontanería y calefacción, climatización doméstica"),
+            ),
+            ###
+            "Hostelería y turismo": (
+                r"\bHosteler[ií]a y turismo\b",
+                mkRe("operaciones básicas de cocina"),
+                mkRe("operaciones básicas de restaurante y bar"),
+            ),
+            "Imagen personal": (
+                None,
+                mkRe("servicios auxiliares de estética"),
+                mkRe("servicios auxiliares de peluquería")
+            ),
+            "Madera, mueble y corcho": (
+                None,
+                mkRe("trabajos de carpintería y mueble"),
+            ),
+            "Química": None,
+            "Sanidad": None,
+            "Imagen y sonido": None,
+            "Artes gráficas": None,
+            "Servicios socioculturales y a la comunidad": None,
+            "Administración y gestión": None,
+            "Comercio y marketing": None,
+            "Energía y agua": None,
+            "Agraria": mkRe(r"(agraria|actividades agrarias)"),
+            "Actividades físicas y deportivas": None,
+            "Informática y comunicaciones": None,
+            "Textil, confección y piel": None,
+            "Seguridad y medio ambiente": None,
+            "Edificación y obra civil": None,
+            "Cuidador infantil de comedor y ocio": None,
+            "Talleres operativos/ocupacionales": r"t[ée]cnico profesional -> talleres (ocupacionales|operativos)",
+            "Industria alimentaria": r"(^|-> )Industrias? alimentarias?\b",
+        }):
+            if r.search(etp):
+                return Etapa(
+                    familia=fp_familia,
+                    txt=t.lower()
+                )
+
     if _re(r"^\b(formación profesional|programas profesionales|ciclos)\b.*? -> (.+)"):
         avoid = ('general', 'especial')
         if spl[-1] in avoid:
             return None
         txt = spl[1] if spl[1] not in avoid else spl[2]
         return Etapa(
-            familia=fp_family(etp),
+            familia=fp_familia,
             txt=txt
         )
     m = _re(r'ciclos formativos -> .*? -> ([^>]+)', 1)
     if m:
         return Etapa(
-            familia=fp_family(etp),
+            familia=fp_familia,
             txt=m.rstrip(" -")
         )
     if _re(r"^artísticas -> música y danza -> música -> ([^>]+) -> interpretación -> itinerario .*? -> "):
@@ -232,17 +353,17 @@ def get_etapa(abr: str, etp: str):
     m = _re(r'grado (medio|superior|e|a) -> .*? -> ([^>]+)', 2)
     if m:
         return Etapa(
-            familia=fp_family(etp),
+            familia=fp_familia,
             txt=m.rstrip(" -")
         )
     if _re(r"^técnico profesional -> .+"):
         return Etapa(
-            familia=fp_family(etp),
+            familia=fp_familia,
             txt=spl[1]
         )
     if _re(r"grado .*? -> capacitación digital"):
         return Etapa(
-            familia=fp_family(etp),
+            familia=fp_familia,
             txt="capacitación digital"
         )
     if _re(r"\b(bachibac|bachillerato|secundaria|eso)\b"):
@@ -273,11 +394,9 @@ def parse_etapa(e: Etapa):
         yield e.merge(txt="fabricación mecánica")
         yield e.merge(txt="instalación y mantenimiento")
         return
-    if e.txt.startswith("talleres ocupacionales"):
-        yield e.merge(txt="talleres ocupacionales")
-        return
-    if e.txt == "actividades agrarias":
-        yield e.merge(txt="agraria")
+    if e.txt == "transporte y mantenimiento de vehículos y fabricación mecánica":
+        yield e.merge(txt="fabricación mecánica")
+        yield e.merge(txt="transporte y mantenimiento de vehículos")
         return
 
     if e.familia == "Diseño":
@@ -305,14 +424,17 @@ def parse_etapa(e: Etapa):
     yield e
 
 
-def simplificar(etps: Set[Etapa]):
-    if len(set((SECUNDARIA, MAGISTERIO, EBO)).difference(etps)) == 0:
-        etps.remove(EBO)
+def simplificar(etps: Set[MacroEtapa]):
+    main = (SECUNDARIA, MAGISTERIO, EBO)
+    st_main = set(e.to_macro() for e in main)
+    if len(st_main.difference(etps)) == 0:
+        for e in (EBO, ):
+            etps.discard(e.to_macro())
     return tuple(sorted(etps))
 
 
-CT: Dict[int, Set[Etapa]] = {}
-OK: Dict[Etapa, Dict[str, Set[str]]] = {}
+CT: Dict[int, Set[MacroEtapa]] = defaultdict(set)
+OK: Dict[MacroEtapa, Dict[str, Set[str]]] = defaultdict(dict)
 KO = set()
 with DBLite(ARG.db) as db:
     db.execute("sql/etapas.sql")
@@ -332,23 +454,20 @@ with DBLite(ARG.db) as db:
             KO.add((abr, etp))
             continue
         for e in parse_etapa(new_etp):
-            if e not in OK:
-                OK[e] = {}
-            if etp not in OK[e]:
-                OK[e][etp] = set()
-            OK[e][etp].add(abr)
-            if c not in CT:
-                CT[c] = set()
-            CT[c].add(e)
+            x = e.to_macro()
+            if etp not in OK[x]:
+                OK[x][etp] = set()
+            OK[x][etp].add(abr)
+            CT[c].add(x)
 
     all_etp = sorted(set([e for sub_list in CT.values() for e in sub_list]))
     for c, etps in sorted(CT.items()):
         for e in simplificar(etps):
-            db.insert("MACRO_ETAPA", familia=e.familia, txt=e.get_txt(), cuerpo=e.get_cuerpo(), id=all_etp.index(e), _or="ignore")
-            db.insert("MACRO_ETAPA_CENTRO", centro=c, etapa=all_etp.index(e))
+            _id_ = all_etp.index(e)
+            db.insert("MACRO_ETAPA", familia=e.familia, txt=e.txt, cuerpo=e.cuerpo, id=_id_, _or="ignore")
+            db.insert("MACRO_ETAPA_CENTRO", centro=c, etapa=_id_)
 
     for new_etp, abretp in sorted(OK.items()):
-        #print(new_etp.to_str())
         for etp, abrs in sorted(abretp.items()):
             #print("  ", ",".join(sorted(abrs)), etp)
             db.insert("MACRO_ETAPA_SUB", etapa=all_etp.index(new_etp), subetapa=etp, _or="ignore")
