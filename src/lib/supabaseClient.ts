@@ -115,11 +115,34 @@ class DBConcurso {
       centros
     );
   }
+  async _get_educacion_especial() {
+    const aux = (this.get_data(
+      `etapa_nombre_centro[educación especial].centro`,
+      (await this.from('etapa_nombre_centro').select(
+        'centro'
+      ).ilike('nombre', '%Educación Especial%')),
+    ) as Tables<'etapa_nombre_centro'>[]).map(c=>c.centro);
+    const cids = new Set(aux);
+    const eids = (this.get_data(
+      `etapa[educación especial].id`,
+      (await this.from('etapa').select('id').ilike('txt', '%Educación Especial%')),
+    ) as Tables<'etapa'>[]).map(e=>e.id);
+    if (eids.length) {
+      (this.get_data(
+        `etapa_centro[ids].centro`,
+        await this.from('etapa_centro').select('centro').in('etapa', eids)
+      ) as Tables<'etapa_centro'>[]).forEach(c => {
+        cids.add(c.centro)
+      });
+    }
+    return [...cids].sort()
+  }
   async get_concurso_centros(id: string, with_latlon: boolean = true) {
     const cetrs = await this._get_concurso_centros(id, with_latlon);
     const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
     const query = await this._get_concurso_query(id);
     const etapas = await this._get_concurso_etapas(id);
+    const educa_especial = await this._get_educacion_especial();
     const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
     const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
@@ -128,6 +151,7 @@ class DBConcurso {
       const e = _isN(etapas, c.id);
       const a = (accesibilidad as {[key: string]: string})[c.id.toString()];
       if (a != null) q.push("githubAccesible="+a);
+      if (educa_especial.includes(c.id)) q.push("educacionEspecial=1");
       return new Centro(
         c,
         t,
@@ -213,6 +237,7 @@ class Concurso {
   public readonly jornadas: readonly string[];
   public readonly etapas: readonly Tables<"macro_etapa">[];
   public readonly accesible: readonly number[];
+  public readonly educacionEspecial: readonly number[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -245,6 +270,7 @@ class Concurso {
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
     this.accesible = _gids(c=>c.accesible);
+    this.educacionEspecial = _gids(c=>c.educacionEspecial);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
@@ -305,6 +331,7 @@ class Concurso {
         this.aleman,
         this.frances,
         this.accesible,
+        this.educacionEspecial,
       ].filter((arr) => arr.length > 0).length > 0
     );
   }
@@ -391,6 +418,9 @@ class Centro {
     if (this.isQuery("githubAccesible=-")) return false;
     if (this.isQuery("checkIntegraM=S")) return true;
     return false;
+  }
+  get educacionEspecial() {
+    return this.isQuery("educacionEspecial=1");
   }
   get motorico() {
     return this.isQuery("checkIntegraM=S");

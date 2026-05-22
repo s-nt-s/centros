@@ -143,6 +143,17 @@
     />
     <label for="FR">Bilingüe o sección de francés</label>
     {% endif %}
+
+    {% if concurso.educacionEspecial.length > 1 %}
+    <br />
+    <input
+      checked="checked"
+      id="eudacionEspecial"
+      title="Etapa/s de educación especial"
+      type="checkbox"
+    />
+    <label for="eudacionEspecial">Centro/aulas de educación especial</label> <a href="https://github.com/s-nt-s/centros/issues/7" style="text-decoration: none;" title="¡OJO! Función experimental, puede inducir a error">⚠</a>
+    {% endif %}
     {% if concurso.accesible.length > 1 %}
     <br />
     <input

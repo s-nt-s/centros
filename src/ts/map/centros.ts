@@ -504,6 +504,7 @@ function mk_filter() {
   const dificultad = getVal("#dificultad", true) as boolean;
   const excelencia = getVal("#excelencia", true) as boolean;
   const nocturno = getVal("#nocturno", true) as boolean;
+  const eudacionEspecial = getVal("#eudacionEspecial", true) as boolean;
   const accesible = getVal("#accesible") as boolean|null;
   const transporte = parseInt(getVal("#kms") as string);
   const fpdual = (getVal("#fpdual", "")??"") as string;
@@ -521,6 +522,7 @@ function mk_filter() {
     }
     if (c.excelencia && !excelencia) return false;
     if (c.nocturno && !nocturno) return false;
+    if (c.educacionEspecial && !eudacionEspecial) return false;
     if (accesible === true && !c.accesible) return false;
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;
