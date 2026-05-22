@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { smart_title, to_dict, toTitle } from "./util";
+import accesibilidad from '../assets/accesibilidad.json';
 import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
@@ -123,9 +124,16 @@ class DBConcurso {
     const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
       const t = tipos[c.tipo] as Tables<'tipo'>;
-      const q = _isS(query, c.id)
-      const e = _isN(etapas, c.id)
-      return new Centro(c, t, q, e);
+      const q = _isS(query, c.id);
+      const e = _isN(etapas, c.id);
+      const a = (accesibilidad as {[key: string]: string})[c.id.toString()];
+      if (a != null) q.push("githubAccesible="+a);
+      return new Centro(
+        c,
+        t,
+        q,
+        e
+      );
     }) as Centro[]
   }
 
@@ -379,6 +387,8 @@ class Centro {
   }
 
   get accesible() {
+    if (this.isQuery("githubAccesible=+")) return true;
+    if (this.isQuery("githubAccesible=-")) return false;
     if (this.isQuery("checkIntegraM=S")) return true;
     return false;
   }
