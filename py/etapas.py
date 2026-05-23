@@ -217,10 +217,12 @@ def get_etapa(abr: str, etp: str):
                 r"Talleres formativos",
             ),
             "Educación básica obligatoria": (
-                None,
-                r"ed\. b[aá]sica obligatoria"
+                r"Educación básica obligatoria.*",
+                r"ed\. b[aá]sica obligatoria.*"
             ),
-            "Educación infantil": None,
+            "Infantil": (
+                r"Educaci[óo]n infantil.*",
+            ),
         }):
             if r.search(etp):
                 return Etapa(
@@ -409,7 +411,9 @@ def get_etapa(abr: str, etp: str):
     if _re(r"\b(bachibac|bachillerato|secundaria|eso)\b"):
         return SECUNDARIA
     if _re(r"\b(infantil|primaria)\b"):
-        return MAGISTERIO
+        if _re(r"\binfantil\b"):
+            return MAGISTERIO.merge(txt="Infantil")
+        return MAGISTERIO.merge(txt="Primaría")
     m = _re(r'educación especial -> ([^>]+)', 1)
     if m:
         return Etapa(
