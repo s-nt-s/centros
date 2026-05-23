@@ -143,9 +143,9 @@ class Etapa(NamedTuple):
                 return "0597 0590 0511 0591 0598"
             if self.txt in ("infantil", "primaria", ):
                 return "0597"
-        if self.familia == "Adultos":
-            if self.txt in ("curso preparatorio prueba de acceso grado superior", ):
-                return "0590 0511"
+        #if self.familia == "Adultos":
+        #    if self.txt in ("curso preparatorio prueba de acceso grado superior", ):
+        #        return "0590 0511"
 
     def get_cuerpo(self):
         c = self.__get_cuerpo()
