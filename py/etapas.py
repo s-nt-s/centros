@@ -130,11 +130,12 @@ class Etapa(NamedTuple):
         if self.familia == "FP":
             return "0590 0511 0591 0598"
         if self.familia == "Educación especial":
-            if self.txt in ("Educación básica obligatoria", ):
+            if self.txt in ("educación básica obligatoria", ):
+                print(111)
                 return "0597 0590 0511"
-            if self.txt in ("Talleres formativos", "Programas de transición a la vida adulta"):
+            if self.txt in ("talleres formativos", "programas de transición a la vida adulta"):
                 return "0597 0590 0511 0591 0598"
-            if self.txt in ("Infantil y/o Primaria", ):
+            if self.txt in ("infantil", "primaria", ):
                 return "0597"
 
     def get_cuerpo(self):
