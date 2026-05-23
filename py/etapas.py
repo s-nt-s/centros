@@ -86,7 +86,13 @@ class Etapa(NamedTuple):
         if self.familia == "Adultos":
             txt = re.sub(r" para personas adultas$", " (adultos)", txt, flags=re.I)
             txt = re.sub(r" para mayores de (\d+) años$", r" (+\1)", txt, flags=re.I)
-            if txt == self.txt and not re.search(r"\b(adult[oa]s|mayores)\b", txt):
+            if txt == self.txt and (
+                not re.search(r"\b(adult[oa]s|mayores)\b", txt) and txt not in (
+                    "preparación para la prueba de conocimientos constitucionales de españa",
+                    "curso preparatorio prueba de acceso grado superior",
+                    "español para extranjeros",
+                )
+            ):
                 txt = txt + " (adultos)"
         if self.familia == "Educación especial":
             if txt not in ("talleres formativos", "educación básica obligatoria"):
