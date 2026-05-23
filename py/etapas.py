@@ -88,6 +88,8 @@ class Etapa(NamedTuple):
             txt = re.sub(r" para mayores de (\d+) años$", r" (+\1)", txt, flags=re.I)
             if txt == self.txt and not re.search(r"\b(adult[oa]s|mayores)\b", txt):
                 txt = txt + " (adultos)"
+        if self.familia == "Educación especial":
+            txt = txt + " (ed. especial)"
         if txt.lower() == "interpretación":
             return f"Interpretación ({self.familia})"
         if txt == txt.lower():
