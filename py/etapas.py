@@ -131,7 +131,6 @@ class Etapa(NamedTuple):
             return "0590 0511 0591 0598"
         if self.familia == "Educación especial":
             if self.txt in ("educación básica obligatoria", ):
-                print(111)
                 return "0597 0590 0511"
             if self.txt in ("talleres formativos", "programas de transición a la vida adulta"):
                 return "0597 0590 0511 0591 0598"
