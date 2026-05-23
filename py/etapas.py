@@ -95,6 +95,24 @@ class Etapa(NamedTuple):
         return txt
 
     def __get_cuerpo(self):
+        # 0597 Maestros
+
+        # 0590 Secundaría Profesores
+        # 0511 Secundaría Catedráticos
+
+        # 0591 FP a extinguir
+        # 0598 FP sectores singulares
+
+        # 0592 EOI Profesores
+        # 0512 EOI Catedráticos
+
+        # 0594 Música y artes escénicas Profesores
+        # 0593 Música y artes escénicas Catedráticos
+
+        # 0513 Artes practicas y diseño Catedráticos
+        # 0595 Artes practicas y diseño Profesores
+
+        # 0596 Maestros de Taller de Artes Plásticas y Diseño
         if self.familia == "Secundaría":
             return "0590 0511"
         if self.familia == "EOI":
@@ -109,6 +127,13 @@ class Etapa(NamedTuple):
             return "0594 0593 0596 0595 0513"
         if self.familia == "FP":
             return "0590 0511 0591 0598"
+        if self.familia == "Educación especial":
+            if self.txt in ("Educación básica obligatoria", ):
+                return "0597 0590 0511"
+            if self.txt in ("Talleres formativos", "Programas de transición a la vida adulta"):
+                return "0597 0590 0511 0591 0598"
+            if self.txt in ("Infantil y/o Primaria", ):
+                return "0597"
 
     def get_cuerpo(self):
         c = self.__get_cuerpo()
@@ -132,10 +157,6 @@ SECUNDARIA = Etapa(
 MAGISTERIO = Etapa(
     familia="Magisterio",
     txt="Infantil y/o Primaria"
-)
-EBO = Etapa(
-    familia="Educación especial",
-    txt="Educación básica obligatoria"
 )
 
 
@@ -186,6 +207,24 @@ def get_etapa(abr: str, etp: str):
         "conocimiento de idiomas",
     ):
         return None
+
+    if re.search(r"\beducaci[oó]n especial", etp, flags=re.I):
+        for t, r in _iter_re_dict({
+            "Talleres formativos": (
+                r"Programas de transición a la vida adulta",
+                r"Talleres formativos",
+            ),
+            "Educación básica obligatoria": (
+                None,
+                r"ed\. b[aá]sica obligatoria"
+            ),
+            "Educación infantil": None,
+        }):
+            if r.search(etp):
+                return Etapa(
+                    familia="Educación especial",
+                    txt=t
+                )
 
     isAdultos = abr in ("CEPA", "CARCEL") or _re(r"\b(adultos|adultas)\b") or re.search(r"(" + "|".join((
         r"curso.*prueba (de )?acceso.*(grado superior|f.p.g.s.)",
@@ -249,7 +288,7 @@ def get_etapa(abr: str, etp: str):
             familia="Master Enseñanzas Artísticas",
             txt=spl[-1]
         )
-    
+
     fp_familia = get_fp_family(etp)
     if fp_familia == "FP":
         for t, r in _iter_re_dict({
@@ -369,8 +408,6 @@ def get_etapa(abr: str, etp: str):
         return SECUNDARIA
     if _re(r"\b(infantil|primaria)\b"):
         return MAGISTERIO
-    if _re(r".*educación básica obligatoria.*"):
-        return EBO
     m = _re(r'educación especial -> ([^>]+)', 1)
     if m:
         return Etapa(
@@ -423,15 +460,6 @@ def parse_etapa(e: Etapa):
     yield e
 
 
-def simplificar(etps: Set[MacroEtapa]):
-    main = (SECUNDARIA, MAGISTERIO, EBO)
-    st_main = set(e.to_macro() for e in main)
-    if len(st_main.difference(etps)) == 0:
-        for e in (EBO, ):
-            etps.discard(e.to_macro())
-    return tuple(sorted(etps))
-
-
 CT: Dict[int, Set[MacroEtapa]] = defaultdict(set)
 OK: Dict[MacroEtapa, Dict[str, Set[str]]] = defaultdict(dict)
 KO = set()
@@ -461,7 +489,7 @@ with DBLite(ARG.db) as db:
 
     all_etp = sorted(set([e for sub_list in CT.values() for e in sub_list]))
     for c, etps in sorted(CT.items()):
-        for e in simplificar(etps):
+        for e in etps: #simplificar(etps):
             _id_ = all_etp.index(e)
             db.insert("MACRO_ETAPA", familia=e.familia, txt=e.txt, cuerpo=e.cuerpo, id=_id_, _or="ignore")
             db.insert("MACRO_ETAPA_CENTRO", centro=c, etapa=_id_)

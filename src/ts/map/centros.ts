@@ -522,7 +522,6 @@ function mk_filter() {
     }
     if (c.excelencia && !excelencia) return false;
     if (c.nocturno && !nocturno) return false;
-    if (c.educacionEspecial && !eudacionEspecial) return false;
     if (accesible === true && !c.accesible) return false;
     if (c.innovacion && !innovacion) return false;
     if (c.dificultad && !dificultad) return false;

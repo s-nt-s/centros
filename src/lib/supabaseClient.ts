@@ -151,7 +151,6 @@ class DBConcurso {
       const e = _isN(etapas, c.id);
       const a = (accesibilidad as {[key: string]: string})[c.id.toString()];
       if (a != null) q.push("githubAccesible="+a);
-      if (educa_especial.includes(c.id)) q.push("educacionEspecial=1");
       return new Centro(
         c,
         t,
@@ -237,7 +236,6 @@ class Concurso {
   public readonly jornadas: readonly string[];
   public readonly etapas: readonly Tables<"macro_etapa">[];
   public readonly accesible: readonly number[];
-  public readonly educacionEspecial: readonly number[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -270,7 +268,6 @@ class Concurso {
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
     this.accesible = _gids(c=>c.accesible);
-    this.educacionEspecial = _gids(c=>c.educacionEspecial);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
@@ -331,7 +328,6 @@ class Concurso {
         this.aleman,
         this.frances,
         this.accesible,
-        this.educacionEspecial,
       ].filter((arr) => arr.length > 0).length > 0
     );
   }
@@ -418,9 +414,6 @@ class Centro {
     if (this.isQuery("githubAccesible=-")) return false;
     if (this.isQuery("checkIntegraM=S")) return true;
     return false;
-  }
-  get educacionEspecial() {
-    return this.isQuery("educacionEspecial=1");
   }
   get motorico() {
     return this.isQuery("checkIntegraM=S");
