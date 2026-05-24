@@ -89,7 +89,7 @@ class Etapa(NamedTuple):
             txt = re.sub(r" de España$", r" (+\1)", txt, flags=re.I)
             if txt == self.txt and not re.search(r"\b(adult[oa]s|mayores)\b", txt) and (
                 txt not in (
-                    "preparación para la prueba de conocimientos constitucionales de españa",
+                    "preparación para la prueba de conocimientos constitucionales",
                     "curso preparatorio prueba de acceso grado superior",
                     "español para extranjeros",
                 )
