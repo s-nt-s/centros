@@ -26,18 +26,31 @@ class Github:
         url = f"https://api.github.com/repos/{self.__repo}/issues/{issue}/comments"
         return self._get(url)
 
-    def get_accesibilidad(self) -> dict[int, str]:
-        accesible: dict[int, str] = {}
-        comentarios = self.get_comments(9)
+    def __get_flags(self, comment: int, flags: str) -> dict[int, str]:
+        data: dict[int, str] = {}
+        comentarios = self.get_comments(comment)
 
         for comment in comentarios:
             body = comment.get("body")
             if not isinstance(body, str):
                 continue
-            for flag, cid in re.findall(r"([-+?])(28\d+)", body):
-                accesible[int(cid)] = flag
+            for flag, cid in re.findall(
+                r"(["+re.escape(flags)+"])(28\d+)",
+                body
+            ):
+                data[int(cid)] = flag
 
-        return accesible
+        return data
+
+    def get_accesibilidad(self) -> dict[int, str]:
+        return self.__get_flags(9, '-+')
+
+    def get_jornada(self) -> dict[int, str]:
+        return self.__get_flags(10, 'cp')
 
 
 GH = Github("s-nt-s/centros")
+
+
+if __name__ == "__main__":
+    print(GH.get_jornada())

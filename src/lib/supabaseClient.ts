@@ -1,12 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { smart_title, to_dict, toTitle } from "./util";
-import accesibilidad from '../assets/accesibilidad.json';
+import centro_accesib from '../assets/accesibilidad.json';
+import centro_jornada from '../assets/jornada.json';
 import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
 
 type TableName = "centro" | "tipo" | "concurso";
 type SchemaName = keyof Database;
+
+function get_flag(obj: any, id: number) {
+  const a = (obj as {[key: string]: string})[id.toString()];
+  return a;
+}
 
 function filter(arr: any[], func: Function) {
   const ok: any[] = [];
@@ -142,15 +148,16 @@ class DBConcurso {
     const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
     const query = await this._get_concurso_query(id);
     const etapas = await this._get_concurso_etapas(id);
-    const educa_especial = await this._get_educacion_especial();
     const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
     const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
       const t = tipos[c.tipo] as Tables<'tipo'>;
       const q = _isS(query, c.id);
       const e = _isN(etapas, c.id);
-      const a = (accesibilidad as {[key: string]: string})[c.id.toString()];
+      const j = get_flag(centro_jornada, c.id);
+      const a = get_flag(centro_accesib, c.id);
       if (a != null) q.push("githubAccesible="+a);
+      if (['c', 'p'].includes(j)) c.jornada = j.toUpperCase();
       return new Centro(
         c,
         t,
