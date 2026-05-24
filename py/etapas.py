@@ -261,7 +261,6 @@ def get_etapa(abr: str, etp: str):
             )
     if isAdultos:
         for t, r in _iter_re_dict({
-            "Aula mentor": r"\baula mento\b",
             "Español para extranjeros": r"\bespañol para extranjeros\b",
             "Curso preparatorio prueba de acceso grado superior": (
                 r"curso.*prueba (de )?acceso.*(grado superior|f.p.g.s.)",
