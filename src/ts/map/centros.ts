@@ -4,6 +4,8 @@ import { DBConcurso, Centro } from "../../lib/supabaseClient";
 import { set_transpo_layer } from "./transporte"
 import { set_area_layer } from './areas'
 import type { SchemaName } from "../../lib/supabaseClient";
+import { State } from "../../lib/state";
+
 import {
   getVal,
   Mail,
@@ -494,44 +496,33 @@ function addCentrosLayer() {
   });
 }
 
-type idbool = { [id: string]: boolean };
-
 function mk_filter() {
-  const invertir = getVal("#invertir") as boolean;
-  const jornada = (getVal("#jornada", "")??"") as string;
-  const etapa = parseInt((getVal("#etapa", "")??"") as string);
-  const innovacion = getVal("#innovacion", true) as boolean;
-  const dificultad = getVal("#dificultad", true) as boolean;
-  const excelencia = getVal("#excelencia", true) as boolean;
-  const nocturno = getVal("#nocturno", true) as boolean;
-  const eudacionEspecial = getVal("#eudacionEspecial", true) as boolean;
-  const accesible = getVal("#accesible") as boolean|null;
-  const transporte = parseInt(getVal("#kms") as string);
-  const fpdual = (getVal("#fpdual", "")??"") as string;
-  const ok_tipo = _get("#tipos input").flatMap((i) => {
-    return (getVal(i) as boolean) ? i.id.substring(1) : [];
-  });
-  const ko_idio = _get("#otros input[name=idioma]").flatMap((i) => {
-    return (getVal(i) as boolean) ? [] : i.id;
-  });
+  const st = State.getState();
+  const ok_tipo = st.tipo.get();
+  const ko_idio = st.idioma.getKo();
+  const jornada = st.jornada.get();
+  const etapa = st.etapa.get();
+  const fpdual = st.fpdual.get();
+  const transporte = st.kms.get();
+  const invertir = st.invertir.get();
   const _isOk = (c: Centro) => {
     let i;
     if (!ok_tipo.includes(c.tp.id)) return false;
     for (i = 0; i < ko_idio.length; i++) {
       if (c.idiomas.includes(ko_idio[i])) return false;
     }
-    if (c.excelencia && !excelencia) return false;
-    if (c.nocturno && !nocturno) return false;
-    if (accesible === true && !c.accesible) return false;
-    if (c.innovacion && !innovacion) return false;
-    if (c.dificultad && !dificultad) return false;
-    if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
-    if (!isNaN(etapa) && !c.hasEtapa(etapa)) return false;
-    if (fpdual.length>0){
+    if (st.excelencia.get() === false && c.excelencia) return false;
+    if (st.nocturno.get() === false && c.nocturno) return false;
+    if (st.accesible.get() === true && !c.accesible) return false;
+    if (st.innovacion.get() === false && c.innovacion) return false;
+    if (st.dificultad.get() === false &&c.dificultad) return false;
+    if (jornada != null && c.jornada!=jornada) return false;
+    if (etapa != null && !c.hasEtapa(etapa)) return false;
+    if (fpdual != null){
       if (fpdual == "con" && c.fpdual == false) return false;
       if (fpdual == "sin" && c.fpdual == true) return false;
     }
-    if (!isNaN(transporte)) {
+    if (transporte != null) {
       for (const [km, ids] of DST) if (km>transporte && ids.includes(c.id)) return false;
     }
     return true;
@@ -670,14 +661,8 @@ function list_centros(
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("download")!.addEventListener("click", dwnTxtCentros);
-  const onChange = (qr:string, fnc: EventListenerOrEventListenerObject) => {
-    document.querySelectorAll(qr).forEach((i) => {
-      const e = i.getAttribute("type") == "checkbox" ? "click" : "change";
-      i.addEventListener(e, fnc);
-    });
-  }
-  onChange("#settings input:not(.nofiltro), #settings select", ()=>updateCentros(false));
-  onChange("#transporte input", set_transpo_layer);
-  onChange("#areas", set_area_layer);
+  const st = State.getState();
+  st.onFiltro(()=>updateCentros(false));
+  st.onTransporte(set_transpo_layer);
+  st.onAreas(set_area_layer);
 });
