@@ -16,14 +16,14 @@ import {
 
 const DONAR = import.meta.env.VITE_DONAR;
 const id_concurso = (() => {
-  const href = window.location.href.replace(/\/(index\.html)?$/, "");
+  const href = window.location.pathname.replace(/\/(index\.html)?$/, "");
   const path = href.split("/");
   const conc = path[path.length - 1];
   return conc as SchemaName;
 })()!;
 
 const myweb = (() => {
-  let href = window.location.href;
+  let href = window.location.origin + window.location.pathname;
   //href = href.substring(document.location.protocol.length + 2);
   if (href.endsWith("/")) href = href.substring(0, href.length - 1);
   return href;

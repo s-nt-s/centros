@@ -19,17 +19,64 @@ export class State {
     public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input");
 
     static getState() {
-        if (State.__instance == null) State.__instance = new State();
+        if (State.__instance == null) {
+            State.__instance = new State();
+            State.__instance.__init();
+        }
         return State.__instance;
     }
 
-    toQuerty() {
-        
+    private __init() {
+        this.__addEventListener(
+            () => {this.toQuerty()},
+            ...this.getInputsFiltro(),
+            ...this.getInputsTransporte(),
+            this.areas.node,
+        );
     }
 
-    onFiltro(fnc: EventListenerOrEventListenerObject) {
-        this.__addEventListener(
-            fnc,
+    toQuerty() {
+        const qr: string[] = [];
+        const ok: string[] = [];
+        const ko: string[] = [];
+        Object.entries({
+            'j': this.jornada.get(),
+            'e': this.etapa.get(),
+            'k': this.kms.get(),
+        }).forEach(([k, v]) => {
+            if(v!=null) qr.push(`${k}=${v}`);
+        });
+        [
+            ...this.tipo.getKo(),
+            ...this.idioma.getKo()
+        ].forEach(t=>{
+            ko.push(t);
+        })
+        Object.entries({
+            'noc': this.nocturno.get(),
+            'dif': this.dificultad.get(),
+            'exc': this.excelencia.get(),
+            'inn': this.innovacion.get()
+        }).forEach(([k, v]) => {
+            if(v === false) ko.push(k);
+        })
+        Object.entries({
+            'acc': this.accesible.get(),
+            'inv': this.invertir.get(),
+            'are': this.areas.get()
+        }).forEach(([k, v]) => {
+            if(v === true) ok.push(k);
+        })
+        if (ok.length) qr.push("ok="+ok.join(','));
+        if (ko.length) qr.push("ko="+ko.join(','));
+        const query = qr.length==0?"":("?"+qr.join("&"));
+        if (document.location.search == query) return;
+        const url = document.location.href.replace(/\?.*$/, "");
+        history.pushState({}, "", url + query);
+    }
+
+    getInputsFiltro() {
+        return  [
             ...this.tipo.nodes,
             this.kms.node,
             this.jornada.node,
@@ -42,14 +89,26 @@ export class State {
             this.accesible.node,
             this.invertir.node,
             this.fpdual.node
+        ]
+    }
+    getInputsTransporte() {
+        return [
+            ...this.transporte.nodes,
+            this.estaciones.node,
+        ]
+    }
+
+    onFiltro(fnc: EventListenerOrEventListenerObject) {
+        this.__addEventListener(
+            fnc,
+            ...this.getInputsFiltro()
         );
     }
 
     onTransporte(fnc: EventListenerOrEventListenerObject) {
         this.__addEventListener(
             fnc,
-            ...this.transporte.nodes,
-            this.estaciones.node,
+            ...this.getInputsTransporte()
         )
     }
 
