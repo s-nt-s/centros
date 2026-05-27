@@ -1,6 +1,5 @@
-import { NavigatorLockAcquireTimeoutError } from "@supabase/supabase-js";
 import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString, FormField } from "./form";
-import { gridLayer } from "leaflet";
+import { decodeArray, encodeArray } from "./query_number";
 
 export class State {
     public static readonly SELECCIONADO = 1;
@@ -98,10 +97,11 @@ export class State {
         if (qr_trans.length) {
             this.transporte.set(qr_trans);
         }
-        const center_filter = (m: number) => {
+        const center_filter = (marca: number) => {
             return (i: string) => {
-                if (!i.match(/^28\d{6}$/)) return true;
-                this.__centros.set(parseInt(i), m);
+                const m = i.match(/^ctr(.+)$/);
+                if (m == null) return true;
+                decodeArray(m[1]).forEach(c=>this.__centros.set(c, marca));
                 return false;
             }
         }
@@ -165,10 +165,14 @@ export class State {
         ].forEach((i) => {
             if(i.get() === true) ok.push(i.qr);
         })
+        const ok_centro: number[] = [];
+        const ko_centro: number[] = [];
         this.__centros.forEach((v, k) => {
-            if (v === State.SELECCIONADO) ok.push(k.toString());
-            if (v === State.DESCARTADO) ko.push(k.toString());
+            if (v === State.SELECCIONADO) ok_centro.push(k);
+            if (v === State.DESCARTADO) ko_centro.push(k);
         });
+        if (ok_centro.length) ok.push("ctr"+encodeArray(ok_centro));
+        if (ko_centro.length) ko.push("ctr"+encodeArray(ko_centro));
         if (ok.length) qr.push("ok="+ok.join(','));
         if (ko.length) qr.push("ko="+ko.join(','));
         const query = qr.length==0?"":("?"+qr.join("&"));
