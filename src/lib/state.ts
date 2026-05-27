@@ -44,8 +44,17 @@ export class State {
             'e': this.etapa.get(),
             'k': this.kms.get(),
         }).forEach(([k, v]) => {
-            if(v!=null) qr.push(`${k}=${v}`);
+            if (Array.isArray(v) && v.length) {
+                if (k=='t') return qr.push(`${k}=${v.map(x=>x.replace(/.*_/, "")).join(',')}`);
+                return qr.push(`${k}=${v.join(',')}`);
+            }
+            if(v!=null) return qr.push(`${k}=${v}`);
         });
+        let qr_trans = this.transporte.get().map(x=>x.replace(/.*_/, "")).join(',');
+        if (qr_trans.length) {
+            if (this.estaciones.get() === true) qr_trans = 'e,' + qr_trans;
+            qr.push(`t=${qr_trans}`);
+        }
         [
             ...this.tipo.getKo(),
             ...this.idioma.getKo()
@@ -63,9 +72,9 @@ export class State {
         Object.entries({
             'acc': this.accesible.get(),
             'inv': this.invertir.get(),
-            'are': this.areas.get()
+            'are': this.areas.get(),
         }).forEach(([k, v]) => {
-            if(v === true) ok.push(k);
+            if (v === true) ok.push(k);
         })
         if (ok.length) qr.push("ok="+ok.join(','));
         if (ko.length) qr.push("ko="+ko.join(','));

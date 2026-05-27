@@ -19,6 +19,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "leaflet": "^1.9.4",
-    "sidebar-v2": "^0.4.0"
+    "sidebar-v2": "^0.4.0",
+    "undici": "^8.3.0"
   }
 }

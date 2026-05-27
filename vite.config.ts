@@ -4,7 +4,18 @@ import { glob } from "glob";
 import { defineConfig, Plugin, loadEnv } from 'vite';
 import { InputOptions } from 'rollup';
 import { do_render } from './src/template/render'
+import { ProxyAgent, setGlobalDispatcher } from "undici";
 
+const proxy = process.env.https_proxy
+  || process.env.HTTPS_PROXY;
+
+if (proxy) {
+  console.log("Using proxy:", proxy);
+
+  setGlobalDispatcher(
+    new ProxyAgent(proxy)
+  );
+}
 
 const OUT_DIR = 'dist'
 
