@@ -114,12 +114,12 @@ class CentroManager {
     let showen: Centro[] = [];
 
     this.all.forEach((c) => {
-      const marca = MARCA.CENTRO[c.id];
-      if (marca == MARCA.SELECCIONADO) {
+      const marca = State.getState().getMarca(c.id);
+      if (marca == State.SELECCIONADO) {
         seleccionados.push(c);
         return;
       }
-      if (marca == MARCA.DESCARTADO) {
+      if (marca == State.DESCARTADO) {
         descartados.push(c);
         return;
       }
@@ -155,12 +155,6 @@ class CentroManager {
 
 let CNT = new CentroManager();
 
-const MARCA = Object.freeze({
-  SELECCIONADO: 1,
-  DESCARTADO: 2,
-  CENTRO: {} as { [id: number]: number },
-});
-
 function get_icon(c: Centro) {
   const color = (() => {
     if (c.dificultad) return "red";
@@ -175,8 +169,8 @@ function get_icon(c: Centro) {
     c.excelencia,
   ].includes(true);
   const url = (() => {
-    const marca = MARCA.CENTRO[c.id];
-    if (marca == MARCA.SELECCIONADO) {
+    const marca = State.getState().getMarca(c.id);
+    if (marca == State.SELECCIONADO) {
       if (color == "green")
         return "http://maps.google.com/mapfiles/ms/micons/grn-pushpin.png";
       return `http://maps.google.com/mapfiles/ms/micons/${color}-pushpin.png`;
@@ -415,14 +409,14 @@ function getPopUp(c: Centro) {
     html = html + km + " kms</p>"
   }
   */
-  const marca = MARCA.CENTRO[c.id];
+  const marca = State.getState().getMarca(c.id);
   let chk1 = "";
   let chk2 = "";
   let chk3 = "checked='checked'";
-  if (marca == MARCA.SELECCIONADO) {
+  if (marca == State.SELECCIONADO) {
     chk1 = chk3;
     chk3 = "";
-  } else if (marca == MARCA.DESCARTADO) {
+  } else if (marca == State.DESCARTADO) {
     chk2 = chk3;
     chk3 = "";
   }
@@ -430,8 +424,8 @@ function getPopUp(c: Centro) {
     html +
     `
     <p>
-      <input value="${MARCA.SELECCIONADO}" class="marcar" type="radio" id="sel${c.id}" ${chk1}/> <label for="sel${c.id}">Marcar como seleccionado</label><br/>
-      <input value="${MARCA.DESCARTADO}" class="marcar" type="radio" id="des${c.id}" ${chk2}/> <label for="des${c.id}">Marcar como descartado</label><br/>
+      <input value="${State.SELECCIONADO}" class="marcar" type="radio" id="sel${c.id}" ${chk1}/> <label for="sel${c.id}">Marcar como seleccionado</label><br/>
+      <input value="${State.DESCARTADO}" class="marcar" type="radio" id="des${c.id}" ${chk2}/> <label for="des${c.id}">Marcar como descartado</label><br/>
       <input value="" class="marcar" type="radio" id="no${c.id}" ${chk3}/> <label for="no${c.id}">No marcar</label>
     </p>
   `;
@@ -442,8 +436,8 @@ function getPopUp(c: Centro) {
     e.addEventListener("change", function (this: HTMLInputElement) {
       if (!this.checked) return;
       const marca = parseInt(this.value);
-      if (isNaN(marca)) delete MARCA.CENTRO[c.id];
-      else MARCA.CENTRO[c.id] = marca;
+      if (isNaN(marca)) State.getState().setMarca(c.id, null);
+      else State.getState().setMarca(c.id, marca);
       setCentroMarker(c, true);
       updateList();
     })
@@ -462,7 +456,7 @@ function setCentroMarker(centro:Centro, refresh: boolean = false) {
   const icon = get_icon(centro);
   const latlng: L.LatLng = new L.LatLng(centro.latitud, centro.longitud);
   const marker = (()=>{
-    if (MARCA.CENTRO[centro.id] == MARCA.DESCARTADO) {
+    if (State.getState().getMarca(centro.id) === State.DESCARTADO) {
       const options: L.CircleOptions = {
         radius: 5,
         fill: true,
@@ -528,7 +522,7 @@ function mk_filter() {
     return true;
   };
   const isOk = (c: Centro) => {
-    if (MARCA.CENTRO[c.id] == MARCA.SELECCIONADO) return true;
+    if (State.getState().getMarca(c.id) === State.SELECCIONADO) return true;
     let b = _isOk(c);
     if (invertir) b = !b;
     //if (!b) console.log(c.id, "descartado");

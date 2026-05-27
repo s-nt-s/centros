@@ -3,6 +3,9 @@ import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectStrin
 import { gridLayer } from "leaflet";
 
 export class State {
+    public static readonly SELECCIONADO = 1;
+    public static readonly DESCARTADO = 2;
+    private readonly __centros = new Map<number, number>();
     private static __instance: State | null = null;
     public readonly tipo = new InputGroupBoolean("#tipos input", [], "", "t");
     public readonly kms = new InputNumber("#kms", null, "km");
@@ -19,7 +22,7 @@ export class State {
     public readonly areas = new InputBoolean("#areas", false, "are");
     public readonly estaciones = new InputBoolean("#estaciones", false, "e");
     public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input", [], "t");
-    private __onchange: EventListener[] = [];
+    private readonly __onchange: EventListener[] = [];
 
     static getState() {
         if (State.__instance == null) {
@@ -28,6 +31,23 @@ export class State {
         }
         return State.__instance;
     }
+
+    public setMarca(id: number, val:number|null) {
+        if (val === null) {
+            if (!this.__centros.has(id)) return false;
+            this.__centros.delete(id)
+        } else {
+            if (this.__centros.get(id) === val) return false;
+            this.__centros.set(id, val)
+        }
+        this.toQuerty();
+        return;
+    }
+
+    public getMarca(id: number) {
+        return this.__centros.get(id)
+    }
+
     private __getImputs() {
         const arr: FormField<any, any>[] = [];
         for (const [k, v] of Object.entries(this)) {
@@ -52,6 +72,7 @@ export class State {
 
     toForm() {
         this.__getImputs().forEach(i=>i.reset());
+        this.__centros.clear()
         const old = this.getQuerty()
         const qr = new URLSearchParams((new URL(document.location.href)).search);
         const gt = (k:string) => (qr.get(k)??"").split(',').flatMap((i) => {return (i=i.trim()).length?i:[]});
@@ -77,8 +98,15 @@ export class State {
         if (qr_trans.length) {
             this.transporte.set(qr_trans);
         }
-        const ko = gt('ko');
-        const ok = gt('ok');
+        const center_filter = (m: number) => {
+            return (i: string) => {
+                if (!i.match(/^28\d{6}$/)) return true;
+                this.__centros.set(parseInt(i), m);
+                return false;
+            }
+        }
+        const ko = gt('ko').filter(center_filter(State.DESCARTADO));
+        const ok = gt('ok').filter(center_filter(State.SELECCIONADO));
         [
             this.nocturno,
             this.dificultad,
@@ -137,6 +165,10 @@ export class State {
         ].forEach((i) => {
             if(i.get() === true) ok.push(i.qr);
         })
+        this.__centros.forEach((v, k) => {
+            if (v === State.SELECCIONADO) ok.push(k.toString());
+            if (v === State.DESCARTADO) ko.push(k.toString());
+        });
         if (ok.length) qr.push("ok="+ok.join(','));
         if (ko.length) qr.push("ko="+ko.join(','));
         const query = qr.length==0?"":("?"+qr.join("&"));
