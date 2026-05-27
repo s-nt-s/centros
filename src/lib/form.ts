@@ -124,7 +124,7 @@ export class InputString extends FormField<string | null, HTMLInputElement | nul
 
 
 export class InputNumber extends FormField<number | null, HTMLInputElement | null> {
-    constructor(slc: string, defVal: number | null, , qr: string) {
+    constructor(slc: string, defVal: number | null, qr: string) {
         const i = document.querySelector(slc);
         super(
              i==null? null : _assertInput(i, "number"),

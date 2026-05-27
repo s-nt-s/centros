@@ -1,5 +1,6 @@
 import { NavigatorLockAcquireTimeoutError } from "@supabase/supabase-js";
 import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString, FormField } from "./form";
+import { gridLayer } from "leaflet";
 
 export class State {
     private static __instance: State | null = null;
@@ -18,6 +19,7 @@ export class State {
     public readonly areas = new InputBoolean("#areas", false, "are");
     public readonly estaciones = new InputBoolean("#estaciones", false, "e");
     public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input", [], "t");
+    private __onchange: EventListener[] = [];
 
     static getState() {
         if (State.__instance == null) {
@@ -41,11 +43,11 @@ export class State {
             () => {this.toQuerty()},
             ...this.__getImputs().flatMap(i=>i.node),
         );
-        
         window.addEventListener(
             "popstate",
             () => {this.toForm()}
         );
+        this.toForm()
     }
 
     toForm() {
@@ -89,11 +91,12 @@ export class State {
             if (ko.includes(i.qr)) i.set(false);
             if (ok.includes(i.qr)) i.set(true);
         })
-        this.tipo.set(this.tipo.getOptions().filter(i=>!ko.concat(i)));
-        this.tipo.set(this.idioma.getOptions().filter(i=>!ko.concat(i)));
+        this.tipo.set(this.tipo.getOptions().filter(i=>!ko.includes(i)));
+        this.idioma.set(this.idioma.getOptions().filter(i=>!ko.includes(i)));
         const nw = this.getQuerty()
         if (old == nw) return;
-        //action
+        this.__onchange.forEach(f=>f(new Event("change")));
+        
     }
     getQuerty() {
         const qr: string[] = [];
@@ -169,32 +172,34 @@ export class State {
         ]
     }
 
-    onFiltro(fnc: EventListenerOrEventListenerObject) {
+    onFiltro(fnc: EventListener) {
         this.__addEventListener(
             fnc,
             ...this.getInputsFiltro()
         );
     }
 
-    onTransporte(fnc: EventListenerOrEventListenerObject) {
+    onTransporte(fnc: EventListener) {
         this.__addEventListener(
             fnc,
             ...this.getInputsTransporte()
         )
     }
 
-    onAreas(fnc: EventListenerOrEventListenerObject) {
+    onAreas(fnc: EventListener) {
         this.__addEventListener(
             fnc,
             this.areas.node,
         );
     }
 
-    private __addEventListener(fnc: EventListenerOrEventListenerObject, ...nodes: (HTMLElement|null)[]) {
-        nodes.forEach((i) => {
-            if (i === null) return;
+    private __addEventListener(fnc: EventListener, ...nodes: (HTMLElement|null)[]) {
+        const done = nodes.flatMap((i) => {
+            if (i === null) return [];
             const e = i.getAttribute("type") == "checkbox" ? "click" : "change";
             i.addEventListener(e, fnc);
+            return i;
         });
+        if (done.length) this.__onchange.push(fnc);
     }
 }
