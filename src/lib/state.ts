@@ -1,22 +1,23 @@
-import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString } from "./form";
+import { NavigatorLockAcquireTimeoutError } from "@supabase/supabase-js";
+import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString, FormField } from "./form";
 
 export class State {
     private static __instance: State | null = null;
-    public readonly tipo = new InputGroupBoolean("#tipos input", undefined, "t");
-    public readonly kms = new InputNumber("#kms");
-    public readonly jornada = new SelectString("#jornada");
-    public readonly etapa = new SelectNumber("#etapa");
-    public readonly fpdual = new SelectString("#fpdual");
-    public readonly nocturno = new InputBoolean("#nocturno", true);
-    public readonly dificultad = new InputBoolean("#dificultad", true);
-    public readonly excelencia = new InputBoolean("#excelencia", true);
-    public readonly innovacion = new InputBoolean("#innovacion", true);
-    public readonly idioma = new InputGroupBoolean("input[name='idioma']");
-    public readonly accesible = new InputBoolean("#accesible", false);
-    public readonly invertir = new InputBoolean("#invertir", false);
-    public readonly areas = new InputBoolean("#areas", false);
-    public readonly estaciones = new InputBoolean("#estaciones", false);
-    public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input");
+    public readonly tipo = new InputGroupBoolean("#tipos input", [], "", "t");
+    public readonly kms = new InputNumber("#kms", null, "km");
+    public readonly jornada = new SelectString("#jornada", null, 'j');
+    public readonly etapa = new SelectNumber("#etapa", null, 'e');
+    public readonly fpdual = new SelectString("#fpdual", null, 'fp');
+    public readonly nocturno = new InputBoolean("#nocturno", true, 'noc');
+    public readonly dificultad = new InputBoolean("#dificultad", true, 'dif');
+    public readonly excelencia = new InputBoolean("#excelencia", true, 'exc');
+    public readonly innovacion = new InputBoolean("#innovacion", true, 'inn');
+    public readonly idioma = new InputGroupBoolean("input[name='idioma']", [], "");
+    public readonly accesible = new InputBoolean("#accesible", false, "acc");
+    public readonly invertir = new InputBoolean("#invertir", false, "inv");
+    public readonly areas = new InputBoolean("#areas", false, "are");
+    public readonly estaciones = new InputBoolean("#estaciones", false, "e");
+    public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input", [], "t");
 
     static getState() {
         if (State.__instance == null) {
@@ -25,60 +26,121 @@ export class State {
         }
         return State.__instance;
     }
+    private __getImputs() {
+        const arr: FormField<any, any>[] = [];
+        for (const [k, v] of Object.entries(this)) {
+            if (v instanceof FormField) {
+                arr.push(v)
+            }
+        }
+        return arr;
+    }
 
     private __init() {
         this.__addEventListener(
             () => {this.toQuerty()},
-            ...this.getInputsFiltro(),
-            ...this.getInputsTransporte(),
-            this.areas.node,
+            ...this.__getImputs().flatMap(i=>i.node),
+        );
+        
+        window.addEventListener(
+            "popstate",
+            () => {this.toForm()}
         );
     }
 
-    toQuerty() {
+    toForm() {
+        this.__getImputs().forEach(i=>i.reset());
+        const old = this.getQuerty()
+        const qr = new URLSearchParams((new URL(document.location.href)).search);
+        const gt = (k:string) => (qr.get(k)??"").split(',').flatMap((i) => {return (i=i.trim()).length?i:[]});
+        [
+            this.jornada,
+            this.etapa,
+            this.kms,
+            this.fpdual
+        ].forEach((i) => {
+            const v = qr.get(i.qr);
+            if(v!=null) return i.set(v);
+        });
+        const qr_trans = gt(this.transporte.qr).flatMap((i) => {
+            if (i == 'e') {
+                this.estaciones.set(true);
+                return [];
+            }
+            if (i.match(/^\d+$/)) return `metro_${i}`;
+            if (i.match(/^C\d+$/)) return `cercanias_${i}`; 
+            if (i.match(/^ML\d+$/)) return `metro_ligero_${i}`; 
+            return [];
+        });
+        if (qr_trans.length) {
+            this.transporte.set(qr_trans);
+        }
+        const ko = gt('ko');
+        const ok = gt('ok');
+        [
+            this.nocturno,
+            this.dificultad,
+            this.excelencia,
+            this.innovacion,
+            this.accesible,
+            this.invertir,
+            this.areas,
+        ].forEach((i) => {
+            if (ko.includes(i.qr)) i.set(false);
+            if (ok.includes(i.qr)) i.set(true);
+        })
+        this.tipo.set(this.tipo.getOptions().filter(i=>!ko.concat(i)));
+        this.tipo.set(this.idioma.getOptions().filter(i=>!ko.concat(i)));
+        const nw = this.getQuerty()
+        if (old == nw) return;
+        //action
+    }
+    getQuerty() {
         const qr: string[] = [];
         const ok: string[] = [];
         const ko: string[] = [];
-        Object.entries({
-            'j': this.jornada.get(),
-            'e': this.etapa.get(),
-            'k': this.kms.get(),
-        }).forEach(([k, v]) => {
-            if (Array.isArray(v) && v.length) {
-                if (k=='t') return qr.push(`${k}=${v.map(x=>x.replace(/.*_/, "")).join(',')}`);
-                return qr.push(`${k}=${v.join(',')}`);
-            }
-            if(v!=null) return qr.push(`${k}=${v}`);
+        [
+            this.jornada,
+            this.etapa,
+            this.kms,
+            this.fpdual
+        ].forEach((i) => {
+            const v = i.get()
+            if(v!=null) return qr.push(`${i.qr}=${v}`);
         });
         let qr_trans = this.transporte.get().map(x=>x.replace(/.*_/, "")).join(',');
         if (qr_trans.length) {
-            if (this.estaciones.get() === true) qr_trans = 'e,' + qr_trans;
-            qr.push(`t=${qr_trans}`);
+            if (this.estaciones.get() === true) qr_trans = `${this.estaciones.qr},${qr_trans}`;
+            qr.push(`${this.transporte.qr}=${qr_trans}`);
         }
         [
             ...this.tipo.getKo(),
             ...this.idioma.getKo()
         ].forEach(t=>{
             ko.push(t);
-        })
-        Object.entries({
-            'noc': this.nocturno.get(),
-            'dif': this.dificultad.get(),
-            'exc': this.excelencia.get(),
-            'inn': this.innovacion.get()
-        }).forEach(([k, v]) => {
-            if(v === false) ko.push(k);
-        })
-        Object.entries({
-            'acc': this.accesible.get(),
-            'inv': this.invertir.get(),
-            'are': this.areas.get(),
-        }).forEach(([k, v]) => {
-            if (v === true) ok.push(k);
+        });
+        [
+            this.nocturno,
+            this.dificultad,
+            this.excelencia,
+            this.innovacion
+        ].forEach((i) => {
+            if(i.get() === false) ko.push(i.qr);
+        });
+        [
+            this.accesible,
+            this.invertir,
+            this.areas,
+        ].forEach((i) => {
+            if(i.get() === true) ok.push(i.qr);
         })
         if (ok.length) qr.push("ok="+ok.join(','));
         if (ko.length) qr.push("ko="+ko.join(','));
         const query = qr.length==0?"":("?"+qr.join("&"));
+        return query;
+    }
+    toQuerty() {
+        const query = this.getQuerty();
         if (document.location.search == query) return;
         const url = document.location.href.replace(/\?.*$/, "");
         history.pushState({}, "", url + query);
@@ -86,7 +148,7 @@ export class State {
 
     getInputsFiltro() {
         return  [
-            ...this.tipo.nodes,
+            ...this.tipo.node,
             this.kms.node,
             this.jornada.node,
             this.etapa.node,
@@ -94,7 +156,7 @@ export class State {
             this.dificultad.node,
             this.excelencia.node,
             this.innovacion.node,
-            ...this.idioma.nodes,
+            ...this.idioma.node,
             this.accesible.node,
             this.invertir.node,
             this.fpdual.node
@@ -102,7 +164,7 @@ export class State {
     }
     getInputsTransporte() {
         return [
-            ...this.transporte.nodes,
+            ...this.transporte.node,
             this.estaciones.node,
         ]
     }
