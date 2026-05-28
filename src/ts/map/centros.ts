@@ -111,7 +111,7 @@ class CentroManager {
     let seleccionados: Centro[] = [];
     let descartados: Centro[] = [];
     let hidden: Centro[] = [];
-    let showen: Centro[] = [];
+    let shown: Centro[] = [];
 
     this.all.forEach((c) => {
       const marca = State.getState().getMarca(c.id);
@@ -124,7 +124,7 @@ class CentroManager {
         return;
       }
       if (this.ok.includes(c.id)) {
-        showen.push(c);
+        shown.push(c);
         return;
       }
       if (this.ko.includes(c.id)) {
@@ -140,14 +140,14 @@ class CentroManager {
       seleccionados = seleccionados.sort(cmp);
       descartados = descartados.sort(cmp);
       hidden = hidden.sort(cmp);
-      showen = showen.sort(cmp);
+      shown = shown.sort(cmp);
     }
 
     return {
       seleccionados: seleccionados,
       descartados: descartados,
       hidden: hidden,
-      showen: showen,
+      shown: shown,
       distancias: dist,
     };
   }
@@ -252,20 +252,20 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   }
 
   const filtro = (()=>{
-    const invertir = getVal("#invertir") as boolean;
-    const tipos = _get("#settings #tipos input").flatMap((i) => {
-      if (!(i instanceof HTMLInputElement)) return [];
-      let b = (getVal(i) as boolean);
-      if (invertir) b = !b;
-      return b ? i.title : [];
-    });
+    const st = State.getState();
+    const invertir = st.invertir.get() === true;
+    const tipos = (invertir?st.tipo.getKoInputs():st.tipo.getOkInputs()).map(i=>i.title);
     if (tipos.length == 0) return "Ocultar todos";
-    const transporte = parseInt(getVal("#kms") as string);
+    const kms = st.kms.get();
     const filtro = [];
-    if (!isNaN(transporte)) {
-      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + transporte + " metros de una estación");
+    const accesibilidad = st.accesible.get() === (!invertir);
+    if (accesibilidad) {
+      filtro.push("* Centros sin barreras arquitectónicas");
     }
-    const selects = _get("#settings select").flatMap(s=>{
+    if (kms!=null) {
+      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + kms + " metros de una estación");
+    }
+    _get("#settings select").forEach(s=>{
       if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
       const opts = Array.from(s.options).filter(o=>o.value.trim().length > 0);
       const label = s.getAttribute("data-label")||"";
@@ -280,19 +280,19 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
         return 
       }
       filtro.push("* " +label+opt.textContent);
-    })
+    });
     filtro.push("* Tipos de centro:");
     tipos.forEach(t=>{
       filtro.push("    * " + t);
     })
     let excepto = true;
     _get("fieldset.uncheck_to_hide").forEach(f=>{
-      const inputs = Array.from(f.querySelectorAll("input")).flatMap(i=>{
+      const inputs = Array.from(f.querySelectorAll("input:not(.check_to_hide)")).flatMap(i=>{
         if (!(i instanceof HTMLInputElement)) return [];
         let isChecked = i.checked;
         if (invertir) isChecked = !isChecked;
         if (isChecked) return [];
-        return (i.title||i.textContent?.trim())??"";
+        return (i.getAttribute("data-label")||i.title||i.textContent?.trim())??"";
       })
       if (inputs.length == 0) return;
       if (excepto) {
@@ -311,7 +311,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   txt = txt + "\nFiltro: " + filtro + "\n";
   let cols = [
     ["Centros seleccionados por mi", estadistica.seleccionados],
-    ["Centros seleccionados por el filtro", estadistica.showen],
+    ["Centros seleccionados por el filtro", estadistica.shown],
     ["Centros descartados por el filtro", estadistica.hidden],
     ["Centros descartados por mi", estadistica.descartados],
   ];
@@ -341,7 +341,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     txt = txt + "\n";
   });
   txt = txt.replace(/<.*?>/g, "");
-  txt = txt + "\n---\n" + myweb;
+  txt = txt + "\n---\n" + document.location.href;
   txt = txt + "\n¿Te hay sido útil?. Considera donar para mantener este proyecto\n"+DONAR;
   txt = txt.trim();
   txt = txt.replace(/\n/g, "\r\n");
@@ -531,7 +531,11 @@ function mk_filter() {
   return isOk;
 }
 
-function setMark(e: L.LeafletMouseEvent) {
+function setMark(e: L.LeafletMouseEvent | [number, number]) {
+  const latlng = (() => {
+    if (Array.isArray(e)) return new L.LatLng(e[0], e[1]);
+    return e.latlng
+  })();
   window.MAP.removeLayerById("marker");
   const options: L.CircleOptions = {
     radius: 10,
@@ -541,8 +545,8 @@ function setMark(e: L.LeafletMouseEvent) {
     opacity: 1,
     fillOpacity: 0.8
   };
-  console.log(e.latlng.lat + "," + e.latlng.lng);
-  const cursorMarker = L.circleMarker(e.latlng, options);
+  console.log(latlng.lat + "," + latlng.lng);
+  const cursorMarker = L.circleMarker(latlng, options);
   window.MAP.addIdLayer("marker", cursorMarker);
   updateList();
 }
@@ -563,7 +567,7 @@ function updateList() {
     "cShw",
     list_centros(
       "Tu filtro oculta todos los centros",
-      estadistica.showen,
+      estadistica.shown,
       estadistica.distancias?.centro
     )
   );
@@ -655,6 +659,7 @@ function list_centros(
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("download")!.addEventListener("click", dwnTxtCentros);
   const st = State.getState();
   st.onFiltro(()=>updateCentros(false));
   st.onTransporte(set_transpo_layer);

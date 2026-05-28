@@ -203,18 +203,24 @@ export class InputGroupBoolean extends FormField<string[], HTMLInputElement[]> {
         );
         this.__prefix = prefix;
     }
+    getOkInputs() {
+        return this.node.flatMap((i) => i.checked ? [i] : []);
+    }
+    getKoInputs() {
+        return this.node.flatMap((i) => i.checked ? [] : [i]);
+    }
     get() {
         return this.__default.concat(
             this.node.flatMap((i) => i.checked ? [i.id.substring(this.__prefix.length)] : [])
         );
     }
-    getOptions() {
-        return this.node.map((i) => i.id.substring(this.__prefix.length));
-    }
     getKo() {
         return this.__default.concat(
             this.node.flatMap((i) => i.checked ? [] : [i.id.substring(this.__prefix.length)])
         );
+    }
+    getOptions() {
+        return this.node.map((i) => i.id.substring(this.__prefix.length));
     }
     set(v: string[]) {
         this.node.forEach((i) => i.checked = v.includes(i.id.substring(this.__prefix.length)));
