@@ -17,14 +17,31 @@ function _assertSelect(i: Element, ...tp: string[]) {
     return i;
 }
 
-export class SelectString {
-    public readonly node: HTMLSelectElement | null;
-    private __default: string | null;
 
-    constructor(slc: string, defVal: string | null = null) {
-        const i = document.querySelector(slc);
-        this.node = i==null? null :_assertSelect(i, "select-one");
+export abstract class FormField<T, N> {
+    public readonly node: N;
+    public readonly qr: string;
+    protected __default: T;
+
+    constructor(node: N, defVal: T, qr: string) {
+        this.node = node;
         this.__default = defVal;
+        this.qr = qr;
+    }
+
+    abstract get(): T;
+    abstract set(v: T): boolean;
+    abstract reset(): boolean;
+}
+
+export class SelectString extends FormField<string | null, HTMLSelectElement | null> {
+    constructor(slc: string, defVal: string | null, qr: string) {
+        const i = document.querySelector(slc);
+        super(
+             i==null? null :_assertSelect(i, "select-one"),
+             defVal,
+             qr
+        );
     }
     get() {
         if (this.node == null) return this.__default;
@@ -36,17 +53,22 @@ export class SelectString {
         this.node.value = v;
         return true;
     }
+    reset() {
+        if (this.node == null) return false;
+        this.node.value = this.__default??"";
+        return true;
+    }
 }
 
 
-export class SelectNumber {
-    public readonly node: HTMLSelectElement | null;
-    private __default: number | null;
-
-    constructor(slc: string, defVal: number | null = null) {
+export class SelectNumber extends FormField<number | null, HTMLSelectElement | null> {
+    constructor(slc: string, defVal: number | null, qr: string) {
         const i = document.querySelector(slc);
-        this.node = i==null? null :_assertSelect(i, "select-one");
-        this.__default = defVal;
+        super(
+             i==null? null :_assertSelect(i, "select-one"),
+             defVal,
+             qr
+        );
     }
     get() {
         if (this.node == null) return this.__default;
@@ -56,8 +78,9 @@ export class SelectNumber {
         if (isNaN(n)) return null;
         return n;
     }
-    set(v: number | null) {
+    set(v: number | string | null) {
         if (this.node == null) return false;
+        if (v != null && typeof v === "string") v = parseFloat(v);
         if (v == null || isNaN(v)) {
             this.node.value = "";
             return true;
@@ -66,16 +89,21 @@ export class SelectNumber {
         this.node.value = v.toString();
         return true;
     }
+    reset() {
+        if (this.node == null) return false;
+        this.node.value = this.__default?.toString()??"";
+        return true;
+    }
 }
 
-export class InputString {
-    public readonly node: HTMLInputElement | null;
-    private __default: string | null;
-
-    constructor(slc: string, defVal: string | null = null) {
+export class InputString extends FormField<string | null, HTMLInputElement | null> {
+    constructor(slc: string, defVal: string | null, qr: string) {
         const i = document.querySelector(slc);
-        this.node = i==null? null :_assertInput(i, "text");
-        this.__default = defVal;
+        super(
+             i==null? null : _assertInput(i, "text"),
+             defVal,
+             qr
+        );
     }
     get() {
         if (this.node == null) return this.__default;
@@ -87,17 +115,22 @@ export class InputString {
         this.node.value = v;
         return true;
     }
+    reset() {
+        if (this.node == null) return false;
+        this.node.value = this.__default??"";
+        return true;
+    }
 }
 
 
-export class InputNumber {
-    public readonly node: HTMLInputElement | null;
-    private __default: number | null;
-
-    constructor(slc: string, defVal: number | null = null) {
+export class InputNumber extends FormField<number | null, HTMLInputElement | null> {
+    constructor(slc: string, defVal: number | null, qr: string) {
         const i = document.querySelector(slc);
-        this.node = i==null? null :_assertInput(i, "number");
-        this.__default = defVal;
+        super(
+             i==null? null : _assertInput(i, "number"),
+             defVal,
+             qr
+        );
     }
     get() {
         if (this.node == null) return this.__default;
@@ -107,8 +140,9 @@ export class InputNumber {
         if (isNaN(n)) return null;
         return n;
     }
-    set(v: number | null) {
+    set(v: number | string |null) {
         if (this.node == null) return false;
+        if (v != null && typeof v === "string") v = parseFloat(v);
         if (v == null || isNaN(v)) {
             this.node.value = "";
             return true;
@@ -117,17 +151,22 @@ export class InputNumber {
         this.node.value = v.toString();
         return true;
     }
+    reset() {
+        if (this.node == null) return false;
+        this.node.value = this.__default?.toString()??"";
+        return true;
+    }
 }
 
 
-export class InputBoolean {
-    public readonly node: HTMLInputElement | null;
-    private __default: boolean | null;
-
-    constructor(slc: string, defVal: boolean | null = null) {
+export class InputBoolean extends FormField<boolean | null, HTMLInputElement | null> {
+    constructor(slc: string, defVal: boolean | null, qr: string) {
         const i = document.querySelector(slc);
-        this.node = i==null? null :_assertInput(i, "checkbox", "radio");
-        this.__default = defVal;
+        super(
+             i==null? null : _assertInput(i, "checkbox", "radio"),
+             defVal,
+             qr
+        );
     }
     get() {
         if (this.node == null) return this.__default;
@@ -140,41 +179,52 @@ export class InputBoolean {
         this.node.checked = v;
         return true;
     }
+    reset() {
+        if (this.node == null) return false;
+        this.node.checked = this.__default??false;
+        return true;
+    }
 }
 
 
-export class InputGroupBoolean {
-    public readonly nodes: HTMLInputElement[];
-    private __default: string[];
+export class InputGroupBoolean extends FormField<string[], HTMLInputElement[]> {
     private __prefix: string;
 
-    constructor(slc: string, defVal: string[] = [], prefix: string = "") {
-        this.nodes = Array.from(document.querySelectorAll(slc)).map(
+    constructor(slc: string, defVal: string[], qr: string, prefix: string = "") {
+        const nodes = Array.from(document.querySelectorAll(slc)).map(
             (e) => _assertInput(e, "checkbox", "radio")
         );
-        const okValues = this.nodes.map((i) => i.id.substring(prefix.length));
-        this.__default = defVal.filter((v) => !okValues.includes(v));
+        const okValues = nodes.map((i) => i.id.substring(prefix.length));
+        defVal = defVal.filter((v) => !okValues.includes(v));
+        super(
+            nodes,
+             defVal,
+             qr
+        );
         this.__prefix = prefix;
     }
     get() {
         return this.__default.concat(
-            this.nodes.flatMap((i) => i.checked ? [i.id.substring(this.__prefix.length)] : [])
+            this.node.flatMap((i) => i.checked ? [i.id.substring(this.__prefix.length)] : [])
         );
+    }
+    getOptions() {
+        return this.node.map((i) => i.id.substring(this.__prefix.length));
     }
     getKo() {
         return this.__default.concat(
-            this.nodes.flatMap((i) => i.checked ? [] : [i.id.substring(this.__prefix.length)])
+            this.node.flatMap((i) => i.checked ? [] : [i.id.substring(this.__prefix.length)])
         );
     }
     set(v: string[]) {
-        this.nodes.forEach((i) => i.checked = v.includes(i.id.substring(this.__prefix.length)));
+        this.node.forEach((i) => i.checked = v.includes(i.id.substring(this.__prefix.length)));
         return true;
     }
-    getQuery(name: string) {
-        const ok = this.get().join(",");
-        const ko = this.getKo().join(",");
-        if (ok.length == 0 && ko.length == 0) return null;
-        if (ok.length <= ko.length) return `${name}=${ok}`;
-        return `!${name}=${ko}`;
+    reset() {
+        if (this.node.length == 0) return false;
+        this.node.forEach(i => {
+            i.checked = this.__default.includes(i.id.substring(this.__prefix.length))
+        })
+        return true;
     }
 }
