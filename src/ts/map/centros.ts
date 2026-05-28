@@ -192,6 +192,9 @@ export function dwnConcurso() {
     updateCentros(true);
     return centros;
   });
+  const st = State.getState();
+  const cMarker = st.getCircleMarker();
+  if (cMarker != null) setMark(cMarker);
   window.MAP.on("click", function (this: SBMap, e) {
     if (!e || !e.originalEvent || !e.originalEvent.ctrlKey) return;
     setMark.apply(this, [e]);
@@ -531,23 +534,29 @@ function mk_filter() {
   return isOk;
 }
 
-function setMark(e: L.LeafletMouseEvent | [number, number]) {
+function setMark(e: L.LeafletMouseEvent | [number, number] | null) {
   const latlng = (() => {
+    if (e == null) return null;
     if (Array.isArray(e)) return new L.LatLng(e[0], e[1]);
     return e.latlng
   })();
   window.MAP.removeLayerById("marker");
-  const options: L.CircleOptions = {
-    radius: 10,
-    fillColor: "yellow",
-    color: "black",
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8
-  };
-  console.log(latlng.lat + "," + latlng.lng);
-  const cursorMarker = L.circleMarker(latlng, options);
-  window.MAP.addIdLayer("marker", cursorMarker);
+  if (latlng == null) {
+    State.getState().setCircleMarker(null, null);
+  } else {
+    const options: L.CircleOptions = {
+      radius: 10,
+      fillColor: "yellow",
+      color: "black",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+    State.getState().setCircleMarker(latlng.lat, latlng.lng);
+    console.log(latlng.lat + "," + latlng.lng);
+    const cursorMarker = L.circleMarker(latlng, options);
+    window.MAP.addIdLayer("marker", cursorMarker);
+  }
   updateList();
 }
 

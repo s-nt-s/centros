@@ -1,6 +1,9 @@
 import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString, FormField } from "./form";
 import { decodeArray, encodeArray } from "./query_number";
 
+const DELTA=28000000;
+
+
 export class State {
     public static readonly SELECCIONADO = 1;
     public static readonly DESCARTADO = 2;
@@ -21,6 +24,7 @@ export class State {
     public readonly areas = new InputBoolean("#areas", false, "are");
     public readonly estaciones = new InputBoolean("#estaciones", false, "e");
     public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input", [], "t");
+    private __circleMarker: null|[number, number] = null;
     private readonly __onchange: EventListener[] = [];
 
     static getState() {
@@ -29,6 +33,22 @@ export class State {
             State.__instance.__init();
         }
         return State.__instance;
+    }
+
+    public getCircleMarker() {
+        return this.__circleMarker;
+    }
+
+    public setCircleMarker(lat: number| null, lng: number | null) {
+        if (lat == null || lng == null) {
+            if (this.__circleMarker == null) return;
+            this.__circleMarker = null;
+        } else {
+            if (this.__circleMarker!=null && this.__circleMarker[0] == lat && this.__circleMarker[1] == lng) return false;
+            this.__circleMarker = [lat, lng];
+        }
+        this.toQuerty();
+        return true;
     }
 
     public setMarca(id: number, val:number|null) {
@@ -40,7 +60,7 @@ export class State {
             this.__centros.set(id, val)
         }
         this.toQuerty();
-        return;
+        return true;
     }
 
     public getMarca(id: number) {
@@ -101,7 +121,7 @@ export class State {
             return (i: string) => {
                 const m = i.match(/^ctr(.+)$/);
                 if (m == null) return true;
-                decodeArray(m[1]).forEach(c=>this.__centros.set(c, marca));
+                decodeArray(m[1]).forEach(c=>this.__centros.set(c+DELTA, marca));
                 return false;
             }
         }
@@ -121,6 +141,11 @@ export class State {
         })
         this.tipo.set(this.tipo.getOptions().filter(i=>!ko.includes(i)));
         this.idioma.set(this.idioma.getOptions().filter(i=>!ko.includes(i)));
+        const ll = gt("ll").flatMap(i=>{
+            const x = parseFloat(i);
+            return isNaN(x)?[]:x;
+        });
+        this.__circleMarker = ll.length==2?[ll[0],ll[1]]:null;
         const nw = this.getQuerty()
         if (old == nw) return;
         this.__onchange.forEach(f=>f(new Event("change")));
@@ -168,13 +193,14 @@ export class State {
         const ok_centro: number[] = [];
         const ko_centro: number[] = [];
         this.__centros.forEach((v, k) => {
-            if (v === State.SELECCIONADO) ok_centro.push(k);
-            if (v === State.DESCARTADO) ko_centro.push(k);
+            if (v === State.SELECCIONADO) ok_centro.push(k-DELTA);
+            if (v === State.DESCARTADO) ko_centro.push(k-DELTA);
         });
         if (ok_centro.length) ok.push("ctr"+encodeArray(ok_centro));
         if (ko_centro.length) ko.push("ctr"+encodeArray(ko_centro));
         if (ok.length) qr.push("ok="+ok.join(','));
         if (ko.length) qr.push("ko="+ko.join(','));
+        if (this.__circleMarker) qr.push(`ll=${this.__circleMarker[0]},${this.__circleMarker[1]}`);
         const query = qr.length==0?"":("?"+qr.join("&"));
         return query;
     }
