@@ -4,6 +4,8 @@ import { DBConcurso, Centro } from "../../lib/supabaseClient";
 import { set_transpo_layer } from "./transporte"
 import { set_area_layer } from './areas'
 import type { SchemaName } from "../../lib/supabaseClient";
+import { State } from "../../lib/state";
+
 import {
   getVal,
   Mail,
@@ -14,14 +16,14 @@ import {
 
 const DONAR = import.meta.env.VITE_DONAR;
 const id_concurso = (() => {
-  const href = window.location.href.replace(/\/(index\.html)?$/, "");
+  const href = window.location.pathname.replace(/\/(index\.html)?$/, "");
   const path = href.split("/");
   const conc = path[path.length - 1];
   return conc as SchemaName;
 })()!;
 
 const myweb = (() => {
-  let href = window.location.href;
+  let href = window.location.origin + window.location.pathname;
   //href = href.substring(document.location.protocol.length + 2);
   if (href.endsWith("/")) href = href.substring(0, href.length - 1);
   return href;
@@ -109,20 +111,20 @@ class CentroManager {
     let seleccionados: Centro[] = [];
     let descartados: Centro[] = [];
     let hidden: Centro[] = [];
-    let showen: Centro[] = [];
+    let shown: Centro[] = [];
 
     this.all.forEach((c) => {
-      const marca = MARCA.CENTRO[c.id];
-      if (marca == MARCA.SELECCIONADO) {
+      const marca = State.getState().getMarca(c.id);
+      if (marca == State.SELECCIONADO) {
         seleccionados.push(c);
         return;
       }
-      if (marca == MARCA.DESCARTADO) {
+      if (marca == State.DESCARTADO) {
         descartados.push(c);
         return;
       }
       if (this.ok.includes(c.id)) {
-        showen.push(c);
+        shown.push(c);
         return;
       }
       if (this.ko.includes(c.id)) {
@@ -138,26 +140,20 @@ class CentroManager {
       seleccionados = seleccionados.sort(cmp);
       descartados = descartados.sort(cmp);
       hidden = hidden.sort(cmp);
-      showen = showen.sort(cmp);
+      shown = shown.sort(cmp);
     }
 
     return {
       seleccionados: seleccionados,
       descartados: descartados,
       hidden: hidden,
-      showen: showen,
+      shown: shown,
       distancias: dist,
     };
   }
 }
 
 let CNT = new CentroManager();
-
-const MARCA = Object.freeze({
-  SELECCIONADO: 1,
-  DESCARTADO: 2,
-  CENTRO: {} as { [id: number]: number },
-});
 
 function get_icon(c: Centro) {
   const color = (() => {
@@ -173,8 +169,8 @@ function get_icon(c: Centro) {
     c.excelencia,
   ].includes(true);
   const url = (() => {
-    const marca = MARCA.CENTRO[c.id];
-    if (marca == MARCA.SELECCIONADO) {
+    const marca = State.getState().getMarca(c.id);
+    if (marca == State.SELECCIONADO) {
       if (color == "green")
         return "http://maps.google.com/mapfiles/ms/micons/grn-pushpin.png";
       return `http://maps.google.com/mapfiles/ms/micons/${color}-pushpin.png`;
@@ -196,6 +192,9 @@ export function dwnConcurso() {
     updateCentros(true);
     return centros;
   });
+  const st = State.getState();
+  const cMarker = st.getCircleMarker();
+  if (cMarker != null) setMark(cMarker);
   window.MAP.on("click", function (this: SBMap, e) {
     if (!e || !e.originalEvent || !e.originalEvent.ctrlKey) return;
     setMark.apply(this, [e]);
@@ -256,20 +255,20 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   }
 
   const filtro = (()=>{
-    const invertir = getVal("#invertir") as boolean;
-    const tipos = _get("#settings #tipos input").flatMap((i) => {
-      if (!(i instanceof HTMLInputElement)) return [];
-      let b = (getVal(i) as boolean);
-      if (invertir) b = !b;
-      return b ? i.title : [];
-    });
+    const st = State.getState();
+    const invertir = st.invertir.get() === true;
+    const tipos = (invertir?st.tipo.getKoInputs():st.tipo.getOkInputs()).map(i=>i.title);
     if (tipos.length == 0) return "Ocultar todos";
-    const transporte = parseInt(getVal("#kms") as string);
+    const kms = st.kms.get();
     const filtro = [];
-    if (!isNaN(transporte)) {
-      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + transporte + " metros de una estación");
+    const accesibilidad = st.accesible.get() === (!invertir);
+    if (accesibilidad) {
+      filtro.push("* Centros sin barreras arquitectónicas");
     }
-    const selects = _get("#settings select").flatMap(s=>{
+    if (kms!=null) {
+      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + kms + " metros de una estación");
+    }
+    _get("#settings select").forEach(s=>{
       if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
       const opts = Array.from(s.options).filter(o=>o.value.trim().length > 0);
       const label = s.getAttribute("data-label")||"";
@@ -284,19 +283,19 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
         return 
       }
       filtro.push("* " +label+opt.textContent);
-    })
+    });
     filtro.push("* Tipos de centro:");
     tipos.forEach(t=>{
       filtro.push("    * " + t);
     })
     let excepto = true;
     _get("fieldset.uncheck_to_hide").forEach(f=>{
-      const inputs = Array.from(f.querySelectorAll("input")).flatMap(i=>{
+      const inputs = Array.from(f.querySelectorAll("input:not(.check_to_hide)")).flatMap(i=>{
         if (!(i instanceof HTMLInputElement)) return [];
         let isChecked = i.checked;
         if (invertir) isChecked = !isChecked;
         if (isChecked) return [];
-        return (i.title||i.textContent?.trim())??"";
+        return (i.getAttribute("data-label")||i.title||i.textContent?.trim())??"";
       })
       if (inputs.length == 0) return;
       if (excepto) {
@@ -315,7 +314,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
   txt = txt + "\nFiltro: " + filtro + "\n";
   let cols = [
     ["Centros seleccionados por mi", estadistica.seleccionados],
-    ["Centros seleccionados por el filtro", estadistica.showen],
+    ["Centros seleccionados por el filtro", estadistica.shown],
     ["Centros descartados por el filtro", estadistica.hidden],
     ["Centros descartados por mi", estadistica.descartados],
   ];
@@ -345,7 +344,7 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     txt = txt + "\n";
   });
   txt = txt.replace(/<.*?>/g, "");
-  txt = txt + "\n---\n" + myweb;
+  txt = txt + "\n---\n" + document.location.href;
   txt = txt + "\n¿Te hay sido útil?. Considera donar para mantener este proyecto\n"+DONAR;
   txt = txt.trim();
   txt = txt.replace(/\n/g, "\r\n");
@@ -413,14 +412,14 @@ function getPopUp(c: Centro) {
     html = html + km + " kms</p>"
   }
   */
-  const marca = MARCA.CENTRO[c.id];
+  const marca = State.getState().getMarca(c.id);
   let chk1 = "";
   let chk2 = "";
   let chk3 = "checked='checked'";
-  if (marca == MARCA.SELECCIONADO) {
+  if (marca == State.SELECCIONADO) {
     chk1 = chk3;
     chk3 = "";
-  } else if (marca == MARCA.DESCARTADO) {
+  } else if (marca == State.DESCARTADO) {
     chk2 = chk3;
     chk3 = "";
   }
@@ -428,8 +427,8 @@ function getPopUp(c: Centro) {
     html +
     `
     <p>
-      <input value="${MARCA.SELECCIONADO}" class="marcar" type="radio" id="sel${c.id}" ${chk1}/> <label for="sel${c.id}">Marcar como seleccionado</label><br/>
-      <input value="${MARCA.DESCARTADO}" class="marcar" type="radio" id="des${c.id}" ${chk2}/> <label for="des${c.id}">Marcar como descartado</label><br/>
+      <input value="${State.SELECCIONADO}" class="marcar" type="radio" id="sel${c.id}" ${chk1}/> <label for="sel${c.id}">Marcar como seleccionado</label><br/>
+      <input value="${State.DESCARTADO}" class="marcar" type="radio" id="des${c.id}" ${chk2}/> <label for="des${c.id}">Marcar como descartado</label><br/>
       <input value="" class="marcar" type="radio" id="no${c.id}" ${chk3}/> <label for="no${c.id}">No marcar</label>
     </p>
   `;
@@ -440,8 +439,8 @@ function getPopUp(c: Centro) {
     e.addEventListener("change", function (this: HTMLInputElement) {
       if (!this.checked) return;
       const marca = parseInt(this.value);
-      if (isNaN(marca)) delete MARCA.CENTRO[c.id];
-      else MARCA.CENTRO[c.id] = marca;
+      if (isNaN(marca)) State.getState().setMarca(c.id, null);
+      else State.getState().setMarca(c.id, marca);
       setCentroMarker(c, true);
       updateList();
     })
@@ -460,7 +459,7 @@ function setCentroMarker(centro:Centro, refresh: boolean = false) {
   const icon = get_icon(centro);
   const latlng: L.LatLng = new L.LatLng(centro.latitud, centro.longitud);
   const marker = (()=>{
-    if (MARCA.CENTRO[centro.id] == MARCA.DESCARTADO) {
+    if (State.getState().getMarca(centro.id) === State.DESCARTADO) {
       const options: L.CircleOptions = {
         radius: 5,
         fill: true,
@@ -494,50 +493,39 @@ function addCentrosLayer() {
   });
 }
 
-type idbool = { [id: string]: boolean };
-
 function mk_filter() {
-  const invertir = getVal("#invertir") as boolean;
-  const jornada = (getVal("#jornada", "")??"") as string;
-  const etapa = parseInt((getVal("#etapa", "")??"") as string);
-  const innovacion = getVal("#innovacion", true) as boolean;
-  const dificultad = getVal("#dificultad", true) as boolean;
-  const excelencia = getVal("#excelencia", true) as boolean;
-  const nocturno = getVal("#nocturno", true) as boolean;
-  const eudacionEspecial = getVal("#eudacionEspecial", true) as boolean;
-  const accesible = getVal("#accesible") as boolean|null;
-  const transporte = parseInt(getVal("#kms") as string);
-  const fpdual = (getVal("#fpdual", "")??"") as string;
-  const ok_tipo = _get("#tipos input").flatMap((i) => {
-    return (getVal(i) as boolean) ? i.id.substring(1) : [];
-  });
-  const ko_idio = _get("#otros input[name=idioma]").flatMap((i) => {
-    return (getVal(i) as boolean) ? [] : i.id;
-  });
+  const st = State.getState();
+  const ok_tipo = st.tipo.get();
+  const ko_idio = st.idioma.getKo();
+  const jornada = st.jornada.get();
+  const etapa = st.etapa.get();
+  const fpdual = st.fpdual.get();
+  const transporte = st.kms.get();
+  const invertir = st.invertir.get();
   const _isOk = (c: Centro) => {
     let i;
     if (!ok_tipo.includes(c.tp.id)) return false;
     for (i = 0; i < ko_idio.length; i++) {
       if (c.idiomas.includes(ko_idio[i])) return false;
     }
-    if (c.excelencia && !excelencia) return false;
-    if (c.nocturno && !nocturno) return false;
-    if (accesible === true && !c.accesible) return false;
-    if (c.innovacion && !innovacion) return false;
-    if (c.dificultad && !dificultad) return false;
-    if (jornada.length>0 && c.jornada.length>0 && c.jornada!=jornada) return false;
-    if (!isNaN(etapa) && !c.hasEtapa(etapa)) return false;
-    if (fpdual.length>0){
+    if (st.excelencia.get() === false && c.excelencia) return false;
+    if (st.nocturno.get() === false && c.nocturno) return false;
+    if (st.accesible.get() === true && !c.accesible) return false;
+    if (st.innovacion.get() === false && c.innovacion) return false;
+    if (st.dificultad.get() === false &&c.dificultad) return false;
+    if (jornada != null && c.jornada!=jornada) return false;
+    if (etapa != null && !c.hasEtapa(etapa)) return false;
+    if (fpdual != null){
       if (fpdual == "con" && c.fpdual == false) return false;
       if (fpdual == "sin" && c.fpdual == true) return false;
     }
-    if (!isNaN(transporte)) {
+    if (transporte != null) {
       for (const [km, ids] of DST) if (km>transporte && ids.includes(c.id)) return false;
     }
     return true;
   };
   const isOk = (c: Centro) => {
-    if (MARCA.CENTRO[c.id] == MARCA.SELECCIONADO) return true;
+    if (State.getState().getMarca(c.id) === State.SELECCIONADO) return true;
     let b = _isOk(c);
     if (invertir) b = !b;
     //if (!b) console.log(c.id, "descartado");
@@ -546,19 +534,29 @@ function mk_filter() {
   return isOk;
 }
 
-function setMark(e: L.LeafletMouseEvent) {
+function setMark(e: L.LeafletMouseEvent | [number, number] | null) {
+  const latlng = (() => {
+    if (e == null) return null;
+    if (Array.isArray(e)) return new L.LatLng(e[0], e[1]);
+    return e.latlng
+  })();
   window.MAP.removeLayerById("marker");
-  const options: L.CircleOptions = {
-    radius: 10,
-    fillColor: "yellow",
-    color: "black",
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8
-  };
-  console.log(e.latlng.lat + "," + e.latlng.lng);
-  const cursorMarker = L.circleMarker(e.latlng, options);
-  window.MAP.addIdLayer("marker", cursorMarker);
+  if (latlng == null) {
+    State.getState().setCircleMarker(null, null);
+  } else {
+    const options: L.CircleOptions = {
+      radius: 10,
+      fillColor: "yellow",
+      color: "black",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+    State.getState().setCircleMarker(latlng.lat, latlng.lng);
+    console.log(latlng.lat + "," + latlng.lng);
+    const cursorMarker = L.circleMarker(latlng, options);
+    window.MAP.addIdLayer("marker", cursorMarker);
+  }
   updateList();
 }
 
@@ -578,7 +576,7 @@ function updateList() {
     "cShw",
     list_centros(
       "Tu filtro oculta todos los centros",
-      estadistica.showen,
+      estadistica.shown,
       estadistica.distancias?.centro
     )
   );
@@ -671,13 +669,8 @@ function list_centros(
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("download")!.addEventListener("click", dwnTxtCentros);
-  const onChange = (qr:string, fnc: EventListenerOrEventListenerObject) => {
-    document.querySelectorAll(qr).forEach((i) => {
-      const e = i.getAttribute("type") == "checkbox" ? "click" : "change";
-      i.addEventListener(e, fnc);
-    });
-  }
-  onChange("#settings input:not(.nofiltro), #settings select", ()=>updateCentros(false));
-  onChange("#transporte input", set_transpo_layer);
-  onChange("#areas", set_area_layer);
+  const st = State.getState();
+  st.onFiltro(()=>updateCentros(false));
+  st.onTransporte(set_transpo_layer);
+  st.onAreas(set_area_layer);
 });
