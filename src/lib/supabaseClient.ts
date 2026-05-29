@@ -156,7 +156,7 @@ class DBConcurso {
       const e = _isN(etapas, c.id);
       const j = get_flag(centro_jornada, c.id);
       const a = get_flag(centro_accesib, c.id);
-      if (a != null) q.push("githubAccesible="+a);
+      if (['+', '-'].includes(a)) q.push("githubAccesible="+a);
       if (['c', 'p'].includes(j)) c.jornada = j.toUpperCase();
       return new Centro(
         c,

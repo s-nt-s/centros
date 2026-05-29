@@ -43,7 +43,7 @@ class Github:
         return data
 
     def get_accesibilidad(self) -> dict[int, str]:
-        return self.__get_flags(9, '-+')
+        return self.__get_flags(9, '-+?')
 
     def get_jornada(self) -> dict[int, str]:
         return self.__get_flags(10, 'cp')
