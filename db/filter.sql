@@ -13,6 +13,14 @@ delete from CENTRO where
     )
 ;
 
+with aux as (
+    select id from tipo where id not in (
+        select tipo from centro where id in (select centro from CONCURSO_ANEXO_CENTRO)
+    )
+)
+DELETE FROM CENTRO where tipo in (select id from aux);
+
+
 delete from ETAPA where not exists (
     select * from ETAPA_CENTRO ec where ec.etapa=ETAPA.id
 );
