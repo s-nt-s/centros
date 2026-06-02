@@ -38,7 +38,10 @@ class Github:
                 r"(["+re.escape(flags)+"])(28\d+)",
                 body
             ):
-                data[int(cid)] = flag
+                k = int(cid)
+                if k in data:
+                    del data[k]
+                data[k] = flag
 
         return data
 
