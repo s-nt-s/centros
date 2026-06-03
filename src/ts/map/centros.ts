@@ -380,7 +380,7 @@ function getPopUp(c: Centro) {
   body = [];
   if (c.dificultad) body.push("<b>Centro de especial dificultad</b>");
   if (c.nocturno) body.push("<b>Nocturno</b>");
-  if (c.accesible) body.push("<b>♿ Accesible</b>");
+  if (c.accesible === true) body.push("<b>♿ Accesible</b>");
   const tags = [];
   if (c.excelencia) tags.push("<b>&#35;excelencia</b>");
   if (c.innovacion) tags.push("<b>&#35;tecnológico</b>");
@@ -510,7 +510,7 @@ function mk_filter() {
     }
     if (st.excelencia.get() === false && c.excelencia) return false;
     if (st.nocturno.get() === false && c.nocturno) return false;
-    if (st.accesible.get() === true && !c.accesible) return false;
+    if (st.accesible.get() === true && c.accesible !== true) return false;
     if (st.innovacion.get() === false && c.innovacion) return false;
     if (st.dificultad.get() === false &&c.dificultad) return false;
     if (jornada != null && c.jornada!=jornada) return false;
