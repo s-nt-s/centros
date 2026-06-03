@@ -184,7 +184,10 @@ class DBConcurso {
       "checkSeccionesLinguisticasFr=S",
       "checkSeccionesLinguisticasAl=S",
       "itRegimenDual=5",
-      "checkIntegraM=S"
+      "checkIntegraM=S",
+      "accesibilidad=0",
+      "accesibilidad=1",
+      "accesibilidad=2",
     ];
     this.get_data(
       `query_centro[${id}][query=${qrs}]`,
