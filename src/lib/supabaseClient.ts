@@ -419,8 +419,14 @@ class Centro {
   get accesible() {
     if (this.isQuery("githubAccesible=+")) return true;
     if (this.isQuery("githubAccesible=-")) return false;
+    // Instalación no accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=0")) return false;
+    // Instalación accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=1")) return false;
+    // Instalación parcialmente accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=2")) return false;
     if (this.isQuery("checkIntegraM=S")) return true;
-    return false;
+    return null;
   }
   get motorico() {
     return this.isQuery("checkIntegraM=S");
