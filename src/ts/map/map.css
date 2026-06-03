@@ -223,3 +223,9 @@ p.tabdonar {
   width: 100%;
   display: inline-block;
 }
+
+a.acc_ico {
+  text-decoration: none !important;
+  font-weight: bold !important;
+  color: inherit !important;
+}

@@ -274,7 +274,7 @@ class Concurso {
     this.ingles = _gids(c=>c.ingles);
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
-    this.accesible = _gids(c=>c.accesible);
+    this.accesible = _gids(c=>c.accesible === true);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
