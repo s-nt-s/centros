@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { smart_title, to_dict, toTitle } from "./util";
 import centro_accesib from '../assets/accesibilidad.json';
-import centro_jornada from '../assets/jornada.json';
 import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
@@ -154,10 +153,8 @@ class DBConcurso {
       const t = tipos[c.tipo] as Tables<'tipo'>;
       const q = _isS(query, c.id);
       const e = _isN(etapas, c.id);
-      const j = get_flag(centro_jornada, c.id);
       const a = get_flag(centro_accesib, c.id);
       if (['+', '-'].includes(a)) q.push("githubAccesible="+a);
-      if (['c', 'p'].includes(j)) c.jornada = j.toUpperCase();
       return new Centro(
         c,
         t,
