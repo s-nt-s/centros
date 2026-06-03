@@ -379,8 +379,13 @@ class Centro {
     ].filter(i=>i!=null).join(" ")
   }
 
-  get web(): string|null {
-    return this._c.web;
+  get web(): string[] {
+    if (this._c.web == null) return [];
+    if (this._c.web.length==0) return [];
+    return this._c.web.split(/\s+/).map(u=>{
+      if (u.startsWith("http://") || u.startsWith("https://")) return u;
+      return "http://"+u;
+    })
   }
 
   get latitud(): number {

@@ -356,8 +356,10 @@ function getPopUp(c: Centro) {
     `Código: <b>${c.id}</b>`,
     `<a href="geo:${c.latitud},${c.longitud}" title="Coordenadas: ${c.latitud}, ${c.longitud}">${c.direccion}</a>`,
   ];
-  let links = [];
-  if (c.web) links.push(`<a href="http://${c.web}">Web</a>`);
+  let links = c.web.map(lk=>{
+    if (lk.match(/www\.madrid\.es/)) return `<a href="${lk}">madrid.es</a>`;
+    return `<a href="${lk}">Web</a>`;
+  });
   if (c.emails.length) {
     const mailto = Mail.mail_tobcc(c.emails, MSG_MAIL.subject, MSG_MAIL.body);
     links.push(`<a href='${mailto}' title="${c.emails.join(" ")}">Mail</a>`);
