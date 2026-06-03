@@ -271,7 +271,7 @@ class Concurso {
     this.ingles = _gids(c=>c.ingles);
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
-    this.accesible = _gids(c=>c.accesible);
+    this.accesible = _gids(c=>c.accesible === true);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
@@ -376,8 +376,13 @@ class Centro {
     ].filter(i=>i!=null).join(" ")
   }
 
-  get web(): string|null {
-    return this._c.web;
+  get web(): string[] {
+    if (this._c.web == null) return [];
+    if (this._c.web.length==0) return [];
+    return this._c.web.split(/\s+/).map(u=>{
+      if (u.startsWith("http://") || u.startsWith("https://")) return u;
+      return "http://"+u;
+    })
   }
 
   get latitud(): number {
@@ -416,8 +421,15 @@ class Centro {
   get accesible() {
     if (this.isQuery("githubAccesible=+")) return true;
     if (this.isQuery("githubAccesible=-")) return false;
+    // Instalación no accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=0")) return false;
+    // Instalación accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=1")) return true;
+    // Instalación parcialmente accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=2")) return true;
+    // Centro motorico
     if (this.isQuery("checkIntegraM=S")) return true;
-    return false;
+    return null;
   }
   get motorico() {
     return this.isQuery("checkIntegraM=S");
