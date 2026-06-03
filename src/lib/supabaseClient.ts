@@ -422,9 +422,10 @@ class Centro {
     // Instalación no accesible para personas con movilidad reducida
     if (this.isQuery("accesibilidad=0")) return false;
     // Instalación accesible para personas con movilidad reducida
-    if (this.isQuery("accesibilidad=1")) return false;
+    if (this.isQuery("accesibilidad=1")) return true;
     // Instalación parcialmente accesible para personas con movilidad reducida
-    if (this.isQuery("accesibilidad=2")) return false;
+    if (this.isQuery("accesibilidad=2")) return true;
+    // Centro motorico
     if (this.isQuery("checkIntegraM=S")) return true;
     return null;
   }
