@@ -382,8 +382,8 @@ function getPopUp(c: Centro) {
   body = [];
   if (c.dificultad) body.push("<b>Centro de especial dificultad</b>");
   if (c.nocturno) body.push("<b>Nocturno</b>");
-  if (c.accesible === true) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">♿ Accesible ⚠️</a>');
-  if (c.accesible === false) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">😞 No accesible ⚠️</a>');
+  if (c.accesible === true) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">♿ Accesible</a>');
+  if (c.accesible === false) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">😞 No accesible</a>');
   const tags = [];
   if (c.excelencia) tags.push("<b>&#35;excelencia</b>");
   if (c.innovacion) tags.push("<b>&#35;tecnológico</b>");
