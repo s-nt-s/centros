@@ -424,6 +424,8 @@ class Centro {
   get accesible() {
     if (this.isQuery("githubAccesible=+")) return true;
     if (this.isQuery("githubAccesible=-")) return false;
+    // Los hospitales por defecto son accesibles
+    if (this.tipo == "036") return true;
     // Instalación no accesible para personas con movilidad reducida
     if (this.isQuery("accesibilidad=0")) return false;
     // Instalación accesible para personas con movilidad reducida
