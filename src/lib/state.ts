@@ -1,5 +1,9 @@
 import { InputBoolean, InputGroupBoolean, SelectNumber, InputNumber, SelectString, FormField } from "./form";
 import { decodeArray, encodeArray } from "./query_number";
+import { Centro } from "./supabaseClient";
+import { get_distance } from "./util";
+import type { Distancias, EstadoCentros } from './tp'
+import * as L from "leaflet";
 
 const DELTA=28000000;
 
@@ -7,7 +11,7 @@ const DELTA=28000000;
 export class State {
     public static readonly SELECCIONADO = 1;
     public static readonly DESCARTADO = 2;
-    private readonly __centros = new Map<number, number>();
+    private readonly __marca = new Map<number, number>();
     private static __instance: State | null = null;
     public readonly tipo = new InputGroupBoolean("#tipos input", [], "", "t");
     public readonly kms = new InputNumber("#kms", null, "km");
@@ -26,6 +30,9 @@ export class State {
     public readonly transporte = new InputGroupBoolean(".metro input, .cercanias input, .metro_ligero input", [], "t");
     private __circleMarker: null|[number, number] = null;
     private readonly __onchange: EventListener[] = [];
+    private readonly __centros = new Map<number, Centro>();
+    private __ok: number[] = [];
+    private __ko: number[] = [];
 
     static getState() {
         if (State.__instance == null) {
@@ -53,18 +60,18 @@ export class State {
 
     public setMarca(id: number, val:number|null) {
         if (val === null) {
-            if (!this.__centros.has(id)) return false;
-            this.__centros.delete(id)
+            if (!this.__marca.has(id)) return false;
+            this.__marca.delete(id)
         } else {
-            if (this.__centros.get(id) === val) return false;
-            this.__centros.set(id, val)
+            if (this.__marca.get(id) === val) return false;
+            this.__marca.set(id, val)
         }
         this.toQuerty();
         return true;
     }
 
     public getMarca(id: number) {
-        return this.__centros.get(id)
+        return this.__marca.get(id)
     }
 
     private __getImputs() {
@@ -91,7 +98,7 @@ export class State {
 
     toForm() {
         this.__getImputs().forEach(i=>i.reset());
-        this.__centros.clear()
+        this.__marca.clear()
         const old = this.getQuerty()
         const qr = new URLSearchParams((new URL(document.location.href)).search);
         const gt = (k:string) => (qr.get(k)??"").split(',').flatMap((i) => {return (i=i.trim()).length?i:[]});
@@ -121,7 +128,7 @@ export class State {
             return (i: string) => {
                 const m = i.match(/^ctr(.+)$/);
                 if (m == null) return true;
-                decodeArray(m[1]).forEach(c=>this.__centros.set(c+DELTA, marca));
+                decodeArray(m[1]).forEach(c=>this.__marca.set(c+DELTA, marca));
                 return false;
             }
         }
@@ -192,7 +199,7 @@ export class State {
         })
         const ok_centro: number[] = [];
         const ko_centro: number[] = [];
-        this.__centros.forEach((v, k) => {
+        this.__marca.forEach((v, k) => {
             if (v === State.SELECCIONADO) ok_centro.push(k-DELTA);
             if (v === State.DESCARTADO) ko_centro.push(k-DELTA);
         });
@@ -264,4 +271,101 @@ export class State {
         });
         if (done.length) this.__onchange.push(fnc);
     }
+
+  public setCentros(centros: Centro[]) {
+    this.__centros.clear()
+    const latlon = new Set();
+    centros.forEach((c) => {
+        const ll = c.latlon;
+        while (latlon.has(c.latlon.toString())) {
+            c.longitud = c.longitud + 0.0001;
+        }
+        if (ll[1] != c.longitud)
+            console.log(c.id, `latlon ${ll} -> ${c.latlon}`);
+        latlon.add(c.latlon.toString());
+        this.__centros.set(c.id, c);
+    });
+  }
+  public get ok() {
+    return this.__ok;
+  }
+  public get ko() {
+    return this.__ko;
+  }
+  public get_distancias(): Distancias|null {
+    const cursorMarker = window.MAP.idlayer.get("marker");
+    if (!(cursorMarker instanceof L.CircleMarker)) return null;
+    const ll = cursorMarker.getLatLng();
+    const distance = new Map<number, number>()
+    this.__centros.forEach((c) => {
+        const d = get_distance(c.latitud, c.longitud, ll.lat, ll.lng);
+        distance.set(c.id, d)
+    });
+    return {
+      latitud: ll.lat,
+      longitud: ll.lng,
+      centro: distance,
+    };
+  }
+  public get_ok() {
+    return this.__ok.map((c) => this.getCentro(c));
+  }
+  public get_ko() {
+    return this.__ko.map((c) => this.getCentro(c));
+  }
+  public filter(fnc: ((c: Centro) => boolean)) {
+    this.__ok = [];
+    this.__ko = [];
+    this.__centros.forEach((c) => (fnc(c) ? this.__ok : this.__ko).push(c.id));
+  }
+  public getCentro(id: number) {
+    const c = this.__centros.get(id);
+    if (c == null) throw id + " not fund";
+    return c;
+  }
+
+  public get_estadistica(): EstadoCentros {
+    let seleccionados: Centro[] = [];
+    let descartados: Centro[] = [];
+    let hidden: Centro[] = [];
+    let shown: Centro[] = [];
+
+    this.__centros.forEach((c) => {
+      const marca = this.getMarca(c.id);
+      if (marca == State.SELECCIONADO) {
+        seleccionados.push(c);
+        return;
+      }
+      if (marca == State.DESCARTADO) {
+        descartados.push(c);
+        return;
+      }
+      if (this.__ok.includes(c.id)) {
+        shown.push(c);
+        return;
+      }
+      if (this.__ko.includes(c.id)) {
+        hidden.push(c);
+        return;
+      }
+    });
+
+    const dist = this.get_distancias();
+    if (dist != null) {
+      const d = dist.centro;
+      const cmp = (c1: Centro, c2: Centro) => d.get(c1.id)! - d.get(c2.id)!;
+      seleccionados = seleccionados.sort(cmp);
+      descartados = descartados.sort(cmp);
+      hidden = hidden.sort(cmp);
+      shown = shown.sort(cmp);
+    }
+
+    return {
+      seleccionados: seleccionados,
+      descartados: descartados,
+      hidden: hidden,
+      shown: shown,
+      distancias: dist,
+    };
+  }
 }

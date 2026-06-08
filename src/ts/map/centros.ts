@@ -5,13 +5,13 @@ import { set_transpo_layer } from "./transporte"
 import { set_area_layer } from './areas'
 import type { SchemaName } from "../../lib/supabaseClient";
 import { State } from "../../lib/state";
+import { dwnXlsxCentros } from "../../lib/export";
 
 import {
   getVal,
   Mail,
   dateToString,
   dedent,
-  get_distance,
 } from "../../lib/util";
 
 const DONAR = import.meta.env.VITE_DONAR;
@@ -44,116 +44,6 @@ const MSG_MAIL = Object.freeze({
   Muchas gracias.
   `),
 });
-
-class CentroManager {
-  private _c: { [id: number]: Centro } = {};
-  private _ok: number[] = [];
-  private _ko: number[] = [];
-  get all() {
-    return Object.values(this._c);
-  }
-  get ok() {
-    return this._ok;
-  }
-  get ko() {
-    return this._ko;
-  }
-  get_distancias() {
-    const cursorMarker = window.MAP.idlayer.get("marker");
-    if (!(cursorMarker instanceof L.CircleMarker)) return null;
-    const ll = cursorMarker.getLatLng();
-    const distance = Object.fromEntries(
-      this.all.map((c) => {
-        const d = get_distance(c.latitud, c.longitud, ll.lat, ll.lng);
-        return [c.id, d];
-      })
-    ) as {[id:number]: number};
-    return {
-      latitud: ll.lat,
-      longitud: ll.lng,
-      centro: distance,
-    };
-  }
-  get_ok() {
-    return this._ok.map((id) => this.get(id));
-  }
-  get_ko() {
-    return this._ko.map((id) => this.get(id));
-  }
-  filter() {
-    const fnc = mk_filter();
-    this._ok = [];
-    this._ko = [];
-    this.all.forEach((c) => (fnc(c) ? this._ok : this._ko).push(c.id));
-  }
-  get(id: number) {
-    const c = this._c[id];
-    if (c == null) throw id + " not fund";
-    return c;
-  }
-  set(centros: Centro[]) {
-    const latlon = new Set();
-    this._c = Object.fromEntries(
-      centros.map((c) => {
-        const ll = c.latlon;
-        while (latlon.has(c.latlon.toString())) {
-          c.longitud = c.longitud + 0.0001;
-        }
-        if (ll[1] != c.longitud)
-          console.log(c.id, `latlon ${ll} -> ${c.latlon}`);
-        latlon.add(c.latlon.toString());
-        return [c.id, c];
-      })
-    );
-  }
-
-  get_estadistica() {
-    let seleccionados: Centro[] = [];
-    let descartados: Centro[] = [];
-    let hidden: Centro[] = [];
-    let shown: Centro[] = [];
-
-    this.all.forEach((c) => {
-      const marca = State.getState().getMarca(c.id);
-      if (marca == State.SELECCIONADO) {
-        seleccionados.push(c);
-        return;
-      }
-      if (marca == State.DESCARTADO) {
-        descartados.push(c);
-        return;
-      }
-      if (this.ok.includes(c.id)) {
-        shown.push(c);
-        return;
-      }
-      if (this.ko.includes(c.id)) {
-        hidden.push(c);
-        return;
-      }
-    });
-
-    const dist = this.get_distancias();
-    if (dist != null) {
-      const d = dist.centro;
-      const cmp = (c1: Centro, c2: Centro) => d[c1.id] - d[c2.id];
-      seleccionados = seleccionados.sort(cmp);
-      descartados = descartados.sort(cmp);
-      hidden = hidden.sort(cmp);
-      shown = shown.sort(cmp);
-    }
-
-    return {
-      seleccionados: seleccionados,
-      descartados: descartados,
-      hidden: hidden,
-      shown: shown,
-      distancias: dist,
-    };
-  }
-}
-
-let CNT = new CentroManager();
 
 function get_icon(c: Centro) {
   const color = (() => {
@@ -188,7 +78,7 @@ function get_icon(c: Centro) {
 
 export function dwnConcurso() {
   DB.get_concurso_centros(id_concurso).then((centros) => {
-    CNT.set(centros);
+    State.getState().setCentros(centros);
     updateCentros(true);
     return centros;
   });
@@ -214,8 +104,9 @@ function updateCentros(centrar: boolean|undefined) {
       return;
     }
   }
-  CNT.filter();
-  document.getElementById("count")!.textContent = CNT.ok.length.toString();
+  const ST = State.getState();
+  ST.filter(mk_filter());
+  document.getElementById("count")!.textContent = ST.ok.length.toString();
   addMailLink();
   addCentrosLayer();
   updateList();
@@ -227,8 +118,9 @@ function updateCentros(centrar: boolean|undefined) {
 }
 
 function addMailLink() {
+  const ST = State.getState()
   const a = document.getElementById("maillink") as HTMLAnchorElement;
-  const mails = [...new Set(CNT.get_ok().flatMap((c) => c.emails))].sort();
+  const mails = [...new Set(ST.get_ok().flatMap((c) => c.emails))].sort();
   if (mails.length == 0) {
     a.href = "#";
     a.setAttribute("onclick", "return false");
@@ -488,10 +380,11 @@ function setCentroMarker(centro:Centro, refresh: boolean = false) {
 }
 
 function addCentrosLayer() {
-  CNT.get_ok().forEach((c) => {
+  const ST = State.getState();
+  ST.get_ok().forEach((c) => {
     setCentroMarker(c);
   });
-  CNT.ko.forEach((id) => {
+  ST.ko.forEach((id) => {
     window.MAP.removeLayerById("centro_"+id)
   });
 }
@@ -564,7 +457,8 @@ function setMark(e: L.LeafletMouseEvent | [number, number] | null) {
 }
 
 function updateList() {
-  const estadistica = CNT.get_estadistica();
+  const ST = State.getState();
+  const estadistica = ST.get_estadistica();
   const set_html = (id: string, html:string) =>
     (document.getElementById(id)!.innerHTML = html);
   set_html(
@@ -672,6 +566,7 @@ function list_centros(
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("download")!.addEventListener("click", dwnTxtCentros);
+  document.getElementById("xlsx")!.addEventListener("click", dwnXlsxCentros);
   const st = State.getState();
   st.onFiltro(()=>updateCentros(false));
   st.onTransporte(set_transpo_layer);
