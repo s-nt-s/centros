@@ -7,6 +7,7 @@ import type { EstadoCentros } from './tp'
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import type { Centro } from './supabaseClient'
+import { tooltip } from "leaflet";
 
 
 const applyHeaderStyle = (row: ExcelJS.Row) => {
@@ -48,26 +49,14 @@ const applySectionStyle = (cell: ExcelJS.Cell) => {
     };
 };
 
-const setupWorksheet = (ws: ExcelJS.Worksheet, cols: string[]) => {
-    const header = ws.addRow(cols);
-    applyHeaderStyle(header);
-
-    ws.views = [
-        {
-            state: "frozen",
-            ySplit: 1,
-            xSplit: 1
-        }
-    ];
-
-};
-
 const setAutoFilter = (ws: ExcelJS.Worksheet) => {
+   const header = ws.getRow(1);
+    applyHeaderStyle(header);
     ws.views = [
         {
             state: "frozen",
             ySplit: 1,
-            xSplit: 1
+            xSplit: 2
         }
     ];
 
@@ -103,8 +92,8 @@ const addSection = (
 
 
 const autofit = (ws: ExcelJS.Worksheet, ...widths: number[]) => {
-    ws.eachRow((row) => {
-        row.eachCell((cell) => {
+    ws.eachRow((row, r) => {
+        row.eachCell((cell, c) => {
             cell.font = {
                 ...(cell.font ?? {}),
                 name: "Consolas"
@@ -136,10 +125,19 @@ const autofit = (ws: ExcelJS.Worksheet, ...widths: number[]) => {
         column.width = max + 2;
     });
 
-    ws.eachRow((row) => {
+    ws.eachRow((row, r) => {
         let maxLines = 1;
 
-        row.eachCell((cell) => {
+        row.eachCell((cell, c) => {
+            if (r>1 && c == 1) {
+                console.log(cell.value);
+                cell.alignment = {
+                    vertical: "middle",
+                    horizontal: "center",
+                    wrapText: true
+                }
+                return;
+            }
             const value = cell.value?.toString() ?? "";
 
             maxLines = Math.max(
@@ -173,6 +171,7 @@ export async function dwnXlsxCentros(this: HTMLAnchorElement) {
     rs.addRow([resumen]);
 
     const cols = [
+        "⚙",
         "ID",
         "Tipo",
         "Nombre",
@@ -184,19 +183,22 @@ export async function dwnXlsxCentros(this: HTMLAnchorElement) {
 
     if (INFO.distancias != null) {
         const delta = 1000000;
+        const lat = Math.round(INFO.distancias.latitud*delta)/delta;
+        const lon = Math.round(INFO.distancias.longitud*delta)/delta;
         cols.push(
-            `Distancia en kms a\nlatitud=${Math.round(INFO.distancias.latitud*delta)/delta}\nlongitud=${Math.round(INFO.distancias.longitud*delta)/delta}`
+            `Distancia en kms a\nlatitud=${lat}\nlongitud=${lon}`
         );
     }
 
-    setupWorksheet(ok, cols);
-    setupWorksheet(ko, cols);
+    ok.addRow(cols).getCell(1).note="⭐ Seleccionado por mi\n🔍 Seleccionado por el filtro";
+    ko.addRow(cols).getCell(1).note="❌ Descartado por mi\n🚫 Descartado por el filtro";;
 
     const toRow = (c: Centro) => {
         const row: (string | number|any)[] = [
             {
-                text: String(c.id),
-                hyperlink: `https://gestiona.comunidad.madrid/wpad_pub/run/j/MostrarFichaCentro.icm?cdCentro=${c.id}`
+                text: c.id,
+                hyperlink: `https://gestiona.comunidad.madrid/wpad_pub/run/j/MostrarFichaCentro.icm?cdCentro=${c.id}`,
+                numFmt: '0',
             },
             c.tp.abr,
             c.nombre,
@@ -217,32 +219,31 @@ export async function dwnXlsxCentros(this: HTMLAnchorElement) {
     };
 
 
-    addSection(
-        ok,
-        "Centros seleccionados por mi",
-        INFO.seleccionados.map(toRow)
+    ok.addRows(
+         INFO.seleccionados.map(toRow).map(r=>{
+            return ["⭐"].concat(r)
+         })
+    );
+    ok.addRows(
+         INFO.shown.map(toRow).map(r=>{
+            return ["🔍"].concat(r)
+         })
     );
 
-    addSection(
-        ok,
-        "Centros seleccionados por el filtro",
-        INFO.shown.map(toRow)
+    ko.addRows(
+         INFO.descartados.map(toRow).map(r=>{
+            return ["❌"].concat(r)
+         })
+    );
+    ko.addRows(
+         INFO.hidden.map(toRow).map(r=>{
+            return ["🚫"].concat(r)
+         })
     );
 
-    addSection(
-        ko,
-        "Centros descartados por mi",
-        INFO.descartados.map(toRow)
-    );
 
-    addSection(
-        ko,
-        "Centros descartados por el filtro",
-        INFO.hidden.map(toRow)
-    );
-
-    autofit(ok, 10, 10);
-    autofit(ko, 10, 10);
+    autofit(ok, 8, 10, 10);
+    autofit(ko, 8, 10, 10);
     autofit(rs);
     setAutoFilter(ok);
     setAutoFilter(ko);
