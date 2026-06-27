@@ -27,6 +27,7 @@ class Github:
         return self._get(url)
 
     def __get_flags(self, comment: int, flags: str) -> dict[int, str]:
+        dup: set[int] = set()
         data: dict[int, str] = {}
         comentarios = self.get_comments(comment)
 
@@ -41,8 +42,11 @@ class Github:
                 k = int(cid)
                 if k in data:
                     del data[k]
+                    dup.add(k)
                 data[k] = flag
-
+        #data = dict(sorted(data.items()))
+        if dup:
+            logger.critical("Claves duplicadas: " + ", ".join(map(str, sorted(dup))))
         return data
 
     def get_accesibilidad(self) -> dict[int, str]:
