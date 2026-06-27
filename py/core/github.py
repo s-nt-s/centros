@@ -44,7 +44,7 @@ class Github:
                     del data[k]
                     dup.add(k)
                 data[k] = flag
-        #data = dict(sorted(data.items()))
+        data = dict(sorted(data.items()))
         if dup:
             logger.critical("Claves duplicadas: " + ", ".join(map(str, sorted(dup))))
         return data
