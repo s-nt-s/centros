@@ -30,7 +30,7 @@ for c in DB.to_tuple('''
     from
         centro c join tipo t on c.tipo=t.id
     where
-        c.tipo != '036'
+        c.tipo not in ('036', '020')
         and
         c.id in (
             select centro from concurso_anexo_centro

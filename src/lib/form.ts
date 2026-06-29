@@ -1,4 +1,4 @@
-function _tirmnull(s: string | null) {
+function _tirmnull(s: string | null | undefined) {
   if (s == null) return null;
   s = s.trim();
   if (s.length == 0) return null;
@@ -43,9 +43,20 @@ export class SelectString extends FormField<string | null, HTMLSelectElement | n
              qr
         );
     }
+    getTxt() {
+        if (this.node == null) return null;
+        const o = this.node.querySelector("option[value='"+this.node.value+"']");
+        const t = _tirmnull(o?.textContent);
+        return t;
+    }
     get() {
         if (this.node == null) return this.__default;
         return _tirmnull(this.node.value);
+    }
+    getSplit(sep: string) {
+        const v = this.get();
+        if (v == null) return [];
+        return v.split(sep);
     }
     set(v: string) {
         if (this.node == null) return false;
@@ -59,7 +70,6 @@ export class SelectString extends FormField<string | null, HTMLSelectElement | n
         return true;
     }
 }
-
 
 export class SelectNumber extends FormField<number | null, HTMLSelectElement | null> {
     constructor(slc: string, defVal: number | null, qr: string) {

@@ -261,14 +261,15 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     if (tipos.length == 0) return "Ocultar todos";
     const kms = st.kms.get();
     const filtro = [];
-    const accesibilidad = st.accesible.get() === (!invertir);
+    const accesibilidad = st.accesibilidad.getTxt();
     if (accesibilidad) {
-      filtro.push("* Centros sin barreras arquitectónicas");
+      filtro.push("* Centros con nivel de accesibilidad "+(invertir?"menor":"igual o mayor")+" que "+accesibilidad);
     }
     if (kms!=null) {
       filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + kms + " metros de una estación");
     }
     _get("#settings select").forEach(s=>{
+      if (s == st.accesibilidad.node) return;
       if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
       const opts = Array.from(s.options).filter(o=>o.value.trim().length > 0);
       const label = s.getAttribute("data-label")||"";
@@ -380,8 +381,15 @@ function getPopUp(c: Centro) {
   `;
 
   body = [];
-  if (c.accesible === true) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">♿ Accesible</a>');
-  if (c.accesible === false) body.push('<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/issues/9">😞 No accesible</a>');
+  const accesible = {
+    "TA": "♿ accesible",
+    "PA": "🤔 parcialmente accesible",
+    "NA": "😞 no accesible",
+    '': null
+  }[c.accesible??''];
+  if (accesible != null) {
+    body.push(`<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/wiki/Accesibilidad">${accesible}</a>`);
+  }
   if (c.dificultad) body.push("<b title='Centro de especial dificultad'>🌶 Especial dificultad</b>");
   if (c.nocturno) body.push("<b title='Turno nocturno'>🌑 Nocturno</b>");
   const tags = [];
@@ -505,6 +513,7 @@ function mk_filter() {
   const fpdual = st.fpdual.get();
   const transporte = st.kms.get();
   const invertir = st.invertir.get();
+  const accesibilidad = st.accesibilidad.getSplit(",");
   const _isOk = (c: Centro) => {
     let i;
     if (!ok_tipo.includes(c.tp.id)) return false;
@@ -513,7 +522,7 @@ function mk_filter() {
     }
     if (st.excelencia.get() === false && c.excelencia) return false;
     if (st.nocturno.get() === false && c.nocturno) return false;
-    if (st.accesible.get() === true && !c.accesible) return false;
+    if (accesibilidad.length && (c.accesible == null || !accesibilidad.includes(c.accesible))) return false;
     if (st.innovacion.get() === false && c.innovacion) return false;
     if (st.dificultad.get() === false &&c.dificultad) return false;
     if (jornada != null && c.jornada!=jornada) return false;

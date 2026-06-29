@@ -12,6 +12,7 @@ export class State {
     public readonly tipo = new InputGroupBoolean("#tipos input", [], "", "t");
     public readonly kms = new InputNumber("#kms", null, "km");
     public readonly jornada = new SelectString("#jornada", null, 'j');
+    public readonly accesibilidad = new SelectString("#accesibilidad", null, 'acc');
     public readonly etapa = new SelectNumber("#etapa", null, 'e');
     public readonly fpdual = new SelectString("#fpdual", null, 'fp');
     public readonly nocturno = new InputBoolean("#nocturno", true, 'noc');
@@ -19,7 +20,6 @@ export class State {
     public readonly excelencia = new InputBoolean("#excelencia", true, 'exc');
     public readonly innovacion = new InputBoolean("#innovacion", true, 'inn');
     public readonly idioma = new InputGroupBoolean("input[name='idioma']", [], "");
-    public readonly accesible = new InputBoolean("#accesible", false, "acc");
     public readonly invertir = new InputBoolean("#invertir", false, "inv");
     public readonly areas = new InputBoolean("#areas", false, "are");
     public readonly estaciones = new InputBoolean("#estaciones", false, "e");
@@ -96,6 +96,7 @@ export class State {
         const qr = new URLSearchParams((new URL(document.location.href)).search);
         const gt = (k:string) => (qr.get(k)??"").split(',').flatMap((i) => {return (i=i.trim()).length?i:[]});
         [
+            this.accesibilidad,
             this.jornada,
             this.etapa,
             this.kms,
@@ -132,7 +133,6 @@ export class State {
             this.dificultad,
             this.excelencia,
             this.innovacion,
-            this.accesible,
             this.invertir,
             this.areas,
         ].forEach((i) => {
@@ -156,6 +156,7 @@ export class State {
         const ok: string[] = [];
         const ko: string[] = [];
         [
+            this.accesibilidad,
             this.jornada,
             this.etapa,
             this.kms,
@@ -184,7 +185,6 @@ export class State {
             if(i.get() === false) ko.push(i.qr);
         });
         [
-            this.accesible,
             this.invertir,
             this.areas,
         ].forEach((i) => {
@@ -222,7 +222,7 @@ export class State {
             this.excelencia.node,
             this.innovacion.node,
             ...this.idioma.node,
-            this.accesible.node,
+            this.accesibilidad.node,
             this.invertir.node,
             this.fpdual.node
         ]

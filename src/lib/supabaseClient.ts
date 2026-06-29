@@ -154,7 +154,7 @@ class DBConcurso {
       const q = _isS(query, c.id);
       const e = _isN(etapas, c.id);
       const a = get_flag(centro_accesib, c.id);
-      if (['+', '-'].includes(a)) q.push("githubAccesible="+a);
+      if (['+', '-', 'p',].includes(a)) q.push("githubAccesible="+a);
       return new Centro(
         c,
         t,
@@ -242,7 +242,7 @@ class Concurso {
   public readonly aleman: readonly number[];
   public readonly jornadas: readonly string[];
   public readonly etapas: readonly Tables<"macro_etapa">[];
-  public readonly accesible: readonly number[];
+  //public readonly accesible: readonly number[];
 
   constructor(
     concurso: Tables<"concurso">,
@@ -274,7 +274,7 @@ class Concurso {
     this.ingles = _gids(c=>c.ingles);
     this.frances = _gids(c=>c.frances);
     this.aleman = _gids(c=>c.aleman);
-    this.accesible = _gids(c=>c.accesible === true);
+    //this.accesible = _gids(c=>c.accesible !== null);
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
@@ -334,7 +334,6 @@ class Concurso {
         this.ingles,
         this.aleman,
         this.frances,
-        this.accesible,
       ].filter((arr) => arr.length > 0).length > 0
     );
   }
@@ -422,18 +421,23 @@ class Centro {
   }
 
   get accesible() {
-    if (this.isQuery("githubAccesible=+")) return true;
-    if (this.isQuery("githubAccesible=-")) return false;
+    if (this.isQuery("githubAccesible=+")) return "TA";
+    if (this.isQuery("githubAccesible=p")) return "PA";
+    if (this.isQuery("githubAccesible=-")) return "NA";
     // Los hospitales por defecto son accesibles
-    if (this.tipo == "036") return true;
+    if (this.tipo == "036") return "TA";
     // Instalación no accesible para personas con movilidad reducida
-    if (this.isQuery("accesibilidad=0")) return false;
+    if (this.isQuery("accesibilidad=0")) return "NA";
     // Instalación accesible para personas con movilidad reducida
-    if (this.isQuery("accesibilidad=1")) return true;
+    if (this.isQuery("accesibilidad=1")) return "TA";
     // Instalación parcialmente accesible para personas con movilidad reducida
-    if (this.isQuery("accesibilidad=2")) return true;
-    // Centro motorico
-    if (this.isQuery("checkIntegraM=S")) return true;
+    if (this.isQuery("accesibilidad=2")) return "PA";
+    // Centro motórico
+    if (this.isQuery("checkIntegraM=S")) return "TA";
+    // Colegio de educación especial
+    if (this.tipo == "020") return "TA";
+    // Equipo de orientación educativa y psicopedagógica
+    //if (["204", "205", "206"].includes(this.tipo)) return "NA";
     return null;
   }
   get motorico() {

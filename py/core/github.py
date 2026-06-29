@@ -26,17 +26,22 @@ class Github:
         url = f"https://api.github.com/repos/{self.__repo}/issues/{issue}/comments"
         return self._get(url)
 
-    def __get_flags(self, comment: int, flags: str) -> dict[int, str]:
-        dup: set[int] = set()
-        data: dict[int, str] = {}
-        comentarios = self.get_comments(comment)
+    def __get_flags(self, issue: int, flags: str) -> dict[int, str]:
+        txts: list[str] = [] 
+        comentarios = self.get_comments(issue)
 
         for comment in comentarios:
             body = comment.get("body")
-            if not isinstance(body, str):
-                continue
+            if isinstance(body, str):
+                txts.append(body)
+        return self.__get_flags_from_text(flags, *txts)
+
+    def __get_flags_from_text(self, flags: str, *args: str) -> dict[int, str]:
+        dup: set[int] = set()
+        data: dict[int, str] = {}
+        for body in args:
             for flag, cid in re.findall(
-                r"(["+re.escape(flags)+"])(28\d+)",
+                r"(["+re.escape(flags)+r"])(28\d+)",
                 body
             ):
                 k = int(cid)
@@ -50,7 +55,18 @@ class Github:
         return data
 
     def get_accesibilidad(self) -> dict[int, str]:
+        return self.get_wiki_accesibilidad()
+
+    def __get_issue_accesibilidad(self):
         return self.__get_flags(9, '-+?')
+
+    def get_wiki_accesibilidad(self):
+        req = Request(
+            "https://raw.githubusercontent.com/wiki/s-nt-s/centros/Accesibilidad.md"
+        )
+        with urlopen(req) as response:
+            body = response.read().decode()
+            return self.__get_flags_from_text('-+p?', body)
 
     def get_jornada(self) -> dict[int, str]:
         return self.__get_flags(10, 'cp')
