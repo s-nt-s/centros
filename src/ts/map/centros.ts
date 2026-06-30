@@ -254,35 +254,16 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
       `Punto de refrencia: ${estadistica.distancias.latitud},${estadistica.distancias.longitud}\n`;
   }
 
+  const st = State.getState();
   const filtro = (()=>{
-    const st = State.getState();
-    const invertir = st.invertir.get() === true;
-    const tipos = (invertir?st.tipo.getKoInputs():st.tipo.getOkInputs()).map(i=>i.title);
+    const filtro = [];
+    const tipos = st.tipo.getOkInputs().map(i=>i.title);
     if (tipos.length == 0) return "Ocultar todos";
     const kms = st.kms.get();
-    const filtro = [];
-    const accesibilidad = st.accesibilidad.getTxt();
-    if (accesibilidad) {
-      filtro.push("* Centros con nivel de accesibilidad "+(invertir?"menor":"igual o mayor")+" que "+accesibilidad);
-    }
-    if (kms!=null) {
-      filtro.push("* Centros a "+(invertir?"más":"menos")+" de " + kms + " metros de una estación");
-    }
     _get("#settings select").forEach(s=>{
-      if (s == st.accesibilidad.node) return;
       if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
-      const opts = Array.from(s.options).filter(o=>o.value.trim().length > 0);
       const label = s.getAttribute("data-label")||"";
       const opt = s.selectedOptions[0];
-      if (opts.length == 2) {
-        const o = invertir?opts.filter(o=>!o.selected)[0]:opt;
-        filtro.push("* " +label+ o.textContent);
-        return;
-      }
-      if (invertir) {
-        filtro.push("* " +label+"Cualquiera menos: " +opt.textContent);
-        return 
-      }
       filtro.push("* " +label+opt.textContent);
     });
     filtro.push("* Tipos de centro:");
@@ -294,7 +275,6 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
       const inputs = Array.from(f.querySelectorAll("input:not(.check_to_hide)")).flatMap(i=>{
         if (!(i instanceof HTMLInputElement)) return [];
         let isChecked = i.checked;
-        if (invertir) isChecked = !isChecked;
         if (isChecked) return [];
         return (i.getAttribute("data-label")||i.title||i.textContent?.trim())??"";
       })
@@ -312,7 +292,12 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     return "\n"+filtro.join("\n").trim();
   })();
 
-  txt = txt + "\nFiltro: " + filtro + "\n";
+  if (st.invertir.get() === true) {
+      txt = txt + "\nFiltro (**OJO**, esta invertido): ";
+  } else {
+      txt = txt + "\nFiltro: ";
+  }
+    txt = txt + filtro + "\n";
   let cols = [
     ["Centros seleccionados por mi", estadistica.seleccionados],
     ["Centros seleccionados por el filtro", estadistica.shown],
@@ -382,9 +367,9 @@ function getPopUp(c: Centro) {
 
   body = [];
   const accesible = {
-    "TA": "♿ accesible",
-    "PA": "🤔 parcialmente accesible",
-    "NA": "😞 no accesible",
+    "TA": "♿ Accesible",
+    "PA": "🤔 Parcialmente accesible",
+    "NA": "😞 No accesible",
     '': null
   }[c.accesible??''];
   if (accesible != null) {
@@ -522,7 +507,9 @@ function mk_filter() {
     }
     if (st.excelencia.get() === false && c.excelencia) return false;
     if (st.nocturno.get() === false && c.nocturno) return false;
-    if (accesibilidad.length && (c.accesible == null || !accesibilidad.includes(c.accesible))) return false;
+    if (accesibilidad.length) {
+      if (!accesibilidad.includes(c.accesible??"NULL")) return false;
+    }
     if (st.innovacion.get() === false && c.innovacion) return false;
     if (st.dificultad.get() === false &&c.dificultad) return false;
     if (jornada != null && c.jornada!=jornada) return false;
