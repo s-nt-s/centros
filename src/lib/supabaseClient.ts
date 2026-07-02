@@ -8,6 +8,12 @@ import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase
 type TableName = "centro" | "tipo" | "concurso";
 type SchemaName = keyof Database;
 
+type AlumnadoEtapa = {
+  etapa: string;
+  alumnado: number;
+};
+
+
 function get_flag(obj: any, id: number) {
   const a = (obj as {[key: string]: string})[id.toString()];
   return a;
@@ -147,6 +153,7 @@ class DBConcurso {
     const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
     const query = await this._get_concurso_query(id);
     const etapas = await this._get_concurso_etapas(id);
+    const alumnado = await this._get_alumnado(id);
     const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
     const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
@@ -154,12 +161,14 @@ class DBConcurso {
       const q = _isS(query, c.id);
       const e = _isN(etapas, c.id);
       const a = get_flag(centro_accesib, c.id);
+      const al = alumnado[c.id]??[];
       if (['+', '-', 'p',].includes(a)) q.push("githubAccesible="+a);
       return new Centro(
         c,
         t,
         q,
-        e
+        e,
+        al
       );
     }) as Centro[]
   }
@@ -207,6 +216,21 @@ class DBConcurso {
     etapas.forEach(e=>{
       if (obj[e.etapa]==null) obj[e.etapa]=[];
       obj[e.etapa].push(e.centro);
+    })
+    return Object.freeze(obj);
+  }
+  private async _get_alumnado(id: string) {
+    const obj: {[id:number]: AlumnadoEtapa[]} = {}
+    const etapas: Tables<'alumnado'>[] = this.get_data(
+      `alumnado[${id}]`,
+      await this.from(id+'_alumnado').select('*')
+    );
+    etapas.forEach(e=>{
+      if (obj[e.centro]==null) obj[e.centro]=[];
+      obj[e.centro].push({
+        etapa: e.etapa,
+        alumnado: e.alumnado
+      });
     })
     return Object.freeze(obj);
   }
@@ -278,6 +302,21 @@ class Concurso {
     this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
   }
 
+  get alumnado() {
+    const obj: {[id:string]: {mn: number, mx: number}} = {};
+    this.centros.forEach(c=>{
+      c.alumnado.forEach(a=>{
+        const k = a.etapa;
+        if (obj[k] == null) obj[k] = {mn: a.alumnado, mx: a.alumnado};
+        else {
+          obj[k].mn = Math.min(obj[k].mn, a.alumnado);
+          obj[k].mx = Math.max(obj[k].mx, a.alumnado);
+        }
+      })
+    })
+    return Object.freeze(obj);
+  }
+
   get showFP() {
     const spl = this.id.split("-");
     const id = spl[spl.length-1];
@@ -344,17 +383,24 @@ class Centro {
   private readonly _t: Tables<"tipo">;
   readonly queries: readonly string[];
   readonly etapas: readonly number[];
+  readonly alumnado: readonly AlumnadoEtapa[];
 
   constructor(
     centro: Tables<"centro">,
     tipo: Tables<"tipo">,
     queries: string[],
-    etapas: number[]
+    etapas: number[],
+    alumnado: AlumnadoEtapa[]
   ) {
     this._c = centro;
     this._t = tipo;
     this.queries = Object.freeze(queries);
     this.etapas = Object.freeze(etapas);
+    this.alumnado = Object.freeze(alumnado);
+  }
+
+  get alumnos(): number {
+    return this.alumnado.reduce((acc, a) => acc + a.alumnado, 0);
   }
 
   get id(): number {

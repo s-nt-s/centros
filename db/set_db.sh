@@ -37,6 +37,9 @@ function mk_schema () {
                 else
             echo "  DO \$\$ CREATE VIEW ${cc}_${tb} with (security_invoker=on) AS (select * from ${tb} where ${col} in (select id from ${cc}_ctr)); \$\$" >> "aux/config.load"
                 fi
+                if [ "$tb" == "ALUMNADO" ]; then
+            echo "  DO \$\$ CREATE VIEW ${cc}_alumnado_etapa with (security_invoker=on) AS (select etapa, max(alumnado) mx, min(alumnado) mn from ${cc}_alumnado group by etapa order by etapa); \$\$" >> "aux/config.load"
+                fi
                 done
             done
         done
