@@ -411,7 +411,7 @@ class Centro {
     return {
       year: year,
       total: total,
-      title: `Cursos ${year}: ${arr.join(", ")}`
+      title: `Curso ${year}-${year+1}: ${arr.join(", ")}`
     }
   }
 
