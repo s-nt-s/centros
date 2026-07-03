@@ -342,6 +342,7 @@ function getPopUp(c: Centro) {
     `Código: <b>${c.id}</b>`,
     `<a href="geo:${c.latitud},${c.longitud}" title="Coordenadas: ${c.latitud}, ${c.longitud}">${c.direccion}</a>`,
   ];
+  if (c.alumnos != null) body[0] = body[0] + ` <span title="${c.alumnos.title}">(${c.alumnos.total} 🧑)</span>`;
   let links = c.web.map(lk=>{
     if (lk.match(/www\.madrid\.es/)) return `<a href="${lk}">madrid.es</a>`;
     return `<a href="${lk}">Web</a>`;
