@@ -80,5 +80,37 @@ UPDATE CONCURSO_ANEXO SET txt=REPLACE(txt, 'Colegios públicos ', 'Colegios ');
 UPDATE CENTRO SET latitud=0 where latitud is null;
 UPDATE CENTRO SET longitud=0 where longitud is null;
 
+ALTER TABLE CENTRO ADD COLUMN CURSO_ALUMNADO INTEGER NOT NULL DEFAULT 0;
+UPDATE CENTRO SET CURSO_ALUMNADO = COALESCE(
+    (
+        SELECT MAX(CURSO)
+        FROM ALUMNADO
+        WHERE ALUMNADO.CENTRO = CENTRO.ID
+    ),
+    0
+);
+DELETE FROM ALUMNADO
+WHERE CURSO != (
+    SELECT MAX(a2.CURSO)
+    FROM ALUMNADO AS a2
+    WHERE a2.CENTRO = ALUMNADO.CENTRO
+);
+
+ALTER TABLE ALUMNADO RENAME TO OLD_ALUMNADO;
+
+CREATE TABLE ALUMNADO (
+    centro INTEGER NOT NULL,
+    etapa TEXT NOT NULL,
+    alumnado INTEGER NOT NULL,
+    PRIMARY KEY (centro, etapa),
+    FOREIGN KEY (centro) REFERENCES CENTRO(id)
+);
+
+INSERT INTO ALUMNADO (centro, etapa, alumnado)
+SELECT centro, etapa, alumnado
+FROM OLD_ALUMNADO;
+
+DROP TABLE OLD_ALUMNADO;
+
 pragma integrity_check;
 pragma foreign_key_check;

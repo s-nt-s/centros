@@ -18,19 +18,16 @@ export type Database = {
         Row: {
           alumnado: number
           centro: number
-          curso: number
           etapa: string
         }
         Insert: {
           alumnado: number
           centro: number
-          curso: number
           etapa: string
         }
         Update: {
           alumnado?: number
           centro?: number
-          curso?: number
           etapa?: string
         }
         Relationships: [
@@ -139,6 +136,7 @@ export type Database = {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number
           dificultad: number
           distrito: string | null
           domicilio: string | null
@@ -157,6 +155,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number
           dificultad?: number
           distrito?: string | null
           domicilio?: string | null
@@ -175,6 +174,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number
           dificultad?: number
           distrito?: string | null
           domicilio?: string | null
@@ -1226,19 +1226,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -1328,10 +1325,19 @@ export type Database = {
           },
         ]
       }
+      concursillo_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       concursillo_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -1350,6 +1356,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -1368,6 +1375,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -1612,19 +1620,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -1714,10 +1719,19 @@ export type Database = {
           },
         ]
       }
+      concursillo_diseno_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       concursillo_diseno_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -1736,6 +1750,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -1754,6 +1769,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -2731,19 +2747,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -2833,10 +2846,19 @@ export type Database = {
           },
         ]
       }
+      concursillo_eoi_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       concursillo_eoi_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -2855,6 +2877,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -2873,6 +2896,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -4276,19 +4300,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -4378,10 +4399,19 @@ export type Database = {
           },
         ]
       }
+      concursillo_magisterio_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       concursillo_magisterio_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -4400,6 +4430,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -4418,6 +4449,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -5395,19 +5427,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -5497,10 +5526,19 @@ export type Database = {
           },
         ]
       }
+      concursillo_musica_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       concursillo_musica_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -5519,6 +5557,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -5537,6 +5576,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -6821,19 +6861,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -6923,10 +6960,19 @@ export type Database = {
           },
         ]
       }
+      diseno_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       diseno_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -6945,6 +6991,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -6963,6 +7010,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -7940,19 +7988,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -8042,10 +8087,19 @@ export type Database = {
           },
         ]
       }
+      eoi_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       eoi_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -8064,6 +8118,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -8082,6 +8137,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -9059,19 +9115,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -9161,10 +9214,19 @@ export type Database = {
           },
         ]
       }
+      fp_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       fp_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -9183,6 +9245,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -9201,6 +9264,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -10178,19 +10242,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -10280,10 +10341,19 @@ export type Database = {
           },
         ]
       }
+      magisterio_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       magisterio_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -10302,6 +10372,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -10320,6 +10391,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -11297,19 +11369,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -11399,10 +11468,19 @@ export type Database = {
           },
         ]
       }
+      musica_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       musica_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -11421,6 +11499,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -11439,6 +11518,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -12416,19 +12496,16 @@ export type Database = {
         Row: {
           alumnado: number | null
           centro: number | null
-          curso: number | null
           etapa: string | null
         }
         Insert: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Update: {
           alumnado?: number | null
           centro?: number | null
-          curso?: number | null
           etapa?: string | null
         }
         Relationships: [
@@ -12518,10 +12595,19 @@ export type Database = {
           },
         ]
       }
+      secundaria_alumnado_etapa: {
+        Row: {
+          etapa: string | null
+          mn: number | null
+          mx: number | null
+        }
+        Relationships: []
+      }
       secundaria_centro: {
         Row: {
           area: string | null
           cp: number | null
+          curso_alumnado: number | null
           dificultad: number | null
           distrito: string | null
           domicilio: string | null
@@ -12540,6 +12626,7 @@ export type Database = {
         Insert: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null
@@ -12558,6 +12645,7 @@ export type Database = {
         Update: {
           area?: string | null
           cp?: number | null
+          curso_alumnado?: number | null
           dificultad?: number | null
           distrito?: string | null
           domicilio?: string | null

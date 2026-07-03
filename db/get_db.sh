@@ -20,6 +20,8 @@ else
     cat "$SRC" | sqlite3 db.sqlite
 fi
 
-sqlite3 db.sqlite "SELECT 'DROP VIEW ' || name || ';' FROM sqlite_master WHERE type='view'; SELECT sql || ';' FROM sqlite_master WHERE type='view'" > view.sql
+sqlite3 db.sqlite "SELECT sql || ';' FROM sqlite_master WHERE type='view'" > create_view.sql
+sqlite3 db.sqlite "SELECT 'DROP VIEW ' || name || ';' FROM sqlite_master WHERE type='view';" > drop_view.sql
+sqlite3 db.sqlite < drop_view.sql
 sqlite3 db.sqlite < filter.sql
-sqlite3 db.sqlite < view.sql
+sqlite3 db.sqlite < create_view.sql
