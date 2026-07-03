@@ -400,7 +400,8 @@ class Centro {
   }
 
   get alumnos() {
-    if (this._c.curso_alumnado == 0) return null;
+    const year = this._c.curso_alumnado;
+    if (year == 0) return null;
     const arr: string[] = [];
     let total = 0;
     this.alumnado.forEach(a=>{
@@ -408,8 +409,9 @@ class Centro {
       arr.push(`${a.alumnado} en ${a.etapa}`);
     })
     return {
+      year: year,
       total: total,
-      title: arr.join(", ")
+      title: `Cursos ${year}: ${arr.join(", ")}`
     }
   }
 
