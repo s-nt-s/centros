@@ -222,9 +222,9 @@ def get_etapa(abr: str, etp: str):
         return None
 
     if re.search(r"(" + "|".join([
-        r"\beducaci[oó]n( infantil)? especial",
-        r"Educaci[óo]n Básica Obligatoria",
-        r"programa formaci[óo]n transición vida adulta",
+        r"educaci[oó]n( infantil)? especial",
+        r"Educaci[óo]n B[aá]sica Obligatoria",
+        r"programa formaci[óo]n transici[oó]n vida adulta",
     ]) + r")", etp, flags=re.I):
         for t, r in _iter_re_dict({
             "Talleres formativos": (
