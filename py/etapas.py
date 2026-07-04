@@ -427,9 +427,9 @@ def get_etapa(abr: str, etp: str):
         return SECUNDARIA
     if _re(r"\b(infantil|primaria)\b"):
         if _re(r"\binfantil\b"):
-            if _re(r"\b(primer|I|1)\b.*\bciclo\b"):
+            if _re(r"\b(primer|I|1[ºª])\b.*\bciclo\b"):
                 return MAGISTERIO.merge(txt="Infantil 1º ciclo")
-            if _re(r"\b(segundo|II|2)\b.*\bciclo\b"):
+            if _re(r"\b(segundo|II|2[ºª])\b.*\bciclo\b"):
                 return MAGISTERIO.merge(txt="Infantil 2º ciclo")
             return MAGISTERIO.merge(txt="Infantil")
         return MAGISTERIO.merge(txt="Primaría")
