@@ -18,7 +18,7 @@ select distinct
 from (
 	select centro, nombre txt from ETAPA_NOMBRE_CENTRO
 	union
-	select ec.centro, e.txt from ETAPA e join ETAPA_CENTRO ec on ec.etapa=e.
+	select ec.centro, e.txt from ETAPA e join ETAPA_CENTRO ec on ec.etapa=e.id
     union
     select centro, etapa txt from ALUMNADO
 )
