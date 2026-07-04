@@ -482,7 +482,7 @@ KO = set()
 with DBLite(ARG.db) as db:
     db.execute("sql/etapas.sql")
     for c, abr, etp in db.to_tuple('''
-        select 
+        select
             e.centro,
             t.abr,
             e.txt
