@@ -229,6 +229,7 @@ def get_etapa(abr: str, etp: str):
         for t, r in _iter_re_dict({
             "Talleres formativos": (
                 r"Programas de transición a la vida adulta",
+                r"Programa formación transición vida adulta",
                 r"Talleres formativos",
             ),
             "Educación básica obligatoria": (
