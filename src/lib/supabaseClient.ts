@@ -93,6 +93,20 @@ class DBConcurso {
     );
     return jnd as Tables<"jornada">[];
   }
+  async get_centros() {
+    const cnt = this.get_data(
+      `centro`,
+      await this.from("centro").select()
+    );
+    return cnt as Tables<"centro">[];
+  }
+  async get_tipos() {
+    const tps = this.get_data(
+      `tipo`,
+      await this.from("tipo").select()
+    );
+    return tps as Tables<"tipo">[];
+  }
   async get_etapas() {
     const jnd = this.get_data(
       `macro_etapa`,
