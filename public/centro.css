@@ -1,0 +1,54 @@
+body {
+  font-family: DejaVu Sans, Arial, Sans Serif;
+  font-size: 0.75em;
+}
+body {
+  font-family: Arial, sans-serif;
+  font-size: 11pt;
+  margin: 0;
+  --max-width: 500px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+header, footer {
+  padding: 1em;
+  clear: both;
+  margin: 0;
+  color: #fff;
+  background-color: #d32f2f; /* Rojo Comunidad de Madrid */
+}
+
+footer {
+  margin-top: 16px;
+}
+
+footer p:first-child {
+  margin-top: 0;
+}
+
+footer p:last-child {
+  margin-bottom: 0;
+}
+
+header {
+  margin-bottom: 16px;
+}
+
+header p:first-child {
+  margin-top: 0;
+}
+
+header p:last-child {
+  margin-bottom: 0;
+}
+
+header a, footer a {
+  color: inherit;
+}
+
+main {
+  margin: auto;
+  max-width: var(--max-width);
+  padding: 16px 1em;
+}

@@ -1,11 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { smart_title, to_dict, toTitle } from "./util";
+import { smart_title, toTitle } from "./util";
 import centro_accesib from '../assets/accesibilidad.json';
 import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
 
-type TableName = "centro" | "tipo" | "concurso";
+type TableName = keyof Database["public"]["Tables"];
+type IdTableName = "tipo" | "jornada" | "query" | "macro_etapa" | "etapa" | "concurso" | "centro" | "area";
 type SchemaName = keyof Database;
 
 type AlumnadoEtapa = {
@@ -58,20 +59,21 @@ class DBConcurso {
     return obj.data;
   }
 
-  private async get_one(table: TableName, id: number | string) {
-    const r = await this.get(table, id);
+  public async get_one<T extends TableName>(table: T, id: number | string) {
+    const r = await this.get<T>(table, id);
     if (r.length == 1) return r[0];
     throw `${table}[id=${id}] devuelve ${r.length} resultados`;
   }
 
-  private async get(table: TableName, ...ids: (number | string)[]) {
+  public async get<T extends TableName>(table: T, ...ids: (number | string)[]): Promise<Tables<T>[]> {
     let prm = this.from(table).select();
     if (ids.length == 1) prm = prm.eq('id', ids[0]);
     else if (ids.length>1) prm = prm.in('id', ids);
-    return this.get_data(
+    const data = this.get_data(
       ids.length==0?table:`${table}[id=${ids}]`,
       await prm
     );
+    return data as Tables<T>[];
   }
 
   async get_concursos() {
@@ -86,43 +88,16 @@ class DBConcurso {
     }
     return obj
   }
-  async get_jornadas() {
-    const jnd = this.get_data(
-      `jornada`,
-      await this.from("jornada").select()
-    );
-    return jnd as Tables<"jornada">[];
-  }
-  async get_centros() {
-    const cnt = this.get_data(
-      `centro`,
-      await this.from("centro").select()
-    );
-    return cnt as Tables<"centro">[];
-  }
-  async get_tipos() {
-    const tps = this.get_data(
-      `tipo`,
-      await this.from("tipo").select()
-    );
-    return tps as Tables<"tipo">[];
-  }
-  async get_etapas() {
-    const jnd = this.get_data(
-      `macro_etapa`,
-      await this.from("macro_etapa").select()
-    );
-    return jnd as Tables<"macro_etapa">[];
-  }
-  async get_etapas_sub() {
-    const jnd = this.get_data(
-      `macro_etapa_sub`,
-      await this.from("macro_etapa_sub").select()
-    );
-    return jnd as Tables<"macro_etapa_sub">[];
+  async get_dict<T extends IdTableName>(tb: T, ...ids: (number | string)[]){
+    const arr = await this.get<T>(tb, ...ids);
+    const data = new Map<string|number, Tables<T>>();
+    arr.forEach((q) => {
+      data.set(q.id, q);
+    });
+    return data;
   }
   async get_concurso(c: string|Tables<"concurso">) {
-    if (typeof c == "string") c=(await this.get_one("concurso", c)) as Tables<"concurso">
+    if (typeof c == "string") c=await this.get_one("concurso", c);
     const anx = this.get_data(
       `anexo[concurso=${c.id}]`,
       await this.from("concurso_anexo").select().eq("concurso", c.id)
@@ -140,38 +115,16 @@ class DBConcurso {
       centros
     );
   }
-  async _get_educacion_especial() {
-    const aux = (this.get_data(
-      `etapa_nombre_centro[educación especial].centro`,
-      (await this.from('etapa_nombre_centro').select(
-        'centro'
-      ).ilike('nombre', '%Educación Especial%')),
-    ) as Tables<'etapa_nombre_centro'>[]).map(c=>c.centro);
-    const cids = new Set(aux);
-    const eids = (this.get_data(
-      `etapa[educación especial].id`,
-      (await this.from('etapa').select('id').ilike('txt', '%Educación Especial%')),
-    ) as Tables<'etapa'>[]).map(e=>e.id);
-    if (eids.length) {
-      (this.get_data(
-        `etapa_centro[ids].centro`,
-        await this.from('etapa_centro').select('centro').in('etapa', eids)
-      ) as Tables<'etapa_centro'>[]).forEach(c => {
-        cids.add(c.centro)
-      });
-    }
-    return [...cids].sort()
-  }
   async get_concurso_centros(id: string, with_latlon: boolean = true) {
     const cetrs = await this._get_concurso_centros(id, with_latlon);
-    const tipos = to_dict(await this.get('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo)))));
+    const tipos = await this.get_dict('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo))));
     const query = await this._get_concurso_query(id);
     const etapas = await this._get_concurso_etapas(id);
     const alumnado = await this._get_alumnado(id);
     const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
     const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
     return cetrs.map(c=>{
-      const t = tipos[c.tipo] as Tables<'tipo'>;
+      const t = tipos.get(c.tipo)!;
       const q = _isS(query, c.id);
       const e = _isN(etapas, c.id);
       const a = get_flag(centro_accesib, c.id);

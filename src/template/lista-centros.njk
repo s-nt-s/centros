@@ -1,0 +1,7 @@
+<div id="lista-centros">
+{% for c in centros %}
+<p>
+    <a target="_self" href="?{{c.id}}">{{c.id}} <abbr title="{{tipos.get(c.tipo).txt}}">{{tipos.get(c.tipo).abr}}</abbr> {{c.nombre}} ({{c.municipio}})</a>
+</p>
+{% endfor %}
+</div>
