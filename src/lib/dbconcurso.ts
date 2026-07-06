@@ -1,4 +1,4 @@
-import { DataBase } from "./supabaseClient";
+import { DataBase, } from "./supabaseClient";
 import { smart_title, toTitle } from "./util";
 import centro_accesib from '../assets/accesibilidad.json';
 import type { Tables } from "./database.types";
@@ -28,7 +28,7 @@ function filter(arr: any[], func: Function) {
 
 class DBConcurso extends DataBase {
   async get_concursos() {
-    const cpn = ((await this.get('concurso')) as Tables<"concurso">[]).sort((c1, c2)=>{
+    const cpn = ((await this.get('concurso'))).sort((c1, c2)=>{
       if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
       if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
       return c1.txt.localeCompare(c2.txt);
@@ -44,13 +44,13 @@ class DBConcurso extends DataBase {
     const anx = this.get_data(
       `anexo[concurso=${c.id}]`,
       await this.from("concurso_anexo").select().eq("concurso", c.id)
-    ) as Tables<'concurso_anexo'>[];
+    );
     const centros = (await this.get_concurso_centros(c.id, false))
     const id_etapas = Array.from(new Set(centros.flatMap(c=>c.etapas)));
     const etapas = this.get_data(
       `macro_etapa[${c.id}]`,
       (await this.from('macro_etapa').select().in('id', id_etapas).order('txt')),
-    ) as Tables<'macro_etapa'>[];
+    );
     return new Concurso(
       c,
       anx,
@@ -59,6 +59,7 @@ class DBConcurso extends DataBase {
     );
   }
   async get_concurso_centros(id: string, with_latlon: boolean = true) {
+    id = id.replace("-", "_");
     const cetrs = await this._get_concurso_centros(id, with_latlon);
     const tipos = await this.get_dict('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo))));
     const query = await this._get_concurso_query(id);
@@ -84,12 +85,15 @@ class DBConcurso extends DataBase {
   }
 
   private async _get_concurso_centros(id: string, with_latlon: boolean = true) {
-    let prm = this.from(id+'_centro').select().order('id');
+    let prm = this.from(
+      'centro', id
+    ).select().order('id');
     if (with_latlon) prm = prm.neq('latitud', 0);
-    return this.get_data(
+    const data = this.get_data(
       `centro[${id}]`,
-      (await prm),
-    ) as Tables<'centro'>[];
+      await prm,
+    );
+    return data;
   }
   private async _get_concurso_query(id: string) {
     const obj: {[id:string]: number[]} = {}
@@ -110,7 +114,9 @@ class DBConcurso extends DataBase {
     ];
     this.get_data(
       `query_centro[${id}][query=${qrs}]`,
-      await this.from(id+'_query_centro').select('query, centro').in('query', qrs)
+      await this.from(
+        'query_centro', id
+      ).select('query, centro').in('query', qrs)
     ).forEach(e=>{
       if (obj[e.query]==null) obj[e.query]=[];
       obj[e.query].push(e.centro);
@@ -119,9 +125,9 @@ class DBConcurso extends DataBase {
   }
   private async _get_concurso_etapas(id: string) {
     const obj: {[id:number]: number[]} = {}
-    const etapas: Tables<'macro_etapa_centro'>[] = this.get_data(
+    const etapas = this.get_data(
       `macro_etapa_centro[${id}]`,
-      await this.from(id+'_macro_etapa_centro').select('centro, etapa')
+      await this.from('macro_etapa_centro', id).select('centro, etapa')
     );
     etapas.forEach(e=>{
       if (obj[e.etapa]==null) obj[e.etapa]=[];
@@ -131,9 +137,9 @@ class DBConcurso extends DataBase {
   }
   private async _get_alumnado(id: string) {
     const obj: {[id:number]: AlumnadoEtapa[]} = {}
-    const etapas: Tables<'alumnado'>[] = this.get_data(
+    const etapas = this.get_data(
       `alumnado[${id}]`,
-      await this.from(id+'_alumnado').select('*')
+      await this.from('alumnado', id).select('*')
     );
     etapas.forEach(e=>{
       if (obj[e.centro]==null) obj[e.centro]=[];

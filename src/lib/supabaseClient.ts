@@ -3,9 +3,9 @@ import type { Database } from "./database.types";
 import type { Tables } from "./database.types";
 import type { PostgrestSingleResponse, PostgrestError } from "@supabase/supabase-js";
 
-type TablesMap = Database["public"]["Tables"];
-type TableName = keyof Database["public"]["Tables"];
-type IdTableName = {
+export type TablesMap = Database["public"]["Tables"];
+export type TableName = keyof Database["public"]["Tables"];
+export type IdTableName = {
   [K in keyof TablesMap]:
     "id" extends keyof TablesMap[K]["Row"] ? K : never
 }[keyof TablesMap];
@@ -22,18 +22,24 @@ class DataBase {
     this.onerror = onerror;
   }
 
-  from(relation: string) {
-    relation = relation.replace("-", "_");
+  from<T extends TableName>(relation: T, prefix?: string) {
+    if (prefix !=undefined && typeof prefix === "string") {
+      relation = `${prefix}_${relation}` as T;
+    }
     return this.supabase.from(relation);
   }
 
-  protected get_data(log: string, obj: PostgrestSingleResponse<any[]>) {
+  protected get_data<T>(
+    log: string,
+    obj: PostgrestSingleResponse<T[]>
+  ): T[] {
     if (obj.error) {
       console.error(log, obj);
       if (this.onerror) this.onerror(obj.error);
       throw obj.error;
     }
-    console.log(log+': '+obj.data.length+' resultados');
+
+    console.log(`${log}: ${obj.data.length} resultados`);
     return obj.data;
   }
 
@@ -44,25 +50,25 @@ class DataBase {
   }
 
   public async get<T extends TableName>(table: T, ...ids: (number | string)[]): Promise<Tables<T>[]> {
-    let prm = this.from(table).select();
+    let prm = this.from(table).select("*");
     if (ids.length == 1) prm = prm.eq('id', ids[0]);
     else if (ids.length>1) prm = prm.in('id', ids);
-    const data = this.get_data(
+    const data = this.get_data<Tables<T>>(
       ids.length==0?table:`${table}[id=${ids}]`,
-      await prm
+      await prm.returns<Tables<T>[]>()
     );
-    return data as Tables<T>[];
+    return data;
   }
 
   public async getWhere<T extends TableName>(table: T, field: string,...ids: (number | string)[]): Promise<Tables<T>[]> {
     let prm = this.from(table).select();
     if (ids.length == 1) prm = prm.eq(field, ids[0]);
     else if (ids.length>1) prm = prm.in(field, ids);
-    const data = this.get_data(
+    const data = this.get_data<Tables<T>>(
       ids.length==0?table:`${table}[${field}=${ids}]`,
-      await prm
+      await prm.returns<Tables<T>[]>()
     );
-    return data as Tables<T>[];
+    return data;
   }
 
   public async get_dict<T extends IdTableName>(tb: T, ...ids: (number | string)[]){

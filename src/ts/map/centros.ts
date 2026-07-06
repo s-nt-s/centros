@@ -259,6 +259,9 @@ function dwnTxtCentros(this: HTMLAnchorElement) {
     const tipos = st.tipo.getOkInputs().map(i=>i.title);
     if (tipos.length == 0) return "Ocultar todos";
     const kms = st.kms.get();
+    if (kms != null) {
+      filtro.push(`* Distancia máxima a una parada de transporte: ${kms} metros`);
+    }
     _get("#settings select").forEach(s=>{
       if (!(s instanceof HTMLSelectElement) || s.value.trim().length == 0) return [];
       const label = s.getAttribute("data-label")||"";
