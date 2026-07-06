@@ -1,7 +1,7 @@
 <div id="lista-centros">
-{% for c in centros %}
+{% for x in data %}
 <p>
-    <a target="_self" href="?{{c.id}}">{{c.id}} <abbr title="{{tipos.get(c.tipo).txt}}">{{tipos.get(c.tipo).abr}}</abbr> {{c.nombre}} ({{c.municipio}})</a>
+    <a target="_self" href="?{{x.centro.id}}">{{x.centro.id}} <abbr title="{{x.tipo.txt}}">{{x.tipo.abr}}</abbr> {{x.nombre}} ({{x.centro.municipio}})</a>
 </p>
 {% endfor %}
 </div>

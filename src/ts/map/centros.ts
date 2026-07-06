@@ -1,9 +1,8 @@
 import * as L from "leaflet";
 import { SBMap } from "../../mapsidebar/leaflet-sidebar";
-import { DBConcurso, Centro } from "../../lib/supabaseClient";
+import { DBConcurso, Centro } from "../../lib/dbconcurso";
 import { set_transpo_layer } from "./transporte"
 import { set_area_layer } from './areas'
-import type { SchemaName } from "../../lib/supabaseClient";
 import { State } from "../../lib/state";
 
 import {
@@ -19,7 +18,7 @@ const id_concurso = (() => {
   const href = window.location.pathname.replace(/\/(index\.html)?$/, "");
   const path = href.split("/");
   const conc = path[path.length - 1];
-  return conc as SchemaName;
+  return conc;
 })()!;
 
 const myweb = (() => {

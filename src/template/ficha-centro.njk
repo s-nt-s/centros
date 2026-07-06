@@ -1,5 +1,30 @@
 <div id="ficha-centros">
 
-    <h1><a href="https://gestiona.comunidad.madrid/wpad_pub/run/j/MostrarFichaCentro.icm?cdCentro={{centro.id}}"><abbr title="{{tipos.get(centro.tipo).txt}}">{{tipos.get(centro.tipo).abr}}</abbr> {{centro.nombre}}</a></h1>
+    <h1>
+        <abbr title="{{centro.tp.txt}}">{{centro.tp.abr}}</abbr> {{centro.nombre}}
+    </h1>
+    <dl>
+        <dt>Código</dt>
+        <dd><a href="https://gestiona.comunidad.madrid/wpad_pub/run/j/MostrarFichaCentro.icm?cdCentro={{centro.id}}">{{centro.id}}</a></dd>
+        <dt>Tipo</dt>
+        <dd>{{centro.tp.txt}}</dd>
+        <dt>Dirección</dt>
+        <dd>{{centro.direccion}}</dd>
+        {%if centro.web.length > 0 %}
+        <dt>Web</dt>
+        {%for w in centro.web %}
+        <dd><a href="{{w}}" target="_blank">{{w}}</a></dd>
+        {%endfor%}
+        {%endif%}
+        {%if (centro.emails+centro.telefonos).length > 0 %}
+        <dt>Contacto</dt>
+        {%for e in centro.emails %}
+        <dd><a href="mailto:{{e}}">{{e}}</a></dd>
+        {%endfor%}
+        {%for t in centro.telefonos %}
+        <dd>{{t}}</dd>
+        {%endfor%}
+        {%endif%}
+    </dl>
 
 </div>

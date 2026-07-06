@@ -2,7 +2,7 @@ import nunjucks from 'nunjucks'
 import { writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { dirname } from 'path'
 import { glob } from "glob";
-import { DBConcurso, Centro } from '../lib/supabaseClient'
+import { DBConcurso, Centro } from '../lib/dbconcurso';
 import { Mail, get_distance, yJoin, toTitle } from "../lib/util";
 import transporte from "../assets/transporte/transporte.json";
 import estaciones from "../assets/transporte/estaciones.json";

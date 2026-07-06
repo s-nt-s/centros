@@ -1,10 +1,14 @@
-import { DBConcurso } from "../lib/supabaseClient";
+import { DBConcurso, Centro, parseName } from "../lib/dbconcurso";
 import nunjucks from "nunjucks"
 import listTemplate from "../template/lista-centros.njk?raw";
 import fichaTemplate from "../template/ficha-centro.njk?raw";
 
 
 const DB = new DBConcurso();
+
+class FullCentro extends Centro {
+
+}
 
 const render = (source: string, data: object) => {
     const html = nunjucks.renderString(source, data);
@@ -43,8 +47,14 @@ function printList() {
         DB.get("centro")
     ]).then(([tipos, centros])=>{
         main.append(render(listTemplate, {
-            tipos: tipos,
-            centros: centros
+            data: centros.map(c=> {
+                const t = tipos.get(c.tipo)!;
+                return {
+                    nombre: parseName(c, t),
+                    centro: c,
+                    tipo: t
+                }
+            })
         }));
     })
 }
@@ -58,10 +68,15 @@ async function printCentros(ids: number[]) {
     ]);
     ids.forEach(async (id)=>{
         const c = await DB.get_one("centro", id);
+        const ctr = new FullCentro(
+            c,
+            tipos.get(c.tipo)!,
+            (await DB.getWhere("query_centro", "centro", id)).map(q=>q.query),
+            (await DB.getWhere("macro_etapa_centro", "centro", id)).map(q=>q.etapa),
+            (await DB.getWhere("alumnado", "centro", id)),
+        );
         main.append(render(fichaTemplate, {
-            centro: c,
-            tipos: tipos,
-            jornadas: jornadas
+            centro: ctr,
         }));
     })
 }
