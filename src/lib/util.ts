@@ -116,10 +116,6 @@ function tirmnull(s: string | null) {
   return s;
 }
 
-export function to_dict(arr: any[]) {
-  return Object.assign({}, ...arr.map((x) => ({ [x.id]: x })));
-}
-
 export function isChecked(i: Element | string) {
   if (typeof i == "string") i = document.querySelector(i)!;
   return (i as HTMLInputElement).checked;

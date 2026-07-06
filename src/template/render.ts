@@ -2,7 +2,7 @@ import nunjucks from 'nunjucks'
 import { writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { dirname } from 'path'
 import { glob } from "glob";
-import { DBConcurso, Centro } from '../lib/supabaseClient'
+import { DBConcurso, Centro } from '../lib/dbconcurso';
 import { Mail, get_distance, yJoin, toTitle } from "../lib/util";
 import transporte from "../assets/transporte/transporte.json";
 import estaciones from "../assets/transporte/estaciones.json";
@@ -82,7 +82,7 @@ function get_min_idstance(latlons: [number, number][], c: Centro): number|null {
 
 
 async function do_render(env: Record<string, string>) {
-    const jornadas = (await DB.get_jornadas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
+    const jornadas = (await DB.get("jornada")).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
     const concursos = (await DB.get_concursos()).sort((c1, c2)=>{
         if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
         if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
@@ -145,9 +145,9 @@ async function do_render(env: Record<string, string>) {
         save(`public/${c.id}/distancias.json`, json);
         save(`public/${c.id}/concurso.txt`, c.id);
     });
-    const etapas = (await DB.get_etapas()).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
+    const etapas = (await DB.get("macro_etapa")).sort((j1, j2)=>j1.txt.localeCompare(j2.txt));
     const sub = new Map<number, Tables<'macro_etapa_sub'>[]>();
-    (await DB.get_etapas_sub()).sort((j1, j2)=>j1.subetapa.localeCompare(j2.subetapa)).forEach(s=>{
+    (await DB.get("macro_etapa_sub")).sort((j1, j2)=>j1.subetapa.localeCompare(j2.subetapa)).forEach(s=>{
         if (!sub.has(s.etapa)) sub.set(s.etapa, []);
         sub.get(s.etapa)!.push(s);
     });

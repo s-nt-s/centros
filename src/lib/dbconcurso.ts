@@ -1,0 +1,523 @@
+import { DataBase, } from "./supabaseClient";
+import { smart_title, toTitle } from "./util";
+import centro_accesib from '../assets/accesibilidad.json';
+import type { Tables } from "./database.types";
+
+type AlumnadoEtapa = {
+  etapa: string;
+  alumnado: number;
+};
+
+
+function get_flag(obj: any, id: number) {
+  const a = (obj as {[key: string]: string})[id.toString()];
+  return a;
+}
+
+function filter(arr: any[], func: Function) {
+  const ok: any[] = [];
+  const ko: any[] = [];
+  arr.forEach((a) => {
+    (func(a) ? ok : ko).push(a);
+  });
+  return {
+    ok: ok,
+    ko: ko,
+  };
+}
+
+class DBConcurso extends DataBase {
+  async get_concursos() {
+    const cpn = ((await this.get('concurso'))).sort((c1, c2)=>{
+      if (c1.convocatoria != c2.convocatoria) return -c1.convocatoria.localeCompare(c2.convocatoria);
+      if (c1.tipo != c2.tipo) return -c1.tipo.localeCompare(c2.tipo);
+      return c1.txt.localeCompare(c2.txt);
+    });
+    const obj: Concurso[] = [];
+    for (let i = 0; i < cpn.length; i++) {
+      obj.push((await this.get_concurso(cpn[i])));
+    }
+    return obj
+  }
+  async get_concurso(c: string|Tables<"concurso">) {
+    if (typeof c == "string") c=await this.get_one("concurso", c);
+    const anx = this.get_data(
+      `anexo[concurso=${c.id}]`,
+      await this.from("concurso_anexo").select().eq("concurso", c.id)
+    );
+    const centros = (await this.get_concurso_centros(c.id, false))
+    const id_etapas = Array.from(new Set(centros.flatMap(c=>c.etapas)));
+    const etapas = this.get_data(
+      `macro_etapa[${c.id}]`,
+      (await this.from('macro_etapa').select().in('id', id_etapas).order('txt')),
+    );
+    return new Concurso(
+      c,
+      anx,
+      etapas,
+      centros
+    );
+  }
+  async get_concurso_centros(id: string, with_latlon: boolean = true) {
+    id = id.replace("-", "_");
+    const cetrs = await this._get_concurso_centros(id, with_latlon);
+    const tipos = await this.get_dict('tipo', ...Array.from(new Set(cetrs.map(c=>c.tipo))));
+    const query = await this._get_concurso_query(id);
+    const etapas = await this._get_concurso_etapas(id);
+    const alumnado = await this._get_alumnado(id);
+    const _isS = (obj:{[id:string]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?k:[]);
+    const _isN = (obj:{[id:number]:number[]}, id:number) => Object.entries(obj).flatMap(([k, v])=>v.includes(id)?parseInt(k):[]);
+    return cetrs.map(c=>{
+      const t = tipos.get(c.tipo)!;
+      const q = _isS(query, c.id);
+      const e = _isN(etapas, c.id);
+      const a = get_flag(centro_accesib, c.id);
+      const al = alumnado[c.id]??[];
+      if (['+', '-', 'p',].includes(a)) q.push("githubAccesible="+a);
+      return new Centro(
+        c,
+        t,
+        q,
+        e,
+        al
+      );
+    }) as Centro[]
+  }
+
+  private async _get_concurso_centros(id: string, with_latlon: boolean = true) {
+    let prm = this.from(
+      'centro', id
+    ).select().order('id');
+    if (with_latlon) prm = prm.neq('latitud', 0);
+    const data = this.get_data(
+      `centro[${id}]`,
+      await prm,
+    );
+    return data;
+  }
+  private async _get_concurso_query(id: string) {
+    const obj: {[id:string]: number[]} = {}
+    const qrs = [
+      "itRegimenNocturno=4",
+      "itCentroExcelencia=S",
+      "itAulaExcelencia=S",
+      "itInTecno=S",
+      "checkCentroBilingue=S",
+      "checkCentroConvenio=S",
+      "checkSeccionesLinguisticasFr=S",
+      "checkSeccionesLinguisticasAl=S",
+      "itRegimenDual=5",
+      "checkIntegraM=S",
+      "accesibilidad=0",
+      "accesibilidad=1",
+      "accesibilidad=2",
+    ];
+    this.get_data(
+      `query_centro[${id}][query=${qrs}]`,
+      await this.from(
+        'query_centro', id
+      ).select('query, centro').in('query', qrs)
+    ).forEach(e=>{
+      if (obj[e.query]==null) obj[e.query]=[];
+      obj[e.query].push(e.centro);
+    })
+    return Object.freeze(obj);
+  }
+  private async _get_concurso_etapas(id: string) {
+    const obj: {[id:number]: number[]} = {}
+    const etapas = this.get_data(
+      `macro_etapa_centro[${id}]`,
+      await this.from('macro_etapa_centro', id).select('centro, etapa')
+    );
+    etapas.forEach(e=>{
+      if (obj[e.etapa]==null) obj[e.etapa]=[];
+      obj[e.etapa].push(e.centro);
+    })
+    return Object.freeze(obj);
+  }
+  private async _get_alumnado(id: string) {
+    const obj: {[id:number]: AlumnadoEtapa[]} = {}
+    const etapas = this.get_data(
+      `alumnado[${id}]`,
+      await this.from('alumnado', id).select('*')
+    );
+    etapas.forEach(e=>{
+      if (obj[e.centro]==null) obj[e.centro]=[];
+      obj[e.centro].push({
+        etapa: e.etapa,
+        alumnado: e.alumnado
+      });
+    })
+    return Object.freeze(obj);
+  }
+}
+
+class Concurso {
+  private readonly _c: Tables<"concurso">;
+  public readonly anexos: readonly Tables<"concurso_anexo">[];
+  public readonly centros: readonly Centro[];
+  public readonly desubicados: readonly Centro[];
+  public readonly tipos: readonly Tables<"tipo">[];
+  public readonly nocturos: readonly number[];
+  public readonly dificultad: readonly number[];
+  public readonly excelencia: readonly number[]
+  public readonly innovacion: readonly number[];
+  public readonly ingles: readonly number[];
+  public readonly frances: readonly number[];
+  public readonly aleman: readonly number[];
+  public readonly jornadas: readonly string[];
+  public readonly etapas: readonly Tables<"macro_etapa">[];
+  //public readonly accesible: readonly number[];
+
+  constructor(
+    concurso: Tables<"concurso">,
+    anexos: Tables<'concurso_anexo'>[],
+    etapas: Tables<'macro_etapa'>[],
+    centros: Centro[]
+  ) {
+    this._c = concurso;
+    this.anexos = Object.freeze(anexos);
+    this.etapas = Object.freeze(etapas);
+    const {ok, ko} = filter(centros, (c:Centro) => (c.latitud??0)>0);
+    this.centros = Object.freeze(ok as Centro[]);
+    this.desubicados = Object.freeze(ko as Centro[]);
+    this.tipos = Object.freeze((()=>{
+      const tipos:Tables<'tipo'>[] = [];
+      const ids:string[] = [];
+      this.centros.forEach(c=>{
+        if (ids.includes(c.tp.id)) return;
+        ids.push(c.tp.id);
+        tipos.push(c.tp);
+      })
+      return tipos.sort((a, b)=>a.txt.localeCompare(b.txt));
+    })());
+    const _gids = (fnc: (c:Centro)=>boolean) => Object.freeze(this.centros.filter(fnc).map(c=>c.id));
+    this.nocturos = _gids(c=>c.nocturno);
+    this.dificultad = _gids(c=>c.dificultad);
+    this.excelencia = _gids(c=>c.excelencia);
+    this.innovacion = _gids(c=>c.innovacion);
+    this.ingles = _gids(c=>c.ingles);
+    this.frances = _gids(c=>c.frances);
+    this.aleman = _gids(c=>c.aleman);
+    //this.accesible = _gids(c=>c.accesible !== null);
+    this.jornadas = Object.freeze(Array.from(new Set(this.centros.flatMap(c=>c.jornada.length?c.jornada:[]))).sort());
+  }
+
+  get alumnado() {
+    const obj: {[id:string]: {mn: number, mx: number}} = {};
+    this.centros.forEach(c=>{
+      c.alumnado.forEach(a=>{
+        const k = a.etapa;
+        if (obj[k] == null) obj[k] = {mn: a.alumnado, mx: a.alumnado};
+        else {
+          obj[k].mn = Math.min(obj[k].mn, a.alumnado);
+          obj[k].mx = Math.max(obj[k].mx, a.alumnado);
+        }
+      })
+    })
+    return Object.freeze(obj);
+  }
+
+  get showFP() {
+    const spl = this.id.split("-");
+    const id = spl[spl.length-1];
+    return ["fp", "secundaria", "concursillo"].includes(id);
+  }
+
+  get id() {
+    return this._c.id;
+  }
+
+  get cuerpo() {
+    return this._c.cuerpo;
+  }
+
+  get txt() {
+    return this._c.txt;
+  }
+
+  get name() {
+    const txt = this._c.convocatoria+' '+this._c.txt;
+    if (this._c.tipo != 'concursillo') return txt;
+    return txt + ' (concursillo)';
+  }
+
+  get tipo() {
+    return this._c.tipo;
+  }
+
+  get convocatoria() {
+    return this._c.convocatoria;
+  }
+
+  get descripcion() {
+    if (this.tipo == "concurso") return "Concurso de traslados"
+    if (this.tipo == "concursillo" ) return "Asignación de destinos provisionales en inicio de curso"
+    return null;
+  }
+
+  get tipo_convocatoria() {
+    return toTitle(this.tipo)+' '+this.convocatoria;
+  }
+
+  get url() {
+    return this._c.url;
+  }
+
+  get isEspecial() {
+    return (
+      [
+        this.nocturos,
+        this.dificultad,
+        this.innovacion,
+        this.excelencia,
+        this.ingles,
+        this.aleman,
+        this.frances,
+      ].filter((arr) => arr.length > 0).length > 0
+    );
+  }
+}
+
+class Centro {
+  private readonly _c: Tables<"centro">;
+  private readonly _t: Tables<"tipo">;
+  readonly queries: readonly string[];
+  readonly etapas: readonly number[];
+  readonly alumnado: readonly AlumnadoEtapa[];
+
+  constructor(
+    centro: Tables<"centro">,
+    tipo: Tables<"tipo">,
+    queries: string[],
+    etapas: number[],
+    alumnado: AlumnadoEtapa[]
+  ) {
+    this._c = centro;
+    this._t = tipo;
+    this.queries = Object.freeze(queries);
+    this.etapas = Object.freeze(etapas);
+    this.alumnado = Object.freeze(alumnado.sort((a, b) => b.alumnado - a.alumnado));
+  }
+
+  get alumnos() {
+    const year = this._c.curso_alumnado;
+    if (year == 0) return null;
+    const arr: string[] = [];
+    let total = 0;
+    this.alumnado.forEach(a=>{
+      total += a.alumnado;
+      arr.push(`${a.alumnado} en ${a.etapa}`);
+    })
+    return {
+      year: year,
+      total: total,
+      title: `Curso ${year}-${year+1}: ${arr.join(", ")}`
+    }
+  }
+
+  get id(): number {
+    return this._c.id;
+  }
+
+  hasEtapa(s: number) {
+    return this.etapas.includes(s);
+  }
+
+  get latlon(): readonly [number, number] {
+    const ll: readonly [number, number] = [this._c.latitud, this._c.longitud];
+    return ll;
+  }
+
+  get direccion(): string {
+    return [
+      this._c.domicilio,
+      this._c.cp,
+      this._c.municipio,
+    ].filter(i=>i!=null).join(" ")
+  }
+
+  get web(): string[] {
+    if (this._c.web == null) return [];
+    if (this._c.web.length==0) return [];
+    return this._c.web.split(/\s+/).map(u=>{
+      if (u.startsWith("http://") || u.startsWith("https://")) return u;
+      return "http://"+u;
+    })
+  }
+
+  get latitud(): number {
+    return this._c.latitud;
+  }
+
+  get longitud(): number {
+    return this._c.longitud;
+  }
+
+  get jornada(): string {
+    return this._c.jornada;
+  }
+
+  set longitud(l: number) {
+    this._c.longitud = l;
+  }
+
+  get tipo(): string {
+    return this._c.tipo;
+  }
+
+  get tp(): Tables<"tipo"> {
+    return this._t;
+  }
+
+  get dificultad(): boolean {
+    return this._c.dificultad == 1;
+  }
+
+  isQuery(...qrs:string[]) {
+    for (let i=0; i<qrs.length; i++) if (this.queries.includes(qrs[i])) return true;
+    return false;
+  }
+
+  get accesible() {
+    if (this.isQuery("githubAccesible=+")) return "TA";
+    if (this.isQuery("githubAccesible=p")) return "PA";
+    if (this.isQuery("githubAccesible=-")) return "NA";
+    // Los hospitales por defecto son accesibles
+    if (this.tipo == "036") return "TA";
+    // Instalación no accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=0")) return "NA";
+    // Instalación accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=1")) return "TA";
+    // Instalación parcialmente accesible para personas con movilidad reducida
+    if (this.isQuery("accesibilidad=2")) return "PA";
+    // Centro motórico
+    if (this.isQuery("checkIntegraM=S")) return "TA";
+    // Colegio de educación especial
+    if (this.tipo == "020") return "TA";
+    // Equipo de orientación educativa y psicopedagógica
+    //if (["204", "205", "206"].includes(this.tipo)) return "NA";
+    return null;
+  }
+  get motorico() {
+    return this.isQuery("checkIntegraM=S");
+  }
+  get nocturno() {
+    return this.isQuery("itRegimenNocturno=4");
+  }
+  get excelencia() {
+    return this.isQuery("itCentroExcelencia=S", "itAulaExcelencia=S");
+  }
+  get innovacion() {
+    return this.isQuery("itInTecno=S");
+  }
+  get ingles() {
+    return this.isQuery(
+      "checkCentroBilingue=S",
+      "checkCentroConvenio=S"
+    );
+  }
+  get frances() {
+    return this.isQuery("checkSeccionesLinguisticasFr=S");
+  }
+  get aleman() {
+    return this.isQuery("checkSeccionesLinguisticasAl=S");
+  }
+  get fpdual() {
+    return this.isQuery("itRegimenDual=5");
+  }
+  get emails() {
+    return (this._c.email??'').trim().split(/\s+/);
+  }
+
+  get idiomas(): string[] {
+    const arr = [];
+    if (this.ingles) arr.push("EN");
+    if (this.aleman) arr.push("DE");
+    if (this.frances) arr.push("FR");
+    return arr;
+  }
+
+  get telefonos(): string[] {
+    return (this._c.telefono??'').trim().split(/\s+/);
+  }
+
+  get nombre(): string {
+    return parseName(this._c, this._t);
+  }
+
+  get abr_nombre(): string {
+    return `<abbr title="${this.tp.txt}">${this.tp.abr}</abbr> ${this.nombre}`;
+  }
+
+  getAttribute<K extends keyof Centro>(attributeName: K): Centro[K] {
+    return this[attributeName];
+  }
+}
+
+function parseName(c: Tables<"centro">, tp: Tables<"tipo">) {
+    const abr = tp.abr;
+    let nom = c.nombre;
+    if (abr == "AH") {
+      nom = nom.replace(
+        /^(Aula Hospitalaria Hosp\.|Aula Hospitalaria|Hospital) /i,
+        ""
+      );
+    }
+    if (abr.startsWith("EOEP")) {
+      nom = nom.replace(/^(Equipo General|Equipo Gral\.|Equipo) /i, "");
+      nom = nom.replace(
+        /^(E\. a\. Temprana|Eq\. Aten\.temprana|Eq\. At\.temp\.|Equipo At\. Temp\.|Eoep de At\.tna|Eq\. Aten\. Temprana|At\. Temp\.|E\.a\.temprana|Atencion Temprana) /i,
+        ""
+      );
+      nom = nom.replace(/^(E.e\.?) /i, "");
+    }
+    if (abr == "EOEP-AT") {
+      nom = nom.replace(/^(Atencíon Temprana) /i, "");
+    }
+    if (abr == "SIES") {
+      nom = nom.replace(/^(Seccion del Ies) /i, "");
+    }
+    if (abr == "EOI") {
+      nom = nom.replace(/^(e\.o\.i\. de) /i, "");
+    }
+    if (abr == "EXEOI") {
+      nom = nom.replace(/^(Extension de la Escuela Oficial de Idiomas de) /i, "");
+    }
+    if (abr == "ES ARTE") {
+      nom = nom.replace(/^(Escuela de Arte de) /i, "");
+    }
+    if (abr == "ES CANTO") {
+      nom = nom.replace(/^(Real )?Escuela Superior de Canto de /i, "");
+    }
+    if (abr == "CPR DANZA") {
+      nom = nom.replace(/^(Real )?Conservatorio Profesional de Danza( de)? /i, "");
+    }
+    if (abr == "CSU MUS") {
+      nom = nom.replace(/^(Real )?Conservatorio Superior de Musica de /i, "");
+    }
+    if (abr == "CPR MUS") {
+      nom = nom.replace(/^(Real )?Conservatorio Profesional de Musica de /i, "");
+    }
+    if (c.id == 28034428 && abr=="ES ARTE" && nom.toLocaleLowerCase()=="real escuela superior de arte dramatico") {
+      nom = "Madrid";
+    }
+    if (c.id == 28037821 && abr=="ES CRBC" && nom.toLocaleLowerCase()=="escuela superior conservacion y restauracion bienes culturales") {
+      nom = "Madrid";
+    }
+    if (c.id == 28072508 && abr=="ES DISEÑO" && nom.toLocaleLowerCase()=="escuela superior de diseño") {
+      nom = "Madrid";
+    }
+    nom = smart_title(nom);
+    nom = nom.replace(/\bS\./i, "S.");
+    nom = nom.replace(/\bS\./i, "S.");
+    nom = nom.replace(/\bS\.mart/i, "S. Mart");
+    return nom;
+}
+
+export {
+  parseName,
+  DBConcurso,
+  Centro,
+  Concurso
+};
