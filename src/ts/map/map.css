@@ -229,3 +229,15 @@ a.acc_ico {
   font-weight: bold !important;
   color: inherit !important;
 }
+
+header p {
+  padding: 5px;
+  margin: 0px;
+  text-align: center;
+  background-color: #009739;
+  font-size: 0.75em;
+}
+header p a {
+  font-weight: bold;
+  color: white;
+}
