@@ -378,7 +378,7 @@ function getPopUp(c: Centro) {
   if (accesible != null) {
     body.push(`<a title="¡OJO! Función experimental, puede inducir a error" class="acc_ico" href="https://github.com/s-nt-s/centros/wiki/Accesibilidad">${accesible}</a>`);
   }
-  if (c.dificultad) body.push("<b title='Centro de especial dificultad'>🌶 Especial dificultad</b>");
+  if (c.dificultad) body.push("<b title='Centro de especial dificultad'><span style='color: red;'>🌶</span> Especial dificultad</b>");
   if (c.nocturno) body.push("<b title='Turno nocturno'>🌑 Nocturno</b>");
   const tags = [];
   if (c.excelencia) tags.push("<b>&#35;excelencia</b>");

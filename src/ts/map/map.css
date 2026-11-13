@@ -236,6 +236,7 @@ header p {
   text-align: center;
   background-color: #009739;
   font-size: 0.75em;
+  color: white;
 }
 header p a {
   font-weight: bold;
